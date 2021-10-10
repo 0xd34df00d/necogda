@@ -3,6 +3,8 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Neovim.Agda
 ( defaultEnv
@@ -13,9 +15,12 @@ import qualified Data.HashMap.Strict as HM
 import qualified Data.Map.Strict as M
 import Data.String.Interpolate.IsString
 import Control.Monad
-import System.IO
-import UnliftIO.STM
+import System.IO (hGetLine)
+import UnliftIO.Async
+import UnliftIO.IO
+import UnliftIO.MVar
 import UnliftIO.Process
+import UnliftIO.STM
 
 import Neovim
 import Neovim.Quickfix
@@ -39,6 +44,22 @@ newtype AgdaEnv = AgdaEnv
 defaultEnv :: Neovim e AgdaEnv
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
 
+watchErrors :: AgdaInstance -> Neovim AgdaEnv ()
+watchErrors AgdaInstance { agdaStderr, agdaProcess } = do
+  watcherInstance <- newEmptyMVar
+  watcher <- async $ forever do
+    hasInput <- hIsEOF agdaStderr >>= \case True -> pure False
+                                            False -> hWaitForInput agdaStderr 1000
+    exited <- getProcessExitCode agdaProcess
+    case (hasInput, exited) of
+         (True, _)    -> liftIO (hGetLine agdaStderr) >>= nvim_err_writeln
+         (_, Nothing) -> pure ()
+         (_, Just ec) -> do
+           nvim_err_writeln [i|Agda exited with error code: #{ec}|]
+           watcher <- takeMVar watcherInstance
+           cancel watcher
+  putMVar watcherInstance watcher
+
 startAgdaForFile :: FilePath -> Neovim AgdaEnv ()
 startAgdaForFile name = do
   agdasTVar <- asks agdas
@@ -51,7 +72,9 @@ startAgdaForFile name = do
     else do
       modifyTVar' agdasTVar $ HM.insert name inst
       pure False
-  when shouldClose $ terminateProcess agdaProcess
+  if shouldClose
+  then terminateProcess agdaProcess
+  else watchErrors inst
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
