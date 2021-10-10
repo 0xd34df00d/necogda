@@ -27,6 +27,9 @@ dependencies:
 - unordered-containers
 - unliftio
 
+ghc-options:
+- -Wall
+
 library:
   source-dirs: src
 
