@@ -21,7 +21,11 @@ description:         Please see the README on GitHub at <https://github.com/0xd3
 
 dependencies:
 - base >= 4.7 && < 5
+- containers
+- interpolate
 - nvim-hs >= 2.1.0.7
+- unordered-containers
+- unliftio
 
 library:
   source-dirs: src
