@@ -5,6 +5,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda
 ( defaultEnv
@@ -24,15 +25,17 @@ import UnliftIO.STM
 import Neovim
 import Neovim.API.String
 
+newtype NoShow a = NoShow { hidden :: a }
+
+instance Show (NoShow a) where
+  show _ = "hidden"
+
 data AgdaInstance = AgdaInstance
   { agdaStdin :: Handle
   , agdaStdout :: Handle
   , agdaStderr :: Handle
-  , agdaProcess :: ProcessHandle
-  }
-
-instance Show AgdaInstance where
-  show AgdaInstance { .. } = [i|AgdaInstance {agdaStdin = #{agdaStdin}, agdaStdout = #{agdaStdout}, agdaStderr = #{agdaStderr}|]
+  , agdaProcess :: NoShow ProcessHandle
+  } deriving (Show)
 
 newtype AgdaEnv = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath AgdaInstance)
@@ -47,7 +50,7 @@ watchErrors AgdaInstance { agdaStderr, agdaProcess } = do
   watcher <- async $ forever do
     hasInput <- hIsEOF agdaStderr >>= \case True -> pure False
                                             False -> hWaitForInput agdaStderr 1000
-    exited <- getProcessExitCode agdaProcess
+    exited <- getProcessExitCode $ hidden agdaProcess
     case (hasInput, exited) of
          (True, _)    -> liftIO (hGetLine agdaStderr) >>= nvim_err_writeln
          (_, Nothing) -> pure ()
@@ -60,7 +63,7 @@ watchErrors AgdaInstance { agdaStderr, agdaProcess } = do
 startAgdaForFile :: FilePath -> Neovim AgdaEnv ()
 startAgdaForFile name = do
   agdasTVar <- asks agdas
-  (Just agdaStdin, Just agdaStdout, Just agdaStderr, agdaProcess) <- createProcess agdaProc
+  (Just agdaStdin, Just agdaStdout, Just agdaStderr, NoShow -> agdaProcess) <- createProcess agdaProc
   let inst = AgdaInstance { .. }
   shouldClose <- atomically do
     agdas <- readTVar agdasTVar
@@ -70,7 +73,7 @@ startAgdaForFile name = do
       modifyTVar' agdasTVar $ HM.insert name inst
       pure False
   if shouldClose
-  then terminateProcess agdaProcess
+  then terminateProcess $ hidden agdaProcess
   else watchErrors inst
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
