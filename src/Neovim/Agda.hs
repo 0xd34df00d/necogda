@@ -32,7 +32,7 @@ data AgdaInstance = AgdaInstance
   }
 
 instance Show AgdaInstance where
-  show AgdaInstance { .. } = [i|AgdaInstance {agdaStdin = #{agdaStdin}, agdaStdout = #{agdaStdout}|]
+  show AgdaInstance { .. } = [i|AgdaInstance {agdaStdin = #{agdaStdin}, agdaStdout = #{agdaStdout}, agdaStderr = #{agdaStderr}|]
 
 newtype AgdaEnv = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath AgdaInstance)
