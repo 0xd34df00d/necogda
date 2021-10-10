@@ -12,7 +12,6 @@ module Neovim.Agda
 ) where
 
 import qualified Data.HashMap.Strict as HM
-import qualified Data.Map.Strict as M
 import Data.String.Interpolate.IsString
 import Control.Monad
 import System.IO (hGetLine)
@@ -23,9 +22,7 @@ import UnliftIO.Process
 import UnliftIO.STM
 
 import Neovim
-import Neovim.Quickfix
 import Neovim.API.String
-import UnliftIO.Concurrent
 
 data AgdaInstance = AgdaInstance
   { agdaStdin :: Handle
@@ -82,8 +79,6 @@ startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
   name <- buffer_get_name buf
-
-  bufNum <- buffer_get_number buf
 
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
