@@ -35,6 +35,7 @@ data AgdaInstance = AgdaInstance
   , agdaStdout :: Handle
   , agdaStderr :: Handle
   , agdaProcess :: NoShow ProcessHandle
+  , filename :: String
   } deriving (Show)
 
 newtype AgdaEnv = AgdaEnv
@@ -61,16 +62,16 @@ watchErrors AgdaInstance { agdaStderr, agdaProcess } = do
   putMVar watcherInstance watcher
 
 startAgdaForFile :: FilePath -> Neovim AgdaEnv ()
-startAgdaForFile name = do
+startAgdaForFile filename = do
   agdasTVar <- asks agdas
   (Just agdaStdin, Just agdaStdout, Just agdaStderr, NoShow -> agdaProcess) <- createProcess agdaProc
   let inst = AgdaInstance { .. }
   shouldClose <- atomically do
     agdas <- readTVar agdasTVar
-    if name `HM.member` agdas
+    if filename `HM.member` agdas
     then pure True
     else do
-      modifyTVar' agdasTVar $ HM.insert name inst
+      modifyTVar' agdasTVar $ HM.insert filename inst
       pure False
   if shouldClose
   then terminateProcess $ hidden agdaProcess
