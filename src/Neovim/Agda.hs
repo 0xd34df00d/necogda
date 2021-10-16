@@ -41,10 +41,13 @@ withWatcher watch = do
   watcher <- async $ forever $ watch stop
   putMVar watcherInstance watcher
 
+hWaitWithEof :: MonadIO m => Handle -> Int -> m Bool
+hWaitWithEof h t = hIsEOF h >>= \case True -> pure False
+                                      False -> hWaitForInput h t
+
 watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
 watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ \stop -> do
-  hasInput <- hIsEOF agdaStderr >>= \case True -> pure False
-                                          False -> hWaitForInput agdaStderr 1000
+  hasInput <- hWaitWithEof agdaStderr 1000
   exited <- getProcessExitCode $ hidden agdaProcess
   case (hasInput, exited) of
        (True, _)    -> liftIO (hGetLine agdaStderr) >>= errHandler
@@ -52,6 +55,14 @@ watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ 
        (_, Just ec) -> do
          errHandler [i|Agda exited with error code: #{ec}|]
          stop
+
+-- TODO this leaks green threads when agda exits
+watchStdout :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
+watchStdout handler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
+  hasInput <- hWaitWithEof agdaStdout 1000
+  if hasInput
+  then liftIO (hGetLine agdaStdout) >>= handler
+  else pure ()
 
 startAgdaForFile :: (MonadUnliftIO m, MonadReader AgdaEnv m, MonadFail m) => FilePath -> m (Maybe AgdaInstance)
 startAgdaForFile filename = do
