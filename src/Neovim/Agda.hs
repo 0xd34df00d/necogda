@@ -34,21 +34,24 @@ sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin
 loadFile :: MonadIO m => AgdaInstance -> m ()
 loadFile agda@AgdaInstance { filename } = sendCommand agda $ Cmd_load filename []
 
-watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
-watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = do
+withWatcher :: MonadUnliftIO m => (m () -> m ()) -> m ()
+withWatcher watch = do
   watcherInstance <- newEmptyMVar
-  watcher <- async $ forever do
-    hasInput <- hIsEOF agdaStderr >>= \case True -> pure False
-                                            False -> hWaitForInput agdaStderr 1000
-    exited <- getProcessExitCode $ hidden agdaProcess
-    case (hasInput, exited) of
-         (True, _)    -> liftIO (hGetLine agdaStderr) >>= errHandler
-         (_, Nothing) -> pure ()
-         (_, Just ec) -> do
-           errHandler [i|Agda exited with error code: #{ec}|]
-           watcher <- takeMVar watcherInstance
-           cancel watcher
+  let stop = takeMVar watcherInstance >>= cancel
+  watcher <- async $ forever $ watch stop
   putMVar watcherInstance watcher
+
+watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
+watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ \stop -> do
+  hasInput <- hIsEOF agdaStderr >>= \case True -> pure False
+                                          False -> hWaitForInput agdaStderr 1000
+  exited <- getProcessExitCode $ hidden agdaProcess
+  case (hasInput, exited) of
+       (True, _)    -> liftIO (hGetLine agdaStderr) >>= errHandler
+       (_, Nothing) -> pure ()
+       (_, Just ec) -> do
+         errHandler [i|Agda exited with error code: #{ec}|]
+         stop
 
 startAgdaForFile :: (MonadUnliftIO m, MonadReader AgdaEnv m, MonadFail m) => FilePath -> m (Maybe AgdaInstance)
 startAgdaForFile filename = do

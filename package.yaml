@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - containers
 - interpolate
+- mtl
 - nvim-hs >= 2.1.0.7
 - unordered-containers
 - unliftio
