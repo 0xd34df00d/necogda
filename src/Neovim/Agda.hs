@@ -23,26 +23,8 @@ import Neovim
 import Neovim.API.String
 
 import Neovim.Agda.Interaction
+import Neovim.Agda.Types
 
-newtype NoShow a = NoShow { hidden :: a }
-
-instance Show (NoShow a) where
-  show _ = "hidden"
-
-data AgdaInstance = AgdaInstance
-  { agdaStdin :: Handle
-  , agdaStdout :: Handle
-  , agdaStderr :: Handle
-  , agdaProcess :: NoShow ProcessHandle
-  , filename :: String
-  } deriving (Show)
-
-newtype AgdaEnv = AgdaEnv
-  { agdas :: TVar (HM.HashMap FilePath AgdaInstance)
-  }
-
-defaultEnv :: Neovim e AgdaEnv
-defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
 
 sendCommand :: MonadIO m => AgdaInstance -> Interaction -> m ()
 sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Indirect int
