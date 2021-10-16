@@ -31,7 +31,7 @@ import Neovim.Agda.Types
 
 
 sendCommand :: MonadIO m => AgdaInstance -> Interaction -> m ()
-sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Indirect int
+sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Direct int
 
 loadFile :: MonadIO m => AgdaInstance -> m ()
 loadFile agda@AgdaInstance { filename } = sendCommand agda $ Cmd_load filename []
