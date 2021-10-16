@@ -4,8 +4,6 @@ import qualified Data.HashMap.Strict as HM
 import UnliftIO
 import UnliftIO.Process
 
-import Neovim
-
 newtype NoShow a = NoShow { hidden :: a }
 
 instance Show (NoShow a) where
@@ -23,5 +21,5 @@ newtype AgdaEnv = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath AgdaInstance)
   }
 
-defaultEnv :: Neovim e AgdaEnv
+defaultEnv :: MonadIO m => m AgdaEnv
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
