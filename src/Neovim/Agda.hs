@@ -11,6 +11,8 @@
 module Neovim.Agda
 ( defaultEnv
 , loadNecogda
+
+, startStandalone
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -101,3 +103,10 @@ startAgda = do
 
 loadNecogda :: Neovim AgdaEnv ()
 loadNecogda = startAgda
+
+startStandalone :: FilePath -> ReaderT AgdaEnv IO ()
+startStandalone filename = do
+  Just inst <- startAgdaForFile filename
+  watchErrors (liftIO . putStrLn . ("[ERR] " <>)) inst
+  loadFile inst
+  watchStdout (liftIO . putStrLn) inst
