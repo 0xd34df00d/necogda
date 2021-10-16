@@ -15,15 +15,14 @@ module Neovim.Agda
 import qualified Data.HashMap.Strict as HM
 import Data.String.Interpolate.IsString
 import Control.Monad
-import System.IO (hGetLine)
-import UnliftIO.Async
-import UnliftIO.IO
-import UnliftIO.MVar
+import System.IO (hGetLine, hPrint)
+import UnliftIO
 import UnliftIO.Process
-import UnliftIO.STM
 
 import Neovim
 import Neovim.API.String
+
+import Neovim.Agda.Interaction
 
 newtype NoShow a = NoShow { hidden :: a }
 
@@ -44,6 +43,12 @@ newtype AgdaEnv = AgdaEnv
 
 defaultEnv :: Neovim e AgdaEnv
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
+
+sendCommand :: MonadIO m => AgdaInstance -> Interaction -> m ()
+sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Indirect int
+
+loadFile :: MonadIO m => AgdaInstance -> m ()
+loadFile agda@AgdaInstance { filename } = sendCommand agda $ Cmd_load filename []
 
 watchErrors :: AgdaInstance -> Neovim AgdaEnv ()
 watchErrors AgdaInstance { agdaStderr, agdaProcess } = do
@@ -76,6 +81,8 @@ startAgdaForFile filename = do
   if shouldClose
   then terminateProcess $ hidden agdaProcess
   else watchErrors inst
+
+  loadFile inst
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
