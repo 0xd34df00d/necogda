@@ -70,6 +70,7 @@ startAgdaForFile :: (MonadUnliftIO m, MonadReader AgdaEnv m, MonadFail m) => Fil
 startAgdaForFile filename = do
   agdasTVar <- asks agdas
   (Just agdaStdin, Just agdaStdout, Just agdaStderr, NoShow -> agdaProcess) <- createProcess agdaProc
+  hSetBuffering agdaStdin LineBuffering
   let inst = AgdaInstance { .. }
   shouldClose <- atomically do
     agdas <- readTVar agdasTVar
