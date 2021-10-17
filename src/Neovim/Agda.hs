@@ -16,6 +16,7 @@ module Neovim.Agda
 ) where
 
 import qualified Data.HashMap.Strict as HM
+import qualified Data.ByteString.Char8 as BS
 import Data.String.Interpolate.IsString
 import Control.Monad
 import Control.Monad.Reader
@@ -24,7 +25,7 @@ import UnliftIO
 import UnliftIO.Process
 
 import Neovim
-import Neovim.API.String
+import Neovim.API.ByteString
 
 import Neovim.Agda.Interaction
 import Neovim.Agda.Response
@@ -53,23 +54,23 @@ hWaitWithEof :: MonadIO m => Handle -> Int -> m Bool
 hWaitWithEof h t = hIsEOF h >>= \case True -> pure False
                                       False -> hWaitForInput h t
 
-watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstanceT payload -> m ()
+watchErrors :: MonadUnliftIO m => (BS.ByteString -> m ()) -> AgdaInstanceT payload -> m ()
 watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ \stop -> do
   hasInput <- hWaitWithEof agdaStderr 1000
   exited <- getProcessExitCode $ hidden agdaProcess
   case (hasInput, exited) of
-       (True, _)    -> liftIO (hGetLine agdaStderr) >>= errHandler
+       (True, _)    -> liftIO (BS.hGetLine agdaStderr) >>= errHandler
        (_, Nothing) -> pure ()
        (_, Just ec) -> do
          errHandler [i|Agda exited with error code: #{ec}|]
          stop
 
 -- TODO this leaks green threads when agda exits
-watchStdout :: MonadUnliftIO m => (String -> m ()) -> AgdaInstanceT payload -> m ()
+watchStdout :: MonadUnliftIO m => (BS.ByteString -> m ()) -> AgdaInstanceT payload -> m ()
 watchStdout handler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
   hasInput <- hWaitWithEof agdaStdout 1000
   if hasInput
-  then liftIO (hGetLine agdaStdout) >>= handler
+  then liftIO (BS.hGetLine agdaStdout) >>= handler
   else pure ()
 
 startAgdaForFile :: (MonadUnliftIO m, MonadReader (AgdaEnvT payload) m, MonadFail m)
@@ -96,14 +97,17 @@ startAgdaForFile payload filename = do
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
-stripMarker :: String -> String
-stripMarker ('J':'S':'O':'N':'>':' ':rest) = rest
-stripMarker str = str
+stripMarker :: BS.ByteString -> BS.ByteString
+stripMarker str
+  | marker `BS.isPrefixOf` str = BS.drop (BS.length marker) str
+  | otherwise = str
+  where
+    marker = "JSON> "
 
-parseResponse :: Buffer -> String -> Neovim AgdaEnv ()
+parseResponse :: Buffer -> BS.ByteString -> Neovim AgdaEnv ()
 parseResponse buf response =
   case decodeResponse $ stripMarker response of
-       Left errStr -> nvim_err_writeln errStr
+       Left errStr -> nvim_err_writeln $ BS.pack errStr
        Right res -> dispatchResponse buf res
 
 dispatchResponse :: Buffer -> Response -> Neovim AgdaEnv ()
@@ -120,7 +124,7 @@ dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
-  name <- buffer_get_name buf
+  name <- BS.unpack <$> buffer_get_name buf
 
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
@@ -139,6 +143,6 @@ loadNecogda = startAgda
 startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
 startStandalone filename = do
   Just inst <- startAgdaForFile () filename
-  watchErrors (liftIO . putStrLn . ("[ERR] " <>)) inst
+  watchErrors (liftIO . BS.putStrLn . ("[ERR] " <>)) inst
   watchStdout (liftIO . print . decodeResponse . stripMarker) inst
   loadFile inst

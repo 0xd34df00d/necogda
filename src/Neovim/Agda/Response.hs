@@ -52,5 +52,5 @@ instance A.FromJSON Response where
 instance A.ToJSON Response where
   toJSON = A.genericToJSON A.defaultOptions { A.sumEncoding = A.TaggedObject "kind" "", A.fieldLabelModifier = takeWhile (/= '\'') }
 
-decodeResponse :: String -> Either String Response
-decodeResponse = A.eitherDecodeStrict' . BS.pack
+decodeResponse :: BS.ByteString -> Either String Response
+decodeResponse = A.eitherDecodeStrict'
