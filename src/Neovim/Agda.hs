@@ -92,6 +92,23 @@ stripMarker :: String -> String
 stripMarker ('J':'S':'O':'N':'>':' ':rest) = rest
 stripMarker str = str
 
+parseResponse :: String -> Neovim AgdaEnv ()
+parseResponse response =
+  case decodeResponse $ stripMarker response of
+       Left errStr -> nvim_err_writeln errStr
+       Right res -> dispatchResponse res
+
+dispatchResponse :: Response -> Neovim AgdaEnv ()
+dispatchResponse (Status (StatusInfo checked _ _))
+  | checked = nvim_command "echo ''"
+  | otherwise = pure ()
+dispatchResponse (InteractionPoints x0) = pure ()
+dispatchResponse (DisplayInfo di) = pure ()
+dispatchResponse (HighlightingInfo hi) = pure ()
+dispatchResponse (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
+dispatchResponse ClearHighlighting = pure ()
+dispatchResponse ClearRunningInfo = nvim_command "echo ''"
+
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
@@ -105,6 +122,7 @@ startAgda = do
          Nothing -> pure ()
          Just inst -> do
            watchErrors nvim_err_writeln inst
+           watchStdout parseResponse inst
            loadFile inst
 
 loadNecogda :: Neovim AgdaEnv ()
