@@ -9,17 +9,18 @@ newtype NoShow a = NoShow { hidden :: a }
 instance Show (NoShow a) where
   show _ = "hidden"
 
-data AgdaInstance = AgdaInstance
+data AgdaInstanceT payload = AgdaInstance
   { agdaStdin :: Handle
   , agdaStdout :: Handle
   , agdaStderr :: Handle
   , agdaProcess :: NoShow ProcessHandle
   , filename :: String
+  , payload :: payload
   } deriving (Show)
 
-newtype AgdaEnv = AgdaEnv
-  { agdas :: TVar (HM.HashMap FilePath AgdaInstance)
+newtype AgdaEnvT payload = AgdaEnv
+  { agdas :: TVar (HM.HashMap FilePath (AgdaInstanceT payload))
   }
 
-defaultEnv :: MonadIO m => m AgdaEnv
+defaultEnv :: MonadIO m => m (AgdaEnvT payload)
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty

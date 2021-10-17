@@ -30,11 +30,16 @@ import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
 
+newtype NVimPayload = NVimPayload
+  { buffer :: Buffer
+  }
 
-sendCommand :: MonadIO m => AgdaInstance -> Interaction -> m ()
+type AgdaEnv = AgdaEnvT NVimPayload
+
+sendCommand :: MonadIO m => AgdaInstanceT payload -> Interaction -> m ()
 sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Direct int
 
-loadFile :: MonadIO m => AgdaInstance -> m ()
+loadFile :: MonadIO m => AgdaInstanceT payload -> m ()
 loadFile agda@AgdaInstance { filename } = sendCommand agda $ Cmd_load filename []
 
 withWatcher :: MonadUnliftIO m => (m () -> m ()) -> m ()
@@ -48,7 +53,7 @@ hWaitWithEof :: MonadIO m => Handle -> Int -> m Bool
 hWaitWithEof h t = hIsEOF h >>= \case True -> pure False
                                       False -> hWaitForInput h t
 
-watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
+watchErrors :: MonadUnliftIO m => (String -> m ()) -> AgdaInstanceT payload -> m ()
 watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ \stop -> do
   hasInput <- hWaitWithEof agdaStderr 1000
   exited <- getProcessExitCode $ hidden agdaProcess
@@ -60,15 +65,18 @@ watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ 
          stop
 
 -- TODO this leaks green threads when agda exits
-watchStdout :: MonadUnliftIO m => (String -> m ()) -> AgdaInstance -> m ()
+watchStdout :: MonadUnliftIO m => (String -> m ()) -> AgdaInstanceT payload -> m ()
 watchStdout handler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
   hasInput <- hWaitWithEof agdaStdout 1000
   if hasInput
   then liftIO (hGetLine agdaStdout) >>= handler
   else pure ()
 
-startAgdaForFile :: (MonadUnliftIO m, MonadReader AgdaEnv m, MonadFail m) => FilePath -> m (Maybe AgdaInstance)
-startAgdaForFile filename = do
+startAgdaForFile :: (MonadUnliftIO m, MonadReader (AgdaEnvT payload) m, MonadFail m)
+                 => payload
+                 -> FilePath
+                 -> m (Maybe (AgdaInstanceT payload))
+startAgdaForFile payload filename = do
   agdasTVar <- asks agdas
   (Just agdaStdin, Just agdaStdout, Just agdaStderr, NoShow -> agdaProcess) <- createProcess agdaProc
   hSetBuffering agdaStdin LineBuffering
@@ -117,7 +125,7 @@ startAgda = do
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
   unless (name `HM.member` agdas) $ do
-    maybeInst <- startAgdaForFile name
+    maybeInst <- startAgdaForFile (NVimPayload buf) name
     case maybeInst of
          Nothing -> pure ()
          Just inst -> do
@@ -128,9 +136,9 @@ startAgda = do
 loadNecogda :: Neovim AgdaEnv ()
 loadNecogda = startAgda
 
-startStandalone :: FilePath -> ReaderT AgdaEnv IO ()
+startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
 startStandalone filename = do
-  Just inst <- startAgdaForFile filename
+  Just inst <- startAgdaForFile () filename
   watchErrors (liftIO . putStrLn . ("[ERR] " <>)) inst
   watchStdout (liftIO . print . decodeResponse . stripMarker) inst
   loadFile inst
