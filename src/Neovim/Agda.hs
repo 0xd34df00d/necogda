@@ -27,6 +27,7 @@ import Neovim
 import Neovim.API.String
 
 import Neovim.Agda.Interaction
+import Neovim.Agda.Response
 import Neovim.Agda.Types
 
 
@@ -87,6 +88,10 @@ startAgdaForFile filename = do
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
+stripMarker :: String -> String
+stripMarker ('J':'S':'O':'N':'>':' ':rest) = rest
+stripMarker str = str
+
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
@@ -109,5 +114,5 @@ startStandalone :: FilePath -> ReaderT AgdaEnv IO ()
 startStandalone filename = do
   Just inst <- startAgdaForFile filename
   watchErrors (liftIO . putStrLn . ("[ERR] " <>)) inst
+  watchStdout (liftIO . print . decodeResponse . stripMarker) inst
   loadFile inst
-  watchStdout (liftIO . putStrLn) inst
