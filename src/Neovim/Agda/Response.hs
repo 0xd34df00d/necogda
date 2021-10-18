@@ -5,6 +5,7 @@ module Neovim.Agda.Response where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
+import Data.Int (Int64)
 import GHC.Generics (Generic)
 
 data StatusInfo = StatusInfo
@@ -28,7 +29,7 @@ instance A.ToJSON DisplayInfo where
 
 data HlBit = HlBit
   { atoms :: [String]
-  , range :: [Int]
+  , range :: [Int64]
   } deriving (Show, Generic, A.FromJSON, A.ToJSON)
 
 data HlInfo = HlInfo
