@@ -34,11 +34,7 @@ import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
 
-newtype NVimPayload = NVimPayload
-  { buffer :: Buffer
-  }
-
-type AgdaEnv = AgdaEnvT NVimPayload
+type AgdaEnv = AgdaEnvT ()
 
 sendCommand :: MonadIO m => AgdaInstanceT payload -> Interaction -> m ()
 sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Direct int
@@ -152,7 +148,7 @@ startAgda = do
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
   unless (name `HM.member` agdas) $ do
-    maybeInst <- startAgdaForFile (NVimPayload buf) name
+    maybeInst <- startAgdaForFile () name
     case maybeInst of
          Nothing -> pure ()
          Just inst -> do
