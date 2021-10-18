@@ -17,12 +17,13 @@ module Neovim.Agda
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.ByteString.Char8 as BS
+import Control.Arrow
+import Control.Monad
+import Control.Monad.Reader
 import Data.Foldable
 import Data.List
 import Data.String.Interpolate.IsString
-import Control.Monad
-import Control.Monad.Reader
-import System.IO (hGetLine, hPrint)
+import System.IO (hPrint)
 import UnliftIO
 import UnliftIO.Process
 
@@ -116,16 +117,16 @@ addHlBit :: Buffer -> [Int64] -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf offsets (HlBit atoms [from, to])
   | Just fromLine <- subtract 1 <$> findIndex (>= from) offsets
   , Just toLine <- subtract 1 <$> findIndex (>= to) offsets
-  , let fromOffset = offsets !! fromLine
-  , let toOffset = offsets !! toLine
-    = if fromLine == toLine
-      then forM_ atoms $ \atom ->
-         nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] (fromIntegral fromLine) (from - fromOffset - 1) (to - toOffset - 1)
-      else forM_ atoms $ \atom -> do
-         void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] (fromIntegral fromLine) (from - fromOffset - 1) (-1)
-         void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] (fromIntegral toLine) 0 (to - toOffset - 1)
-         forM_ [fromLine + 1 .. toLine - 1] $ \line -> do
-           nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] (fromIntegral line) 0 (-1)
+    = let (fromOffset, toOffset) = join (***) (offsets !!) (fromLine, toLine)
+          (fromLine', toLine') = join (***) fromIntegral (fromLine, toLine)
+      in if fromLine' == toLine'
+         then forM_ atoms $ \atom ->
+            nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] fromLine' (from - fromOffset - 1) (to - toOffset - 1)
+         else forM_ atoms $ \atom -> do
+            void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] fromLine' (from - fromOffset - 1) (-1)
+            void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] toLine' 0 (to - toOffset - 1)
+            forM_ [fromLine' + 1 .. toLine' - 1] $ \line ->
+              nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] line 0 (-1)
   | otherwise = pure ()
 addHlBit _   _       (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
