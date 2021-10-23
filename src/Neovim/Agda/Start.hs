@@ -9,7 +9,9 @@
 
 module Neovim.Agda.Start
 ( startAgda
-, startStandalone
+, startAgdaForFile
+, watchErrors
+, watchStdout
 ) where
 
 import qualified Data.ByteString.Char8 as BS
@@ -98,11 +100,4 @@ startAgda = do
          Just inst -> do
            watchErrors nvim_err_writeln inst
            watchStdout parseDispatch inst
-           loadFile inst
-
-startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
-startStandalone filename = do
-  Just inst <- startAgdaForFile () filename
-  watchErrors (liftIO . BS.putStrLn . ("[ERR] " <>)) inst
-  watchStdout (liftIO . print . parseResponse) inst
-  loadFile inst
+           loadFile

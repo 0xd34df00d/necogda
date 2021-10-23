@@ -2,8 +2,6 @@ module Neovim.Agda
 ( defaultEnv
 , loadNecogda
 , necogdaComplete
-
-, startStandalone
 ) where
 
 import Neovim
