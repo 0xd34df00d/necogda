@@ -30,6 +30,7 @@ import UnliftIO.Process
 import Neovim
 import Neovim.API.ByteString
 
+import Neovim.Agda.Input
 import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
@@ -157,7 +158,9 @@ startAgda = do
            loadFile inst
 
 loadNecogda :: Neovim AgdaEnv ()
-loadNecogda = startAgda
+loadNecogda = do
+  startAgda
+  startInput
 
 startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
 startStandalone filename = do

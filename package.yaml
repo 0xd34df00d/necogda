@@ -23,10 +23,12 @@ dependencies:
 - base >= 4.7 && < 5
 - aeson
 - bytestring
+- bytestring-trie
 - containers
 - interpolate
 - mtl
 - nvim-hs >= 2.1.0.7
+- text
 - unordered-containers
 - unliftio
 

@@ -3,4 +3,5 @@ resolver:
 packages:
 - .
 extra-deps:
+- bytestring-trie-0.2.5.2
 - nvim-hs-2.1.0.7

@@ -18,9 +18,12 @@ data AgdaInstanceT payload = AgdaInstance
   , payload :: payload
   } deriving (Show)
 
-newtype AgdaEnvT payload = AgdaEnv
+data AgdaEnvT payload = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath (AgdaInstanceT payload))
+  , symbolInputCol :: TVar (Maybe Int)
   }
 
 defaultEnv :: MonadIO m => m (AgdaEnvT payload)
-defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
+defaultEnv = atomically $ AgdaEnv <$> newTVar mempty <*> newTVar Nothing
+
+type AgdaEnv = AgdaEnvT ()
