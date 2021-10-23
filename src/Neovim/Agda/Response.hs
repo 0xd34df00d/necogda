@@ -29,31 +29,64 @@ data StatusInfo = StatusInfo
   , showIrrelevantArguments :: Bool
   , showImplicitArguments :: Bool
   }
-  deriving (Show, Generic, A.FromJSON, A.ToJSON)
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson StatusInfo)
+
+data Position = Position
+  { line :: Int
+  , col :: Int
+  , pos :: Int
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson Position)
+
+data Range = Range
+  { start :: Position
+  , end :: Position
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson Range)
+
+data RangeId = RangeId
+  { range :: [Range]
+  , id'range :: Int
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeId)
+
+data Goal = OfType
+  { constraintObj :: RangeId
+  , type'goal :: String
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson Goal)
 
 data DisplayInfo = AllGoalsWarnings
-  { visibleGoals :: [()]
+  { visibleGoals :: [Goal]
   , warnings :: [()]
   , invisibleGoals :: [()]
   , errors :: [()]
   }
-  deriving (Show, Generic, A.FromJSON, A.ToJSON)
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
 data HlBit = HlBit
   { atoms :: [String]
-  , range :: [Int64]
+  , range'hlbit :: [Int64]
   }
-  deriving (Show, Generic, A.FromJSON, A.ToJSON)
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson HlBit)
 
 data HlInfo = HlInfo
   { remove :: Bool
   , payload :: [HlBit]
   }
-  deriving (Show, Generic, A.FromJSON, A.ToJSON)
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson HlInfo)
 
 data Response
   = Status { status :: StatusInfo }
-  | InteractionPoints { interactionPoints :: [()] }
+  | InteractionPoints { interactionPoints :: [RangeId] }
   | DisplayInfo { info'd :: DisplayInfo }
   | HighlightingInfo { info'hl :: HlInfo }
   | RunningInfo { debugLevel :: Int, message :: String }
