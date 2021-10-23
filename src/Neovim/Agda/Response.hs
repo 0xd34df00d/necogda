@@ -1,28 +1,13 @@
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia #-}
 
 module Neovim.Agda.Response where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
 import Data.Int (Int64)
-import GHC.Generics (Generic (Rep))
+import GHC.Generics (Generic)
 
-newtype AgdaJson a = AgdaJson { getAgdaJson :: a }
-  deriving (Generic)
-
-agdaJsonOpts :: A.Options
-agdaJsonOpts = A.defaultOptions { A.sumEncoding = A.TaggedObject "kind" "", A.fieldLabelModifier = takeWhile (/= '\'') }
-
-instance (A.GFromJSON A.Zero (Rep a), Generic a) => A.FromJSON (AgdaJson a) where
-  parseJSON = fmap AgdaJson . A.genericParseJSON agdaJsonOpts
-
-instance (A.GToJSON A.Zero (Rep a), Generic a) => A.ToJSON (AgdaJson a) where
-  toJSON = A.genericToJSON agdaJsonOpts . getAgdaJson
+import Neovim.Agda.Response.AgdaJson
 
 data StatusInfo = StatusInfo
   { checked :: Bool
