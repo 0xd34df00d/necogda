@@ -11,6 +11,7 @@
 module Neovim.Agda
 ( defaultEnv
 , loadNecogda
+, necogdaComplete
 
 , startStandalone
 ) where
@@ -34,8 +35,6 @@ import Neovim.Agda.Input
 import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
-
-type AgdaEnv = AgdaEnvT ()
 
 sendCommand :: MonadIO m => AgdaInstanceT payload -> Interaction -> m ()
 sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Direct int

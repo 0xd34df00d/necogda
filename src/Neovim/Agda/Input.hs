@@ -4,13 +4,17 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module Neovim.Agda.Input(startInput) where
+module Neovim.Agda.Input(startInput, necogdaComplete) where
 
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.Map as M
 import qualified Data.Trie as Trie
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import Control.Arrow (first)
 import Control.Monad
+import Data.Functor
+import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
 import UnliftIO
@@ -101,3 +105,27 @@ startInput = forM_ commands $ \(event, cmd) -> do
   where
     commands = ((, cancelInput) <$> ["InsertLeave"])
             <> ((, handleInput) <$> ["TextChangedI", "TextChangedP"])
+
+necogdaComplete :: Int -> BS.ByteString -> Neovim AgdaEnv Object
+necogdaComplete 1 _ = do
+  line <- nvim_get_current_line
+  col <- col <$> getCursorI
+  pure $ case BS.elemIndexEnd '`' $ BS.take (col + 1) line of
+              Just idx -> ObjectInt $ fromIntegral idx
+              Nothing  -> ObjectInt (-3)
+necogdaComplete 0 base = do
+  let (maybeVal, children) = Trie.lookupBy (,) (BS.tail base) sampleTrie
+  let childrenOpts = map (first (base <>)) $ take 15 $ sortOn (BS.length . fst) $ Trie.toList children
+  let opts = case maybeVal of
+                  Just val -> (base, val) : childrenOpts
+                  Nothing -> childrenOpts
+  let vimOpts = [ M.fromList [ (ObjectString "word", ObjectString $ T.encodeUtf8 sym)
+                             , (ObjectString "equal", ObjectInt 1)
+                             , (ObjectString "menu", ObjectString [i|(#{abbr})|])
+                             ]
+                | (abbr, sym) <- opts
+                ]
+  pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
+                                , (ObjectString "refresh", ObjectString "always")
+                                ]
+necogdaComplete mode _ = nvim_err_writeln [i|Invalid complete mode: #{mode}|] $> ObjectNil
