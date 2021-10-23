@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Input(startInput) where
 
@@ -48,8 +49,11 @@ maybeStartSymbol = do
   unless (BS.null line) $ do
     curCol <- col <$> getCursorI
     case line `BS.index` curCol of
-         '`' -> asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
+         '`' -> startSymbol curCol
          _   -> pure ()
+
+startSymbol :: Int -> Neovim AgdaEnv ()
+startSymbol curCol = asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
 
 split3 :: BS.ByteString -> Int -> Int -> (BS.ByteString, BS.ByteString, BS.ByteString)
 split3 str start len = (left, mid, right)
@@ -57,30 +61,35 @@ split3 str start len = (left, mid, right)
     (left, rest) = BS.splitAt start str
     (mid, right) = BS.splitAt len rest
 
+handleSubstr :: Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
+handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid) sampleTrie
+  where
+    (left, BS.tail -> mid, right) = split3 line start (col - start + 1)
+    isComplete = not (BS.null mid) && BS.last mid `elem` ['`', ' ']
+
+    handleTrieResult Nothing children
+      | Trie.null children = cancelInput
+      | otherwise = pure ()
+    handleTrieResult (Just sub) children
+      | Trie.null children = insertBytes $ T.encodeUtf8 sub
+      | isComplete = insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
+      | otherwise = pure ()
+
+    insertBytes bytes = do
+      insertBehaviour <- nvim_eval [i|get(g:, 'insert_behaviour', '')|]
+      case insertBehaviour of
+           ObjectString "undo" -> do nvim_set_current_line $ left <> bytes <> right
+                                     win <- nvim_get_current_win
+                                     nvim_win_set_cursor win (fromIntegral row, fromIntegral $ start + BS.length bytes)
+           _                   -> void $ nvim_input [i|<ESC>v#{col - start}hdi#{bytes}|]
+      cancelInput
+
 handleNextSymbol :: Int -> Neovim AgdaEnv ()
 handleNextSymbol start = do
-  line <- nvim_get_current_line
-  Cursor { .. } <- getCursorI
-  if col >= start
-  then do
-    let (left, mid, right) = split3 line start (col - start + 1)
-    case Trie.lookup (BS.tail mid) sampleTrie of
-         Nothing  -> pure ()
-         Just sub -> do
-           let subBytes = T.encodeUtf8 sub
-           insertBehaviour <- nvim_eval [i|get(g:, 'insert_behaviour', '')|]
-           case insertBehaviour of
-                ObjectString "undo" -> insertPreservingUndo left subBytes right row
-                _                   -> insertPreservingHighlights subBytes col
-           cancelInput
-  else cancelInput
-  where
-    insertPreservingUndo left subBytes right row = do
-      nvim_set_current_line $ left <> subBytes <> right
-      win <- nvim_get_current_win
-      nvim_win_set_cursor win (fromIntegral row, fromIntegral $ start + BS.length subBytes)
-
-    insertPreservingHighlights subBytes col = void $ nvim_input [i|<ESC>v#{col - start}hdi#{subBytes}|]
+  cur@Cursor { .. } <- getCursorI
+  if col < start
+  then cancelInput
+  else nvim_get_current_line >>= handleSubstr start cur
 
 cancelInput :: Neovim AgdaEnv ()
 cancelInput = asks symbolInputCol >>= \var -> atomically $ writeTVar var Nothing
