@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Neovim.Agda.Response where
 
@@ -39,17 +40,25 @@ data RangeId = RangeId
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeId)
 
-data Goal = OfType
-  { constraintObj :: RangeId
-  , type'goal :: String
+data RangeName = RangeName
+  { range :: [Range]
+  , name'range :: String
   }
   deriving (Show, Generic)
-  deriving (A.FromJSON, A.ToJSON) via (AgdaJson Goal)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeName)
+
+data Goal range
+  = OfType
+    { constraintObj :: range
+    , type'goal :: String
+    }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson (Goal range))
 
 data DisplayInfo = AllGoalsWarnings
-  { visibleGoals :: [Goal]
+  { visibleGoals :: [Goal RangeId]
   , warnings :: [()]
-  , invisibleGoals :: [()]
+  , invisibleGoals :: [Goal RangeName]
   , errors :: [()]
   }
   deriving (Show, Generic)
