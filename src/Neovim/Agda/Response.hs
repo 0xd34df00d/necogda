@@ -52,6 +52,9 @@ data Goal range
     { constraintObj :: range
     , type'goal :: String
     }
+  | JustSort
+    { constraintObj :: range
+    }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson (Goal range))
 
