@@ -20,9 +20,9 @@ data StatusInfo = StatusInfo
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson StatusInfo)
 
 data Position = Position
-  { line :: Int
-  , col :: Int
-  , pos :: Int
+  { line :: Int64
+  , col :: Int64
+  , pos :: Int64
   }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson Position)
