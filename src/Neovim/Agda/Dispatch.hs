@@ -11,6 +11,7 @@ module Neovim.Agda.Dispatch
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import qualified Data.Vector as V
 import Control.Arrow
 import Control.Monad
 import Data.Foldable
@@ -59,12 +60,23 @@ addHlBit buf offsets ls (HlBit atoms [from, to])
   | otherwise = pure ()
 addHlBit _   _       _  (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
-dispatchResponse :: Buffer -> Response -> Neovim AgdaEnv ()
+fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector BS.ByteString
+fmtGoals _    _        [] = V.empty
+fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
+  where
+    fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|]
+    fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
+
+dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status (StatusInfo checked _ _))
   | checked = nvim_command "echo ''"
   | otherwise = pure ()
 dispatchResponse _   (InteractionPoints pts) = pure ()
-dispatchResponse _   (DisplayInfo di) = pure ()
+dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
+  setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
+                     <> fmtGoals "Invisible" name'range invisibleGoals
+dispatchResponse _   (DisplayInfo Version {}) = pure ()
+dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx $ pure $ T.encodeUtf8 $ message'error error'
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines (agdaBuffer ctx) 0 (-1) False
   let offsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList ls
@@ -73,3 +85,6 @@ dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
+
+setOutputBuffer :: DispatchContext -> V.Vector BS.ByteString -> Neovim env ()
+setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False . V.concatMap (V.fromList . BS.split '\n')
