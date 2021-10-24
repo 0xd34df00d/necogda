@@ -60,7 +60,7 @@ addHlBit buf offsets ls (HlBit atoms [from, to])
   | otherwise = pure ()
 addHlBit _   _       _  (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
-fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector BS.ByteString
+fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
 fmtGoals _    _        [] = V.empty
 fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
   where
@@ -76,7 +76,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
-dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx $ pure $ T.encodeUtf8 $ message'error error'
+dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx [message'error error']
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines (agdaBuffer ctx) 0 (-1) False
   let offsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList ls
@@ -86,5 +86,8 @@ dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ct
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
 
-setOutputBuffer :: DispatchContext -> V.Vector BS.ByteString -> Neovim env ()
-setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False . V.concatMap (V.fromList . BS.split '\n')
+setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
+setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False
+                    . V.concatMap (V.fromList . BS.split '\n' . T.encodeUtf8)
+                    . V.fromList
+                    . toList
