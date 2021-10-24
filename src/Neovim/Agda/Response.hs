@@ -53,15 +53,29 @@ data Goal range
     { constraintObj :: range
     , type'goal :: T.Text
     }
-  | JustSort
-    { constraintObj :: range
-    }
+  | JustSort { constraintObj :: range }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson (Goal range))
 
 newtype ErrorObj = ErrorObj { message'error :: T.Text }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson ErrorObj)
+
+data GoalContextEntry = GoalContextEntry
+  { inScope :: Bool
+  , originalName :: T.Text
+  , reifiedName :: T.Text
+  , binding :: T.Text
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson GoalContextEntry)
+
+data GoalInfo = GoalInfo
+  { type'goal :: T.Text
+  , entries :: [GoalContextEntry]
+  }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson GoalInfo)
 
 data DisplayInfo
   = AllGoalsWarnings
@@ -70,10 +84,12 @@ data DisplayInfo
     , invisibleGoals :: [Goal RangeName]
     , errors :: [()]
     }
+  | Version { version :: T.Text }
   | Error
     { error' :: ErrorObj
     , warnings :: [()]
     }
+  | GoalSpecific { goalInfo :: GoalInfo }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
