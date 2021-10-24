@@ -59,12 +59,21 @@ data Goal range
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson (Goal range))
 
-data DisplayInfo = AllGoalsWarnings
-  { visibleGoals :: [Goal RangeId]
-  , warnings :: [()]
-  , invisibleGoals :: [Goal RangeName]
-  , errors :: [()]
-  }
+newtype ErrorObj = ErrorObj { message'error :: T.Text }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson ErrorObj)
+
+data DisplayInfo
+  = AllGoalsWarnings
+    { visibleGoals :: [Goal RangeId]
+    , warnings :: [()]
+    , invisibleGoals :: [Goal RangeName]
+    , errors :: [()]
+    }
+  | Error
+    { error' :: ErrorObj
+    , warnings :: [()]
+    }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
@@ -90,6 +99,7 @@ data Response
   | RunningInfo { debugLevel :: Int, message :: T.Text }
   | ClearRunningInfo
   | ClearHighlighting
+  | JumpToError { filepath :: T.Text, position :: Int }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson Response)
 

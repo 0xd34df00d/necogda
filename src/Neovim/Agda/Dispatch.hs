@@ -72,3 +72,4 @@ dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
+dispatchResponse _   JumpToError { .. } = pure ()
