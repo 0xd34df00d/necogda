@@ -5,6 +5,7 @@
 module Neovim.Agda.Dispatch
 ( parseResponse
 , dispatchResponse
+, DispatchContext(..)
 ) where
 
 import qualified Data.ByteString.Char8 as BS
@@ -35,6 +36,11 @@ parseResponse = decodeResponse . stripMarker
 codepoint2byte :: T.Text -> Int64 -> Int64
 codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
 
+data DispatchContext = DispatchContext
+  { agdaBuffer :: Buffer
+  , outputBuffer :: Buffer
+  }
+
 addHlBit :: Buffer -> [Int64] -> [T.Text] -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf offsets ls (HlBit atoms [from, to])
   | Just fromLine <- subtract 1 <$> findIndex (>= from) offsets
@@ -59,10 +65,10 @@ dispatchResponse _   (Status (StatusInfo checked _ _))
   | otherwise = pure ()
 dispatchResponse _   (InteractionPoints pts) = pure ()
 dispatchResponse _   (DisplayInfo di) = pure ()
-dispatchResponse buf (HighlightingInfo (HlInfo _ bits)) = do
-  ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines buf 0 (-1) False
+dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
+  ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines (agdaBuffer ctx) 0 (-1) False
   let offsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList ls
-  mapM_ (addHlBit buf offsets ls) bits
+  mapM_ (addHlBit (agdaBuffer ctx) offsets ls) bits
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
-dispatchResponse buf ClearHighlighting = nvim_buf_clear_namespace buf (-1) 0 (-1)
+dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"

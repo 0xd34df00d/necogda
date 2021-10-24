@@ -67,6 +67,7 @@ startAgdaForFile payload filename = do
   (Just agdaStdin, Just agdaStdout, Just agdaStderr, NoShow -> agdaProcess) <- createProcess agdaProc
   hSetBuffering agdaStdin LineBuffering
   let inst = AgdaInstance { .. }
+
   shouldClose <- atomically do
     agdas <- readTVar agdasTVar
     if filename `HM.member` agdas
@@ -74,6 +75,7 @@ startAgdaForFile payload filename = do
     else do
       modifyTVar' agdasTVar $ HM.insert filename inst
       pure False
+
   if shouldClose
   then do
     terminateProcess $ hidden agdaProcess
@@ -87,9 +89,15 @@ startAgda = do
   buf <- vim_get_current_buffer
   name <- BS.unpack <$> buffer_get_name buf
 
+  nvim_command [i|belowright pedit! Goals|]
+  nvim_command [i|wincmd P|]
+  nvim_command [i|setlocal buftype=nofile nobuflisted bufhidden=wipe|]
+  outputBuf <- vim_get_current_buffer
+  nvim_command [i|wincmd p|]
+
   let parseDispatch line = case parseResponse line of
                                 Left errStr -> nvim_err_writeln $ BS.pack errStr
-                                Right resp -> dispatchResponse buf resp
+                                Right resp -> dispatchResponse (DispatchContext buf outputBuf) resp
 
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
