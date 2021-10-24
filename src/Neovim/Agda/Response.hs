@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia #-}
+{-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia, GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
 module Neovim.Agda.Response where
@@ -34,19 +34,23 @@ data Range = Range
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson Range)
 
-data RangeId = RangeId
+newtype RangeId = RangeId { getId :: Int }
+  deriving (Show)
+  deriving newtype (A.FromJSON, A.ToJSON)
+
+data RangeWithId = RangeWithId
   { range :: [Range]
-  , id'range :: Int
+  , id'range :: RangeId
   }
   deriving (Show, Generic)
-  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeId)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeWithId)
 
-data RangeName = RangeName
+data RangeWithName = RangeWithName
   { range :: [Range]
   , name'range :: T.Text
   }
   deriving (Show, Generic)
-  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeName)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeWithName)
 
 data Goal range
   = OfType
@@ -79,9 +83,9 @@ data GoalInfo = GoalInfo
 
 data DisplayInfo
   = AllGoalsWarnings
-    { visibleGoals :: [Goal RangeId]
+    { visibleGoals :: [Goal RangeWithId]
     , warnings :: [()]
-    , invisibleGoals :: [Goal RangeName]
+    , invisibleGoals :: [Goal RangeWithName]
     , errors :: [()]
     }
   | Version { version :: T.Text }
@@ -109,7 +113,7 @@ data HlInfo = HlInfo
 
 data Response
   = Status { status :: StatusInfo }
-  | InteractionPoints { interactionPoints :: [RangeId] }
+  | InteractionPoints { interactionPoints :: [RangeWithId] }
   | DisplayInfo { info'd :: DisplayInfo }
   | HighlightingInfo { info'hl :: HlInfo }
   | RunningInfo { debugLevel :: Int, message :: T.Text }
