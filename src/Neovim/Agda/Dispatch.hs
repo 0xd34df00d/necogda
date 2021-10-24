@@ -34,13 +34,45 @@ stripMarker str
 parseResponse :: BS.ByteString -> Either String Response
 parseResponse = decodeResponse . stripMarker
 
-codepoint2byte :: T.Text -> Int64 -> Int64
-codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
-
 data DispatchContext = DispatchContext
   { agdaBuffer :: Buffer
   , outputBuffer :: Buffer
   }
+
+dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
+dispatchResponse _   (Status (StatusInfo checked _ _))
+  | checked = nvim_command "echo ''"
+  | otherwise = pure ()
+dispatchResponse ctx (InteractionPoints pts) = pure ()
+dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
+  setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
+                     <> fmtGoals "Invisible" name'range invisibleGoals
+  where
+    fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
+    fmtGoals _    _        [] = V.empty
+    fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
+      where
+        fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|] :: T.Text
+        fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
+dispatchResponse _   (DisplayInfo Version {}) = pure ()
+dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx [message'error error']
+dispatchResponse ctx (DisplayInfo GoalSpecific { goalInfo = GoalInfo { .. } }) = setOutputBuffer ctx $ V.fromList $ header : (fmtEntry <$> entries)
+  where
+    header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
+    fmtEntry GoalContextEntry { .. } = let scopeMarker = if inScope then T.empty else " (not in scope)"
+                                           reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
+                                        in [i|#{originalName}#{reifyMarker}: #{binding}#{scopeMarker}|]
+dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
+  ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines (agdaBuffer ctx) 0 (-1) False
+  let offsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList ls
+  mapM_ (addHlBit (agdaBuffer ctx) offsets ls) bits
+dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
+dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
+dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
+dispatchResponse _   JumpToError { .. } = pure ()
+
+codepoint2byte :: T.Text -> Int64 -> Int64
+codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
 
 addHlBit :: Buffer -> [Int64] -> [T.Text] -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf offsets ls (HlBit atoms [from, to])
@@ -59,32 +91,6 @@ addHlBit buf offsets ls (HlBit atoms [from, to])
               nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] line 0 (-1)
   | otherwise = pure ()
 addHlBit _   _       _  (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
-
-fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
-fmtGoals _    _        [] = V.empty
-fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
-  where
-    fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|]
-    fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
-
-dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
-dispatchResponse _   (Status (StatusInfo checked _ _))
-  | checked = nvim_command "echo ''"
-  | otherwise = pure ()
-dispatchResponse _   (InteractionPoints pts) = pure ()
-dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
-  setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
-                     <> fmtGoals "Invisible" name'range invisibleGoals
-dispatchResponse _   (DisplayInfo Version {}) = pure ()
-dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx [message'error error']
-dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
-  ls <- toList . fmap T.decodeUtf8 <$> nvim_buf_get_lines (agdaBuffer ctx) 0 (-1) False
-  let offsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList ls
-  mapM_ (addHlBit (agdaBuffer ctx) offsets ls) bits
-dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
-dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
-dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
-dispatchResponse _   JumpToError { .. } = pure ()
 
 setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
 setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False
