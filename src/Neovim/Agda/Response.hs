@@ -5,6 +5,7 @@ module Neovim.Agda.Response where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.Text as T
 import Data.Int (Int64)
 import GHC.Generics (Generic)
 
@@ -42,7 +43,7 @@ data RangeId = RangeId
 
 data RangeName = RangeName
   { range :: [Range]
-  , name'range :: String
+  , name'range :: T.Text
   }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson RangeName)
@@ -50,7 +51,7 @@ data RangeName = RangeName
 data Goal range
   = OfType
     { constraintObj :: range
-    , type'goal :: String
+    , type'goal :: T.Text
     }
   | JustSort
     { constraintObj :: range
@@ -68,7 +69,7 @@ data DisplayInfo = AllGoalsWarnings
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
 data HlBit = HlBit
-  { atoms :: [String]
+  { atoms :: [T.Text]
   , range'hlbit :: [Int64]
   }
   deriving (Show, Generic)
@@ -86,7 +87,7 @@ data Response
   | InteractionPoints { interactionPoints :: [RangeId] }
   | DisplayInfo { info'd :: DisplayInfo }
   | HighlightingInfo { info'hl :: HlInfo }
-  | RunningInfo { debugLevel :: Int, message :: String }
+  | RunningInfo { debugLevel :: Int, message :: T.Text }
   | ClearRunningInfo
   | ClearHighlighting
   deriving (Show, Generic)
