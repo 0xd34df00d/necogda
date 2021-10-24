@@ -28,7 +28,10 @@ newtype SrcFile = SrcFile (Maybe AbsolutePath)
 data Range
   = NoRange
   | Range SrcFile (Seq IntervalWithoutFile)
-  deriving (Show)
+
+instance Show Range where
+  show NoRange = "noRange"
+  show _ = error "Dunno how to handle this yet"
 
 newtype InteractionId = InteractionId { interactionId :: Int }
   deriving newtype (Show)
