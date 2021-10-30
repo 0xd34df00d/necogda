@@ -20,6 +20,7 @@ import Data.String.Interpolate.IsString
 import Neovim
 import Neovim.API.ByteString
 
+import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
 
@@ -45,7 +46,9 @@ dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status (StatusInfo checked _ _))
   | checked = nvim_command "echo ''"
   | otherwise = pure ()
-dispatchResponse ctx (InteractionPoints pts) = pure ()
+dispatchResponse ctx (InteractionPoints pts) = do
+  marks <- setInteractionMarks (agdaBuffer ctx) pts
+  modifyPayload ctx $ \p -> p { markId2interactionPoint = marks }
 dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
