@@ -14,8 +14,11 @@ main = do
                   { environment = env
                   , exports = [ $(function' 'P.initializePlugin) Async
                               , $(function' 'P.loadNecogda) Async
+
                               , $(function' 'P.necogdaComplete) Sync
+
                               , $(function "NecogdaLoadFile" 'C.loadFile) Async
+                              , $(function "NecogdaGoalInfo" 'C.goalInfo) Async
                               ]
                   }
   neovim defaultConfig { plugins = [plugin], logOptions = Just ("nvim.log", DEBUG) }

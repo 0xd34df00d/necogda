@@ -1,13 +1,16 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Neovim.Agda.Commands
 ( sendCommand
 
 , loadFile
+, goalInfo
 ) where
 
 import qualified Data.HashMap.Strict as HM
+import Data.String.Interpolate.IsString
 import System.IO (hPrint)
 import UnliftIO
 
@@ -30,3 +33,10 @@ withInstance cmd = do
 
 loadFile :: Neovim (AgdaEnvT payload) ()
 loadFile = withInstance $ \agda -> sendCommand agda $ Cmd_load (filename agda) []
+
+goalInfo :: Neovim AgdaEnv ()
+goalInfo = withInstance $ \agda -> do
+  maybeInteractionId <- getCurrentInteractionId agda
+  case maybeInteractionId of
+       Nothing -> nvim_err_writeln [i|Not in an interaction point|]
+       Just iid -> sendCommand agda $ Cmd_goal_type_context Simplified iid NoRange ""
