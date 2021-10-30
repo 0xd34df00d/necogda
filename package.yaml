@@ -29,6 +29,7 @@ dependencies:
 - mtl
 - nvim-hs >= 2.1.0.7
 - text
+- vector
 - unordered-containers
 - unliftio
 
