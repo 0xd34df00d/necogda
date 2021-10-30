@@ -6,3 +6,6 @@ set completefunc=NecogdaComplete
 set completeopt=menu,menuone,noinsert
 
 inoremap <buffer><silent> ` `<C-X><C-U>
+
+nnoremap <buffer><silent> <LocalLeader>l :w<CR>:call NecogdaLoadFile()<CR>
+nnoremap <buffer><silent> <LocalLeader>.       :call NecogdaGoalInfo()<CR>
