@@ -12,7 +12,6 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
-import Control.Arrow
 import Control.Monad
 import Data.Foldable
 import Data.List
@@ -73,8 +72,6 @@ dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ct
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
 
-codepoint2byte :: T.Text -> Int64 -> Int64
-codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
 
 addHlBit :: Buffer -> Position2Cursor -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf pos2cur (HlBit atoms [from, to])
@@ -91,11 +88,6 @@ addHlBit buf pos2cur (HlBit atoms [from, to])
   | otherwise = pure ()
 addHlBit _   _       (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
-setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
-setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False
-                    . V.concatMap (V.fromList . BS.split '\n' . T.encodeUtf8)
-                    . V.fromList
-                    . toList
 
 data Position2Cursor = Position2Cursor
   { linesOffsets :: [Int64]
@@ -112,5 +104,15 @@ position2cursor :: Position2Cursor -> Int64 -> Maybe (Int64, Int64)
 position2cursor Position2Cursor { .. } pos = do
   lineIdx <- subtract 1 <$> findIndex (>= pos) linesOffsets
   let lineOffset = linesOffsets !! lineIdx
-  let colIdx = codepoint2byte (linesContents !! lineIdx) (pos - lineOffset - 1)
+      colIdx = codepoint2byte (linesContents !! lineIdx) (pos - lineOffset - 1)
   pure (fromIntegral lineIdx, colIdx)
+
+codepoint2byte :: T.Text -> Int64 -> Int64
+codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
+
+
+setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
+setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False
+                    . V.concatMap (V.fromList . BS.split '\n' . T.encodeUtf8)
+                    . V.fromList
+                    . toList
