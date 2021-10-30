@@ -4,6 +4,7 @@ module Neovim.Agda.Interaction
 ( module X
 
 , setInteractionMarks
+, getCurrentInteractionId
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -41,3 +42,33 @@ setInteractionMarks buffer pts = do
                      | (id'range, markIds) <- id'range2markIds
                      , markId <- markIds
                      ]
+
+getCurrentInteractionId :: AgdaInstance -> Neovim AgdaEnv (Maybe InteractionId)
+getCurrentInteractionId AgdaInstance { .. } = do
+  goalmarksId <- asks goalmarksNs >>= readTVarIO
+
+  buf <- nvim_get_current_buf
+  win <- nvim_get_current_win
+  (row, col) <- nvim_win_get_cursor win
+  marks <- nvim_buf_get_extmarks buf goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
+  let mark = findMark (markId2interactionPoint payload) (row - 1) col marks
+  pure mark
+
+findMark :: Foldable f => MarkId2InteractionPoint -> Int64 -> Int64 -> f Object -> Maybe InteractionId
+findMark id2ip row col = (listToMaybe . mapMaybe f . toList) >=> getInteractionId
+  where
+    f (ObjectArray [ ObjectInt markId
+                   , ObjectInt markRow
+                   , ObjectInt markCol
+                   , ObjectMap extras
+                   ])
+      | Just (ObjectInt endRow) <- ObjectString "end_row" `M.lookup` extras
+      , Just (ObjectInt endCol) <- ObjectString "end_col" `M.lookup` extras
+      , (row, col) `between` ((markRow, markCol), (endRow, endCol)) = Just markId
+    f _ = Nothing
+
+    getInteractionId :: Int64 -> Maybe InteractionId
+    getInteractionId markId = InteractionId . getId <$> markId `HM.lookup` id2ip
+
+between :: Ord a => a -> (a, a) -> Bool
+smth `between` (start, end) = start <= smth && smth <= end
