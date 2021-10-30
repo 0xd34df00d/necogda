@@ -20,7 +20,7 @@ import Neovim.Agda.Types
 sendCommand :: MonadIO m => AgdaInstanceT payload -> Interaction -> m ()
 sendCommand AgdaInstance { agdaStdin, filename } int = liftIO $ hPrint agdaStdin $ IOTCM (AbsolutePath filename) NonInteractive Direct int
 
-withInstance :: (forall m. MonadIO m => AgdaInstanceT payload -> m ()) -> Neovim (AgdaEnvT payload) ()
+withInstance :: (AgdaInstanceT payload -> Neovim (AgdaEnvT payload) ()) -> Neovim (AgdaEnvT payload) ()
 withInstance cmd = do
   buf <- nvim_get_current_buf
   name <- buffer_get_name buf
