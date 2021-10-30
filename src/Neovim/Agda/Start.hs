@@ -92,17 +92,27 @@ startAgda = do
   nvim_command [i|belowright pedit! Goals|]
   nvim_command [i|wincmd P|]
   nvim_command [i|setlocal buftype=nofile nobuflisted bufhidden=wipe|]
-  outputBuf <- vim_get_current_buffer
+  outputBuffer <- vim_get_current_buffer
   nvim_command [i|wincmd p|]
+
+  let withPayload f = do
+        agdasTVar <- asks agdas
+        agdas <- readTVarIO agdasTVar
+        case name `HM.lookup` agdas of
+             Nothing -> nvim_err_writeln [i|Unable to find Agda instance for #{name}|]
+             Just inst -> f $ payload inst
+  let modifyPayload f = do
+        agdasTVar <- asks agdas
+        atomically $ modifyTVar' agdasTVar $ HM.adjust (\inst -> inst { payload = f $ payload inst }) name
 
   let parseDispatch line = case parseResponse line of
                                 Left errStr -> nvim_err_writeln $ BS.pack errStr
-                                Right resp -> dispatchResponse (DispatchContext buf outputBuf) resp
+                                Right resp  -> dispatchResponse (DispatchContext { agdaBuffer = buf, .. }) resp
 
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
   unless (name `HM.member` agdas) $ do
-    maybeInst <- startAgdaForFile () name
+    maybeInst <- startAgdaForFile (NeovimPayload mempty) name
     case maybeInst of
          Nothing -> pure ()
          Just inst -> do

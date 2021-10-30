@@ -37,6 +37,9 @@ parseResponse = decodeResponse . stripMarker
 data DispatchContext = DispatchContext
   { agdaBuffer :: Buffer
   , outputBuffer :: Buffer
+
+  , withPayload :: (NeovimPayload -> Neovim AgdaEnv ()) -> Neovim AgdaEnv ()
+  , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()

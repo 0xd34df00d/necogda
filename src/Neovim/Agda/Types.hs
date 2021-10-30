@@ -1,8 +1,11 @@
 module Neovim.Agda.Types where
 
 import qualified Data.HashMap.Strict as HM
+import Data.Int (Int64)
 import UnliftIO
 import UnliftIO.Process
+
+import Neovim.Agda.Response
 
 newtype NoShow a = NoShow { hidden :: a }
 
@@ -14,16 +17,30 @@ data AgdaInstanceT payload = AgdaInstance
   , agdaStdout :: Handle
   , agdaStderr :: Handle
   , agdaProcess :: NoShow ProcessHandle
+
   , filename :: String
+
   , payload :: payload
   } deriving (Show)
 
 data AgdaEnvT payload = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath (AgdaInstanceT payload))
+
   , symbolInputCol :: TVar (Maybe Int)
+
+  , goalmarksNs :: TVar Int64
   }
 
 defaultEnv :: MonadIO m => m (AgdaEnvT payload)
-defaultEnv = atomically $ AgdaEnv <$> newTVar mempty <*> newTVar Nothing
+defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
+                                  <*> newTVar Nothing
+                                  <*> newTVar (-1)
 
-type AgdaEnv = AgdaEnvT ()
+type MarkId2InteractionPoint = HM.HashMap Int64 RangeId
+
+newtype NeovimPayload = NeovimPayload
+  { markId2interactionPoint :: MarkId2InteractionPoint
+  } deriving (Show)
+
+type AgdaInstance = AgdaInstanceT NeovimPayload
+type AgdaEnv = AgdaEnvT NeovimPayload
