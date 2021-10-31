@@ -24,11 +24,12 @@ import Neovim.API.ByteString
 
 import Neovim.Agda.Types
 
-sampleTrie :: Trie.Trie T.Text
-sampleTrie = Trie.fromList [ ("all", "∀")
-                           , ("forall", "∀")
-                           , ("Ga", "α")
-                           , ("Gb", "β")
+sampleTrie :: Trie.Trie [T.Text]
+sampleTrie = Trie.fromList [ ("all", ["∀"])
+                           , ("alls", ["∀"])
+                           , ("forall", ["∀"])
+                           , ("Ga", ["α"])
+                           , ("Gb", ["β"])
                            ]
 
 data Cursor = Cursor { row :: Int, col :: Int }
@@ -69,12 +70,13 @@ handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isCom
     (left, BS.tail -> mid, right) = split3 line start (col - start + 1)
     isComplete = not (BS.null mid) && BS.last mid `elem` ['`', ' ']
 
-    handleTrieResult Nothing children
-      | Trie.null children = cancelInput
-      | otherwise = pure ()
-    handleTrieResult (Just sub) children
+    handleTrieResult (Just [sub]) children
       | Trie.null children = insertBytes $ T.encodeUtf8 sub
       | isComplete = insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
+      | otherwise = pure ()
+    handleTrieResult maybeOpts children
+      | Trie.null children
+      , null $ fromMaybe [] maybeOpts = cancelInput
       | otherwise = pure ()
 
     insertBytes bytes = do
@@ -121,7 +123,8 @@ necogdaComplete 0 base = do
                              , (ObjectString "equal", ObjectInt 1)
                              , (ObjectString "menu", ObjectString [i|(#{abbr})|])
                              ]
-                | (abbr, sym) <- opts
+                | (abbr, syms) <- opts
+                , sym <- syms
                 ]
   pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
                                 , (ObjectString "refresh", ObjectString "always")
