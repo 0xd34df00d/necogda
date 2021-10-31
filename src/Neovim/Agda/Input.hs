@@ -72,7 +72,9 @@ handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isCom
 
     handleTrieResult (Just [sub]) children
       | Trie.null children = insertBytes $ T.encodeUtf8 sub
-      | isComplete = insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
+      | isComplete = do
+          insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
+          when (BS.last mid == '`') maybeStartSymbol
       | otherwise = pure ()
     handleTrieResult maybeOpts children
       | Trie.null children
