@@ -1,13 +1,20 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, DerivingStrategies #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, DerivingStrategies, DeriveGeneric, DeriveAnyClass #-}
 
 module Neovim.Agda.Interaction.Types where
 
 import Data.Sequence (Seq)
-import GHC.Int (Int32)
+import GHC.Generics
+
+import Neovim
+import Neovim.Classes
 
 data Backend = MAlonzo deriving (Show)
 
-data Rewrite = AsIs | Instantiated | HeadNormal | Simplified | Normalised deriving (Show)
+data Rewrite = AsIs | Instantiated | HeadNormal | Simplified | Normalised deriving (Show, Read, Generic, NFData)
+
+instance NvimObject Rewrite where
+  toObject = toObject . show
+  fromObject = fmap read . fromObject
 
 data PositionWithoutFile = Pn
   { srcFile :: ()
