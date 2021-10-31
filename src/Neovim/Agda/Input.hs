@@ -85,7 +85,7 @@ handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isCom
            ObjectString "undo" -> do nvim_set_current_line $ left <> bytes <> right
                                      win <- nvim_get_current_win
                                      nvim_win_set_cursor win (fromIntegral row, fromIntegral $ start + BS.length bytes)
-           _                   -> void $ nvim_input [i|<ESC>v#{col - start}hdi#{bytes}|]
+           _                   -> void $ nvim_input [i|<ESC>v#{col - start}hs#{bytes}|]
       cancelInput
 
 handleNextSymbol :: Int -> Neovim AgdaEnv ()
