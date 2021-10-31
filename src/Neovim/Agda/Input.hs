@@ -24,6 +24,15 @@ import Neovim.API.ByteString
 
 import Neovim.Agda.Types
 
+getMarker :: Neovim env Char
+getMarker = do
+  -- TODO cache this
+  markerObj <- nvim_eval [i|get(g:, 'symbol_start_marker', '`')|]
+  case markerObj of
+       ObjectString (BS.unpack -> [c]) -> pure c
+       _ -> do nvim_err_writeln "Invalid symbol start marker"
+               pure '`'
+
 sampleTrie :: Trie.Trie [T.Text]
 sampleTrie = Trie.fromList [ ("all", ["∀"])
                            , ("alls", ["∀"])
@@ -51,9 +60,8 @@ maybeStartSymbol = do
   line <- nvim_get_current_line
   unless (BS.null line) $ do
     curCol <- col <$> getCursorI
-    case line `BS.index` curCol of
-         '`' -> startSymbol curCol
-         _   -> pure ()
+    marker <- getMarker
+    when (line `BS.index` curCol == marker) $ startSymbol curCol
 
 startSymbol :: Int -> Neovim AgdaEnv ()
 startSymbol curCol = asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
@@ -64,17 +72,17 @@ split3 str start len = (left, mid, right)
     (left, rest) = BS.splitAt start str
     (mid, right) = BS.splitAt len rest
 
-handleSubstr :: Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
-handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid) sampleTrie
+handleSubstr :: Char -> Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
+handleSubstr marker start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid) sampleTrie
   where
     (left, BS.tail -> mid, right) = split3 line start (col - start + 1)
-    isComplete = not (BS.null mid) && BS.last mid `elem` ['`', ' ']
+    isComplete = not (BS.null mid) && BS.last mid `elem` [marker, ' ']
 
     handleTrieResult (Just [sub]) children
       | Trie.null children = insertBytes $ T.encodeUtf8 sub
       | isComplete = do
           insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
-          when (BS.last mid == '`') maybeStartSymbol
+          when (BS.last mid == marker) maybeStartSymbol
       | otherwise = pure ()
     handleTrieResult maybeOpts children
       | Trie.null children
@@ -93,9 +101,10 @@ handleSubstr start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isCom
 handleNextSymbol :: Int -> Neovim AgdaEnv ()
 handleNextSymbol start = do
   cur@Cursor { .. } <- getCursorI
+  marker <- getMarker
   if col < start
   then cancelInput
-  else nvim_get_current_line >>= handleSubstr start cur
+  else nvim_get_current_line >>= handleSubstr marker start cur
 
 cancelInput :: Neovim AgdaEnv ()
 cancelInput = asks symbolInputCol >>= \var -> atomically $ writeTVar var Nothing
@@ -112,7 +121,8 @@ necogdaComplete :: Int -> BS.ByteString -> Neovim AgdaEnv Object
 necogdaComplete 1 _ = do
   line <- nvim_get_current_line
   col <- col <$> getCursorI
-  pure $ case BS.elemIndexEnd '`' $ BS.take (col + 1) line of
+  marker <- getMarker
+  pure $ case marker `BS.elemIndexEnd` BS.take (col + 1) line of
               Just idx -> ObjectInt $ fromIntegral idx
               Nothing  -> ObjectInt (-3)
 necogdaComplete 0 base = do
