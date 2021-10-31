@@ -43,9 +43,7 @@ getCursorI = do
 handleInput :: Neovim AgdaEnv ()
 handleInput = do
   maybeStartCol <- asks symbolInputCol >>= readTVarIO
-  case maybeStartCol of
-       Nothing -> maybeStartSymbol
-       Just start -> handleNextSymbol start
+  maybe maybeStartSymbol handleNextSymbol maybeStartCol
 
 maybeStartSymbol :: Neovim AgdaEnv ()
 maybeStartSymbol = do
