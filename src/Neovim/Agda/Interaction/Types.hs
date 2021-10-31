@@ -10,7 +10,7 @@ import Neovim.Classes
 
 data Backend = MAlonzo deriving (Show)
 
-data Rewrite = AsIs | Instantiated | HeadNormal | Simplified | Normalised deriving (Show, Read, Generic, NFData)
+data Rewrite = AsIs | Instantiated | HeadNormal | Simplified | Normalised deriving (Show, Read, Enum, Bounded, Generic, NFData)
 
 instance NvimObject Rewrite where
   toObject = toObject . show
