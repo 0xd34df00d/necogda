@@ -18,7 +18,7 @@ main = do
                               , $(function' 'P.necogdaComplete) Sync
 
                               , $(function "NecogdaLoadFile" 'C.loadFile) Async
-                              , $(function "NecogdaGoalInfo" 'C.goalInfo) Async
+                              , $(function "NecogdaGoalCommand" 'C.goalCommand) Async
                               ]
                   }
   neovim defaultConfig { plugins = [plugin], logOptions = Just ("nvim.log", DEBUG) }

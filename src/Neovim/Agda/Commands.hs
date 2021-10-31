@@ -6,7 +6,7 @@ module Neovim.Agda.Commands
 ( sendCommand
 
 , loadFile
-, goalInfo
+, goalCommand
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -34,9 +34,18 @@ withInstance cmd = do
 loadFile :: Neovim (AgdaEnvT payload) ()
 loadFile = withInstance $ \agda -> sendCommand agda $ Cmd_load (filename agda) []
 
-goalInfo :: Neovim AgdaEnv ()
-goalInfo = withInstance $ \agda -> do
+goalCommandCtor :: String -> Maybe (Rewrite -> InteractionId -> Range -> String -> Interaction)
+goalCommandCtor "Context"          = Just Cmd_context
+goalCommandCtor "Type"             = Just Cmd_goal_type
+goalCommandCtor "TypeContext"      = Just Cmd_goal_type_context
+goalCommandCtor "TypeContextInfer" = Just Cmd_goal_type_context_infer
+goalCommandCtor _ = Nothing
+
+goalCommand :: String -> Rewrite -> Neovim AgdaEnv ()
+goalCommand cmd rewrite = withInstance $ \agda -> do
   maybeInteractionId <- getCurrentInteractionId agda
   case maybeInteractionId of
        Nothing -> nvim_err_writeln [i|Not in an interaction point|]
-       Just iid -> sendCommand agda $ Cmd_goal_type_context Simplified iid NoRange ""
+       Just iid -> case goalCommandCtor cmd of
+                        Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
+                        Just ctor -> sendCommand agda $ ctor rewrite iid NoRange ""
