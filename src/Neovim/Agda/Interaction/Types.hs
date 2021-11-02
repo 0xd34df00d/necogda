@@ -78,8 +78,6 @@ data Interaction
 
   | Cmd_auto                    InteractionId Range String
 
-  | Cmd_context                 Rewrite InteractionId Range String
-
   | Cmd_helper_function         Rewrite InteractionId Range String
 
   | Cmd_infer                   Rewrite InteractionId Range String

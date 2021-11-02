@@ -35,7 +35,6 @@ loadFile :: Neovim (AgdaEnvT payload) ()
 loadFile = withInstance $ \agda -> sendCommand agda $ Cmd_load (filename agda) []
 
 goalCommandCtor :: String -> Maybe (Rewrite -> InteractionId -> Range -> String -> Interaction)
-goalCommandCtor "Context"          = Just Cmd_context
 goalCommandCtor "Type"             = Just Cmd_goal_type
 goalCommandCtor "TypeContext"      = Just Cmd_goal_type_context
 goalCommandCtor "TypeContextInfer" = Just Cmd_goal_type_context_infer

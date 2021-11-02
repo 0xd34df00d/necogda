@@ -24,12 +24,19 @@ import Neovim.Agda.Types
 
 registerMappings :: Neovim AgdaEnv ()
 registerMappings = do
-  forM_ [("TypeContextInfer", "."), ("Type", "t"), ("Context", "e")] $ \(cmd :: String, leader :: String) -> do
+  forM_ goalCommands $ \(cmd, leader) -> do
     let str = [i|nnoremap <buffer><silent> <LocalLeader>#{leader}       :call NecogdaGoalCommand('#{cmd}', 'Simplified')<CR>|]
     void $ nvim_exec str False
     forM_ [minBound..maxBound :: Rewrite] $ \rewrite -> do
       let modifier = [toLower $ head $ show rewrite]
       nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}       :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
+  where
+    goalCommands :: [(String, String)]
+    goalCommands = [ ("TypeContextInfer", ".")
+                   , ("TypeContext", ",")
+                   , ("TypeContextCheck", ";")
+                   , ("Type", "t")
+                   ]
 
 loadNecogda :: Neovim AgdaEnv ()
 loadNecogda = do
