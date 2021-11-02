@@ -42,6 +42,18 @@ data DispatchContext = DispatchContext
   , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 
+fmtGoalContextEntry :: GoalContextEntry -> T.Text
+fmtGoalContextEntry GoalContextEntry { .. } = [i|#{originalName}#{reifyMarker}: #{binding}#{scopeMarker}|]
+  where
+    scopeMarker = if inScope then T.empty else " (not in scope)"
+    reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
+
+dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
+dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header : (fmtGoalContextEntry <$> entries)
+  where
+    header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
+dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx ["Goal: " <> type'goal]
+
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status (StatusInfo checked _ _))
   | checked = nvim_command "echo ''"
@@ -61,12 +73,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
         fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
 dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx [message'error error']
-dispatchResponse ctx (DisplayInfo GoalSpecific { goalInfo = GoalInfo { .. } }) = setOutputBuffer ctx $ V.fromList $ header : (fmtEntry <$> entries)
-  where
-    header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
-    fmtEntry GoalContextEntry { .. } = let scopeMarker = if inScope then T.empty else " (not in scope)"
-                                           reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
-                                        in [i|#{originalName}#{reifyMarker}: #{binding}#{scopeMarker}|]
+dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   p2c <- preparePosition2Cursor $ agdaBuffer ctx
   mapM_ (addHlBit (agdaBuffer ctx) p2c) bits

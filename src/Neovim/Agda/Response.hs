@@ -74,10 +74,12 @@ data GoalContextEntry = GoalContextEntry
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson GoalContextEntry)
 
-data GoalInfo = GoalInfo
-  { type'goal :: T.Text
-  , entries :: [GoalContextEntry]
-  }
+data GoalInfo
+  = GoalType
+    { type'goal :: T.Text
+    , entries :: [GoalContextEntry]
+    }
+  | CurrentGoal { type'goal :: T.Text }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson GoalInfo)
 

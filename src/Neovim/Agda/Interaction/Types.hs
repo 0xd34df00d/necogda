@@ -88,6 +88,8 @@ data Interaction
 
   | Cmd_goal_type_context_infer Rewrite InteractionId Range String
 
+  | Cmd_goal_type_context_check Rewrite InteractionId Range String
+
   | Cmd_show_module_contents    Rewrite InteractionId Range String
 
   | Cmd_make_case               InteractionId Range String

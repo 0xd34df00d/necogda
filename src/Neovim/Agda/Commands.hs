@@ -38,6 +38,7 @@ goalCommandCtor :: String -> Maybe (Rewrite -> InteractionId -> Range -> String 
 goalCommandCtor "Type"             = Just Cmd_goal_type
 goalCommandCtor "TypeContext"      = Just Cmd_goal_type_context
 goalCommandCtor "TypeContextInfer" = Just Cmd_goal_type_context_infer
+goalCommandCtor "TypeContextCheck" = Just Cmd_goal_type_context_check
 goalCommandCtor _ = Nothing
 
 goalCommand :: String -> Rewrite -> Neovim AgdaEnv ()
