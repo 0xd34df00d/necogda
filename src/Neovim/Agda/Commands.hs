@@ -35,18 +35,20 @@ withInstance cmd = do
 loadFile :: Neovim (AgdaEnvT payload) ()
 loadFile = withInstance $ \agda -> sendCommand agda $ Cmd_load (filename agda) []
 
-goalCommandCtor :: String -> Maybe (Rewrite -> InteractionId -> Range -> String -> Interaction)
-goalCommandCtor "Type"             = Just Cmd_goal_type
-goalCommandCtor "TypeContext"      = Just Cmd_goal_type_context
-goalCommandCtor "TypeContextInfer" = Just Cmd_goal_type_context_infer
-goalCommandCtor "TypeContextCheck" = Just Cmd_goal_type_context_check
-goalCommandCtor _ = Nothing
-
-goalCommand :: String -> Rewrite -> Neovim AgdaEnv ()
-goalCommand cmd rewrite = withInstance $ \agda -> do
+withInteractionId :: (AgdaInstance -> InteractionId -> T.Text -> Neovim AgdaEnv ()) -> Neovim AgdaEnv ()
+withInteractionId f = withInstance $ \agda -> do
   maybeInteractionId <- getCurrentInteractionId agda
   case maybeInteractionId of
        Nothing -> nvim_err_writeln [i|Not in an interaction point|]
-       Just (iid, substr) -> case goalCommandCtor cmd of
-                                  Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
-                                  Just ctor -> sendCommand agda $ ctor rewrite iid NoRange (T.unpack substr)
+       Just (iid, text) -> f agda iid text
+
+goalCommand :: String -> Rewrite -> Neovim AgdaEnv ()
+goalCommand cmd rewrite = case lookup cmd ctors of
+                               Just ctor -> withInteractionId $ \agda iid text -> sendCommand agda $ ctor rewrite iid NoRange (T.unpack text)
+                               Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
+  where
+    ctors = [ ("Type", Cmd_goal_type)
+            , ("TypeContext", Cmd_goal_type_context)
+            , ("TypeContextInfer", Cmd_goal_type_context_infer)
+            , ("TypeContextCheck", Cmd_goal_type_context_check)
+            ]
