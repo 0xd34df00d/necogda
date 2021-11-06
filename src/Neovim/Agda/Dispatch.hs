@@ -88,7 +88,7 @@ dispatchResponse _   JumpToError { .. } = pure ()
 addHlBit :: Buffer -> Position2Cursor -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf pos2cur (HlBit atoms [fromPos, toPos])
   | Just from <- position2cursor pos2cur fromPos
-  , Just to <- position2cursor pos2cur toPos = mapM_ (onRange from to . highlight) atoms
+  , Just to <- position2cursor pos2cur toPos = mapM_ (onRange (uncurry Cursor from) (uncurry Cursor to) . highlight) atoms
   | otherwise = pure ()
   where
     highlight atom row fromCol toCol = void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)

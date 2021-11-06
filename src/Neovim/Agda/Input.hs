@@ -23,6 +23,7 @@ import Neovim
 import Neovim.API.ByteString
 
 import Neovim.Agda.Types
+import Neovim.Agda.Util
 
 getMarker :: Neovim env Char
 getMarker = do
@@ -40,9 +41,6 @@ sampleTrie = Trie.fromList [ ("all", ["∀"])
                            , ("Ga", ["α"])
                            , ("Gb", ["β"])
                            ]
-
-data Cursor = Cursor { row :: Int, col :: Int }
-  deriving (Eq, Ord, Show)
 
 getCursorI :: Neovim env Cursor
 getCursorI = do

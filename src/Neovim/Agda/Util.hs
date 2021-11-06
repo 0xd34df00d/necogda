@@ -1,4 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveFunctor #-}
 
 module Neovim.Agda.Util where
 
@@ -6,15 +8,21 @@ import Control.Monad.Extra (mconcatMapM)
 
 import Neovim
 
-onRange :: Monoid r
-        => (Int64, Int64)
-        -> (Int64, Int64)
-        -> (Int64 -> Maybe Int64 -> Maybe Int64 -> Neovim env r)
-        -> Neovim env r
-onRange (fromRow, fromCol) (toRow, toCol) f
-  | fromRow == toRow = f fromRow (Just fromCol) (Just toCol)
+data CursorT a = Cursor { row :: a, col :: a }
+  deriving (Eq, Ord, Show, Functor)
+
+type Cursor = CursorT Int
+type Cursor64 = CursorT Int64
+
+onRange :: (Monad m, Monoid r, Eq a, Enum a, Num a)
+        => CursorT a
+        -> CursorT a
+        -> (a -> Maybe a -> Maybe a -> m r)
+        -> m r
+onRange from to f
+  | row from == row to = f (row from) (Just $ col from) (Just $ col to)
   | otherwise = do
-      s <- f fromRow (Just fromCol) Nothing
-      mid <- mconcatMapM (\row -> f row Nothing Nothing) [fromRow + 1 .. toRow - 1]
-      e <- f toRow Nothing (Just toCol)
+      s <- f (row from) (Just $ col from) Nothing
+      e <- f (row to)   Nothing           (Just $ col to)
+      mid <- mconcatMapM (\r -> f r Nothing Nothing) [row from + 1 .. row to - 1]
       pure $ s <> mid <> e
