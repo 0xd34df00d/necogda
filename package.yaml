@@ -25,6 +25,7 @@ dependencies:
 - bytestring
 - bytestring-trie
 - containers
+- data-default
 - extra
 - hashable
 - interpolate

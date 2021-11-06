@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, OverloadedLists #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Neovim.Agda.Dispatch
 ( parseResponse
@@ -16,6 +17,7 @@ import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 import Control.Monad
 import Control.Monad.Identity
+import Data.Default
 import Data.Foldable
 import Data.List
 import Data.Maybe
@@ -44,7 +46,7 @@ data DispatchContext = DispatchContext
   { agdaBuffer :: Buffer
   , outputBuffer :: Buffer
 
-  , withPayload :: (NeovimPayload -> Neovim AgdaEnv ()) -> Neovim AgdaEnv ()
+  , withPayload :: forall a. Default a => (NeovimPayload -> Neovim AgdaEnv a) -> Neovim AgdaEnv a
   , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 

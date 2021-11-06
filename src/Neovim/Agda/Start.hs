@@ -17,6 +17,8 @@ module Neovim.Agda.Start
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.HashMap.Strict as HM
 import Control.Monad.Reader
+import Data.Default
+import Data.Functor
 import Data.String.Interpolate.IsString
 import UnliftIO
 import UnliftIO.Process
@@ -99,7 +101,7 @@ startAgda = do
         agdasTVar <- asks agdas
         agdas <- readTVarIO agdasTVar
         case name `HM.lookup` agdas of
-             Nothing -> nvim_err_writeln [i|Unable to find Agda instance for #{name}|]
+             Nothing -> nvim_err_writeln [i|Unable to find Agda instance for #{name}|] $> def
              Just inst -> f $ payload inst
   let modifyPayload f = do
         agdasTVar <- asks agdas
