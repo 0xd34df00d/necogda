@@ -20,6 +20,7 @@ main = do
                               , $(function "NecogdaLoadFile" 'C.loadFile) Async
                               , $(function "NecogdaGoalCommand" 'C.goalCommand) Async
                               , $(function "NecogdaRefine" 'C.refine) Async
+                              , $(function "NecogdaMakeCase" 'C.makeCase) Async
                               ]
                   }
   neovim defaultConfig { plugins = [plugin], logOptions = Just ("nvim.log", DEBUG) }

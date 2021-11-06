@@ -8,6 +8,7 @@ module Neovim.Agda.Commands
 , loadFile
 , goalCommand
 , refine
+, makeCase
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -56,3 +57,6 @@ goalCommand cmd rewrite = case lookup cmd ctors of
 
 refine :: Neovim AgdaEnv ()
 refine = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_refine_or_intro False iid NoRange (T.unpack text)
+
+makeCase :: Neovim AgdaEnv ()
+makeCase = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_make_case iid NoRange (T.unpack text)
