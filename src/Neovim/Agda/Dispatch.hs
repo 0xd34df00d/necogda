@@ -15,6 +15,7 @@ import qualified Data.Vector as V
 import Control.Monad
 import Data.Foldable
 import Data.List
+import Data.Maybe
 import Data.String.Interpolate.IsString
 
 import Neovim
@@ -23,6 +24,7 @@ import Neovim.API.ByteString
 import Neovim.Agda.Interaction
 import Neovim.Agda.Response
 import Neovim.Agda.Types
+import Neovim.Agda.Util
 
 stripMarker :: BS.ByteString -> BS.ByteString
 stripMarker str
@@ -84,18 +86,12 @@ dispatchResponse _   JumpToError { .. } = pure ()
 
 
 addHlBit :: Buffer -> Position2Cursor -> HlBit -> Neovim AgdaEnv ()
-addHlBit buf pos2cur (HlBit atoms [from, to])
-  | Just (fromLine, fromCol) <- position2cursor pos2cur from
-  , Just (toLine, toCol) <- position2cursor pos2cur to
-    = if fromLine == toLine
-      then forM_ atoms $ \atom ->
-         nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] fromLine fromCol toCol
-      else forM_ atoms $ \atom -> do
-         void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] fromLine fromCol (-1)
-         void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] toLine   0       toCol
-         forM_ [fromLine + 1 .. toLine - 1] $ \line ->
-           nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] line 0 (-1)
+addHlBit buf pos2cur (HlBit atoms [fromPos, toPos])
+  | Just from <- position2cursor pos2cur fromPos
+  , Just to <- position2cursor pos2cur toPos = mapM_ (onRange from to . highlight) atoms
   | otherwise = pure ()
+  where
+    highlight atom row fromCol toCol = void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
 addHlBit _   _       (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
 

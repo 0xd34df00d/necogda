@@ -25,6 +25,7 @@ dependencies:
 - bytestring
 - bytestring-trie
 - containers
+- extra
 - interpolate
 - mtl
 - nvim-hs >= 2.1.0.7
