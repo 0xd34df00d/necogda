@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, OverloadedLists #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -13,6 +13,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 import Control.Monad
+import Control.Monad.Identity
 import Data.Foldable
 import Data.List
 import Data.Maybe
@@ -64,7 +65,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
         fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|] :: T.Text
         fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
-dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx [message'error error']
+dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx (Identity $ message'error error')
 dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
@@ -93,7 +94,7 @@ dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
 dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header : (fmtGoalContextEntry <$> entries)
   where
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
-dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx ["Goal: " <> type'goal]
+dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
 
 addHlBit :: Buffer -> Position2Cursor -> HlBit -> Neovim AgdaEnv ()
