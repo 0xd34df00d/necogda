@@ -7,6 +7,7 @@ module Neovim.Agda.Commands
 
 , loadFile
 , goalCommand
+, refine
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -52,3 +53,6 @@ goalCommand cmd rewrite = case lookup cmd ctors of
             , ("TypeContextInfer", Cmd_goal_type_context_infer)
             , ("TypeContextCheck", Cmd_goal_type_context_check)
             ]
+
+refine :: Neovim AgdaEnv ()
+refine = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_refine_or_intro False iid NoRange (T.unpack text)
