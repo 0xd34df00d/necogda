@@ -30,7 +30,7 @@ import Neovim.API.ByteString
 import Neovim.Agda.Interaction
 import Neovim.Agda.Response as R
 import Neovim.Agda.Types
-import Neovim.Agda.Util
+import Neovim.Agda.Util as U
 
 stripMarker :: BS.ByteString -> BS.ByteString
 stripMarker str
@@ -83,23 +83,27 @@ dispatchResponse _   JumpToError { .. } = pure ()
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
-insertGivenResult ctx GiveResult { .. } range = withPayload ctx $ \payload -> do
+insertGivenResult ctx GiveResult { .. } = withRange ctx f
+  where
+    f start end = nvim_buf_set_text (agdaBuffer ctx) (row start) (U.col start + 1) (row end) (U.col end + 1) (pure $ T.encodeUtf8 str'given)
+
+withRange :: DispatchContext -> (Cursor64 -> Cursor64 -> Neovim AgdaEnv ()) -> RangeWithId -> Neovim AgdaEnv ()
+withRange ctx f range = iipRange ctx range >>= maybe (nvim_err_writeln [i|Unknown range: #{range}|]) (uncurry f)
+
+iipRange :: DispatchContext -> RangeWithId -> Neovim AgdaEnv (Maybe (Cursor64, Cursor64))
+iipRange ctx range = withPayload ctx $ \payload -> do
   goalmarksId <- asks goalmarksNs >>= readTVarIO
   marks <- nvim_buf_get_extmarks (agdaBuffer ctx) goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
-  let maybeRange = do
-        [markId] <- id'range range `HM.lookup` interactionPoint2markIds payload
-        ObjectArray [ _
-                    , ObjectInt markRow
-                    , ObjectInt markCol
-                    , ObjectMap extras
-                    ] <- V.find (findById markId) marks
-        ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
-        ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
-        pure (markRow, markCol, endRow, endCol)
-  case maybeRange of
-       Nothing -> nvim_err_writeln [i|Unknown range when handling GiveAction: #{range}|]
-       Just (markRow, markCol, endRow, endCol) ->
-          nvim_buf_set_text (agdaBuffer ctx) markRow (markCol + 1) endRow (endCol + 1) (pure $ T.encodeUtf8 str'given)
+  pure $ do
+    [markId] <- id'range range `HM.lookup` interactionPoint2markIds payload
+    ObjectArray [ _
+                , ObjectInt markRow
+                , ObjectInt markCol
+                , ObjectMap extras
+                ] <- V.find (findById markId) marks
+    ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
+    ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
+    pure (Cursor markRow markCol, Cursor endRow endCol)
   where
     findById markId (ObjectArray ((ObjectInt markId') : _)) = markId == markId'
     findById _ _ = False
