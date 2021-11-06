@@ -10,6 +10,7 @@ module Neovim.Agda.Commands
 ) where
 
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Text as T
 import Data.String.Interpolate.IsString
 import System.IO (hPrint)
 import UnliftIO
@@ -46,6 +47,6 @@ goalCommand cmd rewrite = withInstance $ \agda -> do
   maybeInteractionId <- getCurrentInteractionId agda
   case maybeInteractionId of
        Nothing -> nvim_err_writeln [i|Not in an interaction point|]
-       Just iid -> case goalCommandCtor cmd of
-                        Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
-                        Just ctor -> sendCommand agda $ ctor rewrite iid NoRange ""
+       Just (iid, substr) -> case goalCommandCtor cmd of
+                                  Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
+                                  Just ctor -> sendCommand agda $ ctor rewrite iid NoRange (T.unpack substr)
