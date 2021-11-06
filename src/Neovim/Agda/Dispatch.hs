@@ -9,6 +9,8 @@ module Neovim.Agda.Dispatch
 ) where
 
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
@@ -18,6 +20,7 @@ import Data.Foldable
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
+import UnliftIO
 
 import Neovim
 import Neovim.API.ByteString
@@ -78,10 +81,26 @@ dispatchResponse _   JumpToError { .. } = pure ()
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
-insertGivenResult ctx GiveResult { .. } RangeWithId { .. }
-  | [R.Range { .. }] <- range = do
-      nvim_buf_set_text (agdaBuffer ctx) (line start - 1) (R.col start) (line end - 1) (R.col end + 1) (pure $ T.encodeUtf8 str'given)
-  | otherwise = nvim_err_writeln [i|Unknown range when handling GiveAction: #{range}|]
+insertGivenResult ctx GiveResult { .. } range = withPayload ctx $ \payload -> do
+  goalmarksId <- asks goalmarksNs >>= readTVarIO
+  marks <- nvim_buf_get_extmarks (agdaBuffer ctx) goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
+  let maybeRange = do
+        [markId] <- id'range range `HM.lookup` interactionPoint2markIds payload
+        ObjectArray [ _
+                    , ObjectInt markRow
+                    , ObjectInt markCol
+                    , ObjectMap extras
+                    ] <- V.find (findById markId) marks
+        ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
+        ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
+        pure (markRow, markCol, endRow, endCol)
+  case maybeRange of
+       Nothing -> nvim_err_writeln [i|Unknown range when handling GiveAction: #{range}|]
+       Just (markRow, markCol, endRow, endCol) ->
+          nvim_buf_set_text (agdaBuffer ctx) markRow (markCol + 1) endRow (endCol + 1) (pure $ T.encodeUtf8 str'given)
+  where
+    findById markId (ObjectArray ((ObjectInt markId') : _)) = markId == markId'
+    findById _ _ = False
 
 
 fmtGoalContextEntry :: GoalContextEntry -> T.Text
