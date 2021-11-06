@@ -27,7 +27,7 @@ import Neovim.Agda.Response as R
 import Neovim.Agda.Types
 import Neovim.Agda.Util as U
 
-setInteractionMarks :: Buffer -> [RangeWithId] -> Neovim AgdaEnv MarkId2InteractionPoint
+setInteractionMarks :: Buffer -> [RangeWithId] -> Neovim AgdaEnv (MarkId2InteractionPoint, InteractionPoint2MarkIds)
 setInteractionMarks buffer pts = do
   goalmarksId <- asks goalmarksNs >>= readTVarIO
   nvim_buf_clear_namespace buffer goalmarksId 0 (-1)
@@ -44,10 +44,12 @@ setInteractionMarks buffer pts = do
       nvim_buf_set_extmark buffer goalmarksId startLine startCol extraOpts
       -- TODO attach virtual text to it when it's available in AllGoalsWarnings
     pure (id'range, markIds)
-  pure $ HM.fromList [ (markId, id'range)
-                     | (id'range, markIds) <- id'range2markIds
-                     , markId <- markIds
-                     ]
+  let mark2id = HM.fromList [ (markId, id'range)
+                            | (id'range, markIds) <- id'range2markIds
+                            , markId <- markIds
+                            ]
+  let id2marks = HM.fromList id'range2markIds
+  pure (mark2id, id2marks)
 
 maybeText :: (T.Text -> Maybe T.Text) -> T.Text -> T.Text
 maybeText f txt = fromMaybe txt $ f txt

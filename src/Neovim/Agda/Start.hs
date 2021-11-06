@@ -112,7 +112,7 @@ startAgda = do
   agdasTVar <- asks agdas
   agdas <- readTVarIO agdasTVar
   unless (name `HM.member` agdas) $ do
-    maybeInst <- startAgdaForFile (NeovimPayload mempty) name
+    maybeInst <- startAgdaForFile (NeovimPayload mempty mempty) name
     case maybeInst of
          Nothing -> pure ()
          Just inst -> do

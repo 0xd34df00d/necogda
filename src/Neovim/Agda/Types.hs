@@ -37,9 +37,11 @@ defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
                                   <*> newTVar (-1)
 
 type MarkId2InteractionPoint = HM.HashMap Int64 RangeId
+type InteractionPoint2MarkIds = HM.HashMap RangeId [Int64]
 
-newtype NeovimPayload = NeovimPayload
-  { markId2interactionPoint :: MarkId2InteractionPoint
+data NeovimPayload = NeovimPayload
+  { markId2interactionPoint  :: MarkId2InteractionPoint
+  , interactionPoint2markIds :: InteractionPoint2MarkIds
   } deriving (Show)
 
 type AgdaInstance = AgdaInstanceT NeovimPayload

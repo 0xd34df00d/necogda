@@ -6,6 +6,7 @@ module Neovim.Agda.Response where
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Text as T
+import Data.Hashable ( Hashable )
 import Data.Int (Int64)
 import GHC.Generics (Generic)
 
@@ -35,8 +36,8 @@ data Range = Range
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson Range)
 
 newtype RangeId = RangeId { getId :: Int }
-  deriving (Show)
-  deriving newtype (A.FromJSON, A.ToJSON)
+  deriving (Show, Eq)
+  deriving newtype (A.FromJSON, A.ToJSON, Hashable)
 
 data RangeWithId = RangeWithId
   { range :: [Range]

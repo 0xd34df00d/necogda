@@ -49,8 +49,10 @@ dispatchResponse _   (Status (StatusInfo checked _ _))
   | checked = nvim_command "echo ''"
   | otherwise = pure ()
 dispatchResponse ctx (InteractionPoints pts) = do
-  marks <- setInteractionMarks (agdaBuffer ctx) pts
-  modifyPayload ctx $ \p -> p { markId2interactionPoint = marks }
+  (mark2id, id2marks) <- setInteractionMarks (agdaBuffer ctx) pts
+  modifyPayload ctx $ \p -> p { markId2interactionPoint = mark2id
+                              , interactionPoint2markIds = id2marks
+                              }
 dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
