@@ -73,6 +73,7 @@ dispatchResponse _   (DisplayInfo Version {}) = pure ()
 dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx (Identity $ message'error error')
 dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
+dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   p2c <- preparePosition2Cursor $ agdaBuffer ctx
   mapM_ (addHlBit (agdaBuffer ctx) p2c) bits
@@ -80,6 +81,13 @@ dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
+
+
+handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
+handleMakeCase "Function" ctx clauses = withRange ctx f
+  where
+    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 <$> clauses
+handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()

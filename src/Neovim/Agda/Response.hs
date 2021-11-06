@@ -123,6 +123,7 @@ data Response
   | InteractionPoints { interactionPoints :: [RangeWithId] }
   | DisplayInfo { info'd :: DisplayInfo }
   | GiveAction { giveResult :: GiveResult, interactionPoint :: RangeWithId }
+  | MakeCase { variant :: String, clauses :: [T.Text], interactionPoint :: RangeWithId }
   | HighlightingInfo { info'hl :: HlInfo }
   | RunningInfo { debugLevel :: Int, message :: T.Text }
   | ClearRunningInfo
