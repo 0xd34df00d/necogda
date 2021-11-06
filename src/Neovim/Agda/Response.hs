@@ -113,10 +113,15 @@ data HlInfo = HlInfo
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson HlInfo)
 
+newtype GiveResult = GiveResult { str'given :: T.Text }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson GiveResult)
+
 data Response
   = Status { status :: StatusInfo }
   | InteractionPoints { interactionPoints :: [RangeWithId] }
   | DisplayInfo { info'd :: DisplayInfo }
+  | GiveAction { giveResult :: GiveResult, interactionPoint :: RangeWithId }
   | HighlightingInfo { info'hl :: HlInfo }
   | RunningInfo { debugLevel :: Int, message :: T.Text }
   | ClearRunningInfo
