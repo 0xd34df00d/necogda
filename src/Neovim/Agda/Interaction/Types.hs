@@ -56,8 +56,6 @@ data Interaction
 
   | Cmd_search_about_toplevel   Rewrite String
 
-  | Cmd_solveAll
-
   | Cmd_infer_toplevel          Rewrite String
 
   | Cmd_compute_toplevel        Bool String
