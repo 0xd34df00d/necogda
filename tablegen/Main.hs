@@ -2,7 +2,6 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -15,6 +14,7 @@ module Main where
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Control.Monad
+import Data.Bifunctor
 import Data.Data
 import Data.Generics.Uniplate.Data
 import Data.SExpresso.Parse
@@ -23,7 +23,6 @@ import Data.SExpresso.Language.SchemeR5RS
 import Data.Void
 import System.Environment
 import Text.Megaparsec as M
-import Data.Bifunctor
 
 deriving instance Data SchemeToken
 deriving instance Data SchemeNumber
@@ -61,9 +60,9 @@ fixupBackslash [] = []
 handleEl :: FilePath -> IO ()
 handleEl elFile  = do
   elContents <- readFile elFile
-  either putStrLn printCodes $ do parsed <- first (\err -> "Parse error:\n" <> errorBundlePretty @_ @Void err) $ parse (decode sexpr) elFile $ fixupBackslash elContents
-                                  handleSExpr parsed
+  either putStrLn printCodes $ handleSExpr =<< first prettyParseError (parse (decode sexpr) elFile $ fixupBackslash elContents)
   where
+    prettyParseError err = "Parse error:\n" <> errorBundlePretty @_ @Void err
     printCodes = mapM_ $ \(abbrev, codes) ->
                    forM_ codes $ \code ->
                      T.putStrLn (abbrev <> " " <> code)
