@@ -61,6 +61,15 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - necogda
+  tablegen:
+    main:                Main.hs
+    source-dirs:         tablegen
+    ghc-options:
+    - -rtsopts
+    dependencies:
+    - megaparsec
+    - sexpresso
+    - uniplate
 
 tests:
   necogda-test:
