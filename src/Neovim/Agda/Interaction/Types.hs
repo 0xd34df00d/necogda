@@ -76,7 +76,7 @@ data Interaction
 
   | Cmd_refine_or_intro         Bool InteractionId Range String
 
-  | Cmd_auto                    InteractionId Range String
+  | Cmd_autoOne                 InteractionId Range String
 
   | Cmd_helper_function         Rewrite InteractionId Range String
 

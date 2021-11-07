@@ -9,6 +9,7 @@ module Neovim.Agda.Commands
 , goalCommand
 , refine
 , makeCase
+, autoOne
 ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -60,3 +61,6 @@ refine = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_refine_or_
 
 makeCase :: Neovim AgdaEnv ()
 makeCase = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_make_case iid NoRange (T.unpack text)
+
+autoOne :: Neovim AgdaEnv ()
+autoOne = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_autoOne iid NoRange (T.unpack text)
