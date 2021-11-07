@@ -34,13 +34,17 @@ getMarker = do
        _ -> do nvim_err_writeln "Invalid symbol start marker"
                pure '`'
 
-sampleTrie :: Trie.Trie [T.Text]
-sampleTrie = Trie.fromList [ ("all", ["∀"])
-                           , ("alls", ["∀"])
-                           , ("forall", ["∀"])
-                           , ("Ga", ["α"])
-                           , ("Gb", ["β"])
-                           ]
+type InputTrie = Trie.Trie [T.Text]
+
+getInputTrie :: Neovim AgdaEnv InputTrie
+getInputTrie = pure sampleTrie
+  where
+    sampleTrie = Trie.fromList [ ("all", ["∀"])
+                               , ("alls", ["∀"])
+                               , ("forall", ["∀"])
+                               , ("Ga", ["α"])
+                               , ("Gb", ["β"])
+                               ]
 
 getCursorI :: Neovim env Cursor
 getCursorI = do
@@ -71,7 +75,7 @@ split3 str start len = (left, mid, right)
     (mid, right) = BS.splitAt len rest
 
 handleSubstr :: Char -> Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
-handleSubstr marker start Cursor { .. } line = Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid) sampleTrie
+handleSubstr marker start Cursor { .. } line = getInputTrie >>= Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid)
   where
     (left, BS.tail -> mid, right) = split3 line start (col - start + 1)
     isComplete = not (BS.null mid) && BS.last mid `elem` [marker, ' ']
@@ -124,7 +128,7 @@ necogdaComplete 1 _ = do
               Just idx -> ObjectInt $ fromIntegral idx
               Nothing  -> ObjectInt (-3)
 necogdaComplete 0 base = do
-  let (maybeVal, children) = Trie.lookupBy (,) (BS.tail base) sampleTrie
+  (maybeVal, children) <- Trie.lookupBy (,) (BS.tail base) <$> getInputTrie
   let childrenOpts = map (first (base <>)) $ take 15 $ sortOn (BS.length . fst) $ Trie.toList children
   let opts = case maybeVal of
                   Just val -> (base, val) : childrenOpts
