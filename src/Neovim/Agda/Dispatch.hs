@@ -93,7 +93,8 @@ handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case varia
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
 insertGivenResult ctx GiveResult { .. } = withRange ctx f
   where
-    f start end = nvim_buf_set_text (agdaBuffer ctx) (row start) (U.col start + 1) (row end) (U.col end + 1) (pure $ T.encodeUtf8 str'given)
+    f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 str'given)
+
 
 withRange :: DispatchContext -> (Cursor64 -> Cursor64 -> Neovim AgdaEnv ()) -> RangeWithId -> Neovim AgdaEnv ()
 withRange ctx f range = iipRange ctx range >>= maybe (nvim_err_writeln [i|Unknown range: #{range}|]) (uncurry f)
