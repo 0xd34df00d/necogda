@@ -2,7 +2,7 @@
 {-# LANGUAGE TupleSections #-}
 
 module Neovim.Agda.Interaction
-( module X
+( module Req
 
 , setInteractionMarks
 , getCurrentInteractionId
@@ -22,8 +22,8 @@ import UnliftIO
 import Neovim
 import Neovim.API.ByteString
 
-import Neovim.Agda.Interaction.Types as X
-import Neovim.Agda.Response as R
+import Neovim.Agda.Response.Types as Resp
+import Neovim.Agda.Request.Types as Req
 import Neovim.Agda.Types
 import Neovim.Agda.Util as U
 
@@ -33,11 +33,11 @@ setInteractionMarks buffer pts = do
   nvim_buf_clear_namespace buffer goalmarksId 0 (-1)
 
   id'range2markIds <- forM pts $ \RangeWithId { .. } -> do
-    markIds <- forM range $ \R.Range { .. } -> do
+    markIds <- forM range $ \Resp.Range { .. } -> do
       let startLine = line start - 1
-          startCol  = R.col start - 1
+          startCol  = Resp.col start - 1
           endLine = line end - 1
-          endCol  = R.col end - 1
+          endCol  = Resp.col end - 1
           extraOpts = M.fromList [ ("end_line", ObjectInt endLine)
                                  , ("end_col",  ObjectInt endCol)
                                  ]

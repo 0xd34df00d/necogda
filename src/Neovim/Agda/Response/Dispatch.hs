@@ -3,7 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Neovim.Agda.Dispatch
+module Neovim.Agda.Response.Dispatch
 ( parseResponse
 , dispatchResponse
 , DispatchContext(..)
@@ -28,7 +28,7 @@ import Neovim
 import Neovim.API.ByteString
 
 import Neovim.Agda.Interaction
-import Neovim.Agda.Response as R
+import Neovim.Agda.Response.Types as R
 import Neovim.Agda.Types
 import Neovim.Agda.Util as U
 

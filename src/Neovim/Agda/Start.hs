@@ -26,8 +26,8 @@ import UnliftIO.Process
 import Neovim
 import Neovim.API.ByteString
 
-import Neovim.Agda.Commands (loadFile)
-import Neovim.Agda.Dispatch
+import Neovim.Agda.Request.Commands (loadFile)
+import Neovim.Agda.Response.Dispatch
 import Neovim.Agda.Types
 
 withWatcher :: MonadUnliftIO m => (m () -> m ()) -> m ()

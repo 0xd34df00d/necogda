@@ -9,9 +9,9 @@ import System.Environment
 
 import Neovim.Agda
 
-import Neovim.Agda.Commands (sendCommand)
-import Neovim.Agda.Dispatch
-import Neovim.Agda.Interaction (Interaction(Cmd_load))
+import Neovim.Agda.Request.Commands (sendCommand)
+import Neovim.Agda.Response.Dispatch
+import Neovim.Agda.Interaction
 import Neovim.Agda.Start
 import Neovim.Agda.Types
 

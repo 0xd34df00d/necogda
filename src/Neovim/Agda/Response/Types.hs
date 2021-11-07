@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia, GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Neovim.Agda.Response where
+module Neovim.Agda.Response.Types where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Char8 as BS

@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, DerivingStrategies, DeriveGeneric, DeriveAnyClass #-}
 
-module Neovim.Agda.Interaction.Types where
+module Neovim.Agda.Request.Types where
 
 import Data.Sequence (Seq)
 import GHC.Generics

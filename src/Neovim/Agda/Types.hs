@@ -5,7 +5,7 @@ import Data.Int (Int64)
 import UnliftIO
 import UnliftIO.Process
 
-import Neovim.Agda.Response
+import Neovim.Agda.Response.Types
 
 newtype NoShow a = NoShow { hidden :: a }
 

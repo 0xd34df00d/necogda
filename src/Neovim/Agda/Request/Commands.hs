@@ -2,7 +2,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Neovim.Agda.Commands
+module Neovim.Agda.Request.Commands
 ( sendCommand
 
 , loadFile
