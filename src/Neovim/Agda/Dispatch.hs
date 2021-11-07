@@ -86,7 +86,7 @@ dispatchResponse _   JumpToError { .. } = pure ()
 handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
 handleMakeCase "Function" ctx clauses = withRange ctx f
   where
-    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 <$> clauses
+    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . T.replace "?" "{! !}" <$> clauses
 handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
 
 
