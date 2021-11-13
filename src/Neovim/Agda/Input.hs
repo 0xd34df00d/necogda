@@ -43,14 +43,12 @@ getMarker = do
                pure '`'
 
 loadInputTrie :: FilePath -> IO InputTrie
-loadInputTrie path = withFile path ReadMode $ \h -> do
-  hSetBinaryMode h True
-  parseContents <$> T.hGetContents h
+loadInputTrie path = parseContents <$> BS.readFile path
   where
     parseContents contents = Trie.fromListWith (<>)
-                             [ (T.encodeUtf8 abbrev, [code])
-                             | l <- T.lines contents
-                             , let [abbrev, code] = T.words l
+                             [ (abbrev, [T.decodeUtf8 code])
+                             | l <- BS.lines contents
+                             , let [abbrev, code] = BS.words l
                              ]
 
 getInputTrie :: Neovim AgdaEnv InputTrie
