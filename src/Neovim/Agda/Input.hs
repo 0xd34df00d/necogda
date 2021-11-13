@@ -137,14 +137,27 @@ startInput = forM_ commands $ \(event, cmd) -> do
             <> ((, handleInput) <$> ["TextChangedI", "TextChangedP"])
 
 necogdaComplete :: Int -> BS.ByteString -> Neovim AgdaEnv Object
-necogdaComplete 1 _ = do
+necogdaComplete 1 = wrapExceptions . const checkCompletionStart
+necogdaComplete 0 = wrapExceptions . generateCompletions
+necogdaComplete m = const $ nvim_err_writeln [i|Invalid complete mode: #{m}|] $> ObjectNil
+
+wrapExceptions :: Neovim AgdaEnv Object -> Neovim AgdaEnv Object
+wrapExceptions = try >=> either showEx pure
+  where
+    showEx :: SomeException -> Neovim AgdaEnv Object
+    showEx ex = nvim_err_writeln [i|Error running completion: #{ex}|] >> dump (show ex) $> ObjectNil
+
+checkCompletionStart :: Neovim AgdaEnv Object
+checkCompletionStart = do
   line <- nvim_get_current_line
   col <- col <$> getCursorI
   marker <- getMarker
   pure $ case marker `BS.elemIndexEnd` BS.take (col + 1) line of
               Just idx -> ObjectInt $ fromIntegral idx
               Nothing  -> ObjectInt (-3)
-necogdaComplete 0 base = do
+
+generateCompletions :: BS.ByteString -> Neovim AgdaEnv Object
+generateCompletions base = do
   (maybeVal, children) <- Trie.lookupBy (,) (BS.tail base) <$> getInputTrie
   let childrenOpts = map (first (base <>)) $ take 15 $ sortOn (BS.length . fst) $ Trie.toList children
   let opts = case maybeVal of
@@ -160,4 +173,3 @@ necogdaComplete 0 base = do
   pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
                                 , (ObjectString "refresh", ObjectString "always")
                                 ]
-necogdaComplete mode _ = nvim_err_writeln [i|Invalid complete mode: #{mode}|] $> ObjectNil
