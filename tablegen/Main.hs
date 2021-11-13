@@ -13,7 +13,6 @@ module Main where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Control.Monad
 import Data.Bifunctor
 import Data.Data
 import Data.Generics.Uniplate.Data
@@ -48,7 +47,7 @@ handleSExpr sexprs
     f (SList _ [SAtom (TString abbrev), SAtom TDot, SAtom TComma, SList _ [SAtom (TIdentifier "agda-input-to-string-list"), SAtom (TString codes)]]) = pure (abbrev, toStringList codes)
     f elt = Left $ "unknown def: " <> show elt
 
-    toStringList = fmap (T.pack . pure) . filter (/= ' ') . T.unpack
+    toStringList = fmap (T.pack . pure) . filter (`notElem` [' ', '\n']) . T.unpack
 
 fixupBackslash :: String -> String
 fixupBackslash ('\\' : '"' : rest)  = '\\' : '"' : fixupBackslash rest
@@ -63,9 +62,7 @@ handleEl elFile  = do
   either putStrLn printCodes $ handleSExpr =<< first prettyParseError (parse (decode sexpr) elFile $ fixupBackslash elContents)
   where
     prettyParseError err = "Parse error:\n" <> errorBundlePretty @_ @Void err
-    printCodes = mapM_ $ \(abbrev, codes) ->
-                   forM_ codes $ \code ->
-                     T.putStrLn (abbrev <> " " <> code)
+    printCodes = mapM_ $ \(abbrev, codes) -> T.putStrLn $ T.unwords (abbrev : codes)
 
 main :: IO ()
 main = getArgs >>=
