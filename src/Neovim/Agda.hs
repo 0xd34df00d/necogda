@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns #-}
 
 module Neovim.Agda
 ( defaultEnv
@@ -12,10 +13,11 @@ module Neovim.Agda
 import Control.Monad
 import Data.Char (toLower)
 import Data.String.Interpolate.IsString
+import Paths_necogda
 import UnliftIO
 
 import Neovim
-import Neovim.API.ByteString (nvim_create_namespace, nvim_exec)
+import Neovim.API.ByteString (nvim_create_namespace, nvim_exec, nvim_err_writeln)
 
 import Neovim.Agda.Input
 import Neovim.Agda.Interaction
@@ -53,3 +55,11 @@ initializePlugin = do
   goalmarksId <- nvim_create_namespace "necogda_goalmarks"
   goalmarksTVar <- asks goalmarksNs
   atomically $ writeTVar goalmarksTVar goalmarksId
+
+  res <- try $ do
+    !trie <- liftIO $ loadInputTrie =<< getDataFileName "data/symbols.txt"
+    tvar <- asks symbolsTrie
+    atomically $ writeTVar tvar trie
+  case res of
+       Right _ -> pure ()
+       Left (ex :: SomeException) -> nvim_err_writeln [i|Unable to load input: #{ex}|]

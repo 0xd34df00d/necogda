@@ -36,6 +36,9 @@ dependencies:
 - unordered-containers
 - unliftio
 
+data-files:
+- data/symbols.txt
+
 ghc-options:
 - -Wall
 

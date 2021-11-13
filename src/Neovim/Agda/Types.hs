@@ -1,6 +1,8 @@
 module Neovim.Agda.Types where
 
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Text as T
+import qualified Data.Trie as Trie
 import Data.Int (Int64)
 import UnliftIO
 import UnliftIO.Process
@@ -23,10 +25,13 @@ data AgdaInstanceT payload = AgdaInstance
   , payload :: payload
   } deriving (Show)
 
+type InputTrie = Trie.Trie [T.Text]
+
 data AgdaEnvT payload = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath (AgdaInstanceT payload))
 
   , symbolInputCol :: TVar (Maybe Int)
+  , symbolsTrie :: TVar InputTrie
 
   , goalmarksNs :: TVar Int64
   }
@@ -34,6 +39,7 @@ data AgdaEnvT payload = AgdaEnv
 defaultEnv :: MonadIO m => m (AgdaEnvT payload)
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
                                   <*> newTVar Nothing
+                                  <*> newTVar mempty
                                   <*> newTVar (-1)
 
 type MarkId2InteractionPoint = HM.HashMap Int64 RangeId

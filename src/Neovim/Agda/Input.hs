@@ -4,19 +4,27 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module Neovim.Agda.Input(startInput, necogdaComplete) where
+module Neovim.Agda.Input
+( startInput
+, necogdaComplete
+
+, loadInputTrie
+) where
 
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.Map as M
 import qualified Data.Trie as Trie
+import qualified Data.Trie.Convenience as Trie
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import qualified Data.Text.IO as T
 import Control.Arrow (first)
 import Control.Monad
 import Data.Functor
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
+import System.IO ( hSetBinaryMode )
 import UnliftIO
 
 import Neovim
@@ -34,17 +42,28 @@ getMarker = do
        _ -> do nvim_err_writeln "Invalid symbol start marker"
                pure '`'
 
-type InputTrie = Trie.Trie [T.Text]
+loadInputTrie :: FilePath -> IO InputTrie
+loadInputTrie path = withFile path ReadMode $ \h -> do
+  hSetBinaryMode h True
+  parseContents <$> T.hGetContents h
+  where
+    parseContents contents = Trie.fromListWith (<>)
+                             [ (T.encodeUtf8 abbrev, [code])
+                             | l <- T.lines contents
+                             , let [abbrev, code] = T.words l
+                             ]
 
 getInputTrie :: Neovim AgdaEnv InputTrie
-getInputTrie = pure sampleTrie
+getInputTrie = asks symbolsTrie >>= readTVarIO
   where
+    sampleTrie :: InputTrie
     sampleTrie = Trie.fromList [ ("all", ["∀"])
                                , ("alls", ["∀"])
                                , ("forall", ["∀"])
                                , ("Ga", ["α"])
                                , ("Gb", ["β"])
                                ]
+    _unused = sampleTrie
 
 getCursorI :: Neovim env Cursor
 getCursorI = do

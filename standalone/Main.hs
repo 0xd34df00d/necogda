@@ -24,7 +24,7 @@ startStandalone filename = do
 
 main :: IO ()
 main = do
-  [filename] <- getArgs
+  [file] <- getArgs
   env <- defaultEnv
-  void $ forkIO $ runReaderT (startStandalone filename) env
+  void $ forkIO $ runReaderT (startStandalone file) env
   void getLine
