@@ -1,6 +1,9 @@
-call nvimhs#start(expand('<sfile>:p:h:h'), 'necogda', [])
-sleep 200m
-call InitializePlugin()
+if (get(g:, 'necogda_started', 0) == 0)
+  call nvimhs#start(expand('<sfile>:p:h:h'), 'necogda', [])
+  call InitializePlugin()
+
+  let g:necogda_started = 1
+endif
 call LoadNecogda()
 
 set omnifunc=NecogdaComplete
