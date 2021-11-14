@@ -15,16 +15,13 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.Map as M
 import qualified Data.Trie as Trie
 import qualified Data.Trie.Convenience as Trie
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import qualified Data.Text.IO as T
 import Control.Arrow (first)
 import Control.Monad
 import Data.Functor
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
-import System.IO ( hSetBinaryMode )
 import UnliftIO
 
 import Neovim
