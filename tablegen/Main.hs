@@ -16,6 +16,7 @@ import qualified Data.Text.IO as T
 import Data.Bifunctor
 import Data.Data
 import Data.Generics.Uniplate.Data
+import Data.List
 import Data.SExpresso.Parse
 import Data.SExpresso.SExpr
 import Data.SExpresso.Language.SchemeR5RS
@@ -59,10 +60,11 @@ fixupBackslash [] = []
 handleEl :: FilePath -> IO ()
 handleEl elFile  = do
   elContents <- readFile elFile
-  either putStrLn printCodes $ handleSExpr =<< first prettyParseError (parse (decode sexpr) elFile $ fixupBackslash elContents)
+  either putStrLn (printCodes . sort) $ handleSExpr =<< first prettyParseError (parse (decode sexpr) elFile $ fixupBackslash elContents)
   where
     prettyParseError err = "Parse error:\n" <> errorBundlePretty @_ @Void err
-    printCodes = mapM_ $ \(abbrev, codes) -> T.putStrLn $ T.unwords (abbrev : codes)
+    printCodes = mapM_ $ \(abbrev, codes) -> T.putStrLn $ T.unwords (abbrev : sort codes)
+
 
 main :: IO ()
 main = getArgs >>=
