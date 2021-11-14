@@ -48,7 +48,7 @@ loadInputTrie path = parseContents <$> BS.readFile path
     parseContents contents = Trie.fromListWith (<>)
                              [ (abbrev, T.decodeUtf8 <$> codes)
                              | l <- BS.lines contents
-                             , let (abbrev : codes) = BS.words l
+                             , let (abbrev : codes) = BS.split ' ' l
                              ]
 
 getInputTrie :: Neovim AgdaEnv InputTrie
