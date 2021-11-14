@@ -7,22 +7,29 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Main where
 
+import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import Control.Monad
 import Data.Bifunctor
 import Data.Data
+import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
 import Data.SExpresso.Parse
 import Data.SExpresso.SExpr
 import Data.SExpresso.Language.SchemeR5RS
+import Data.String
 import Data.Void
 import System.Environment
 import Text.Megaparsec as M
+import Text.Megaparsec.Char as M
 
 deriving instance Data SchemeToken
 deriving instance Data SchemeNumber
@@ -65,8 +72,43 @@ handleEl elFile  = do
     prettyParseError err = "Parse error:\n" <> errorBundlePretty @_ @Void err
     printCodes = mapM_ $ \(abbrev, codes) -> T.putStrLn $ T.unwords (abbrev : sort codes)
 
+data VimAST
+  = VimArray [VimAST]
+  | VimObj [(String, VimAST)]
+  | VimStr String
+  deriving (Eq, Ord, Show)
+
+vimASTParser :: forall e s m. (MonadParsec e s m, Token s ~ Char, IsString (Tokens s)) => m VimAST
+vimASTParser = parseArray <|> parseObj <|> parseStr
+  where
+    parseArray = VimArray <$> between (char '[') (char ']') (vimASTParser `sepBy` string ", ")
+    parseObj = VimObj <$> between (char '{') (char '}') (parseKVPair `sepBy` string ", ")
+    parseKVPair = do
+     key <- between (char q) (string "': ") $ many $ anySingleBut q <|> (string "''" $> q)
+     val <- vimASTParser
+     pure (key, val)
+    parseQuoted = chunkToTokens (Proxy :: Proxy s) <$> between (char q) (char q) (takeWhile1P Nothing (/= q))
+    parseStr = VimStr <$> parseQuoted
+
+    q = '\''
+
+collectVimTrie :: VimAST -> HM.HashMap String [String]
+collectVimTrie = go ""
+  where
+    go prefix (VimArray arr) = union' $ go prefix <$> arr
+    go prefix (VimObj pairs) = union' $ (\(k, v) -> go (prefix <> k) v) <$> pairs
+    go prefix (VimStr s) = HM.singleton prefix [s]
+    union' = foldl' (HM.unionWith (<>)) mempty
+
+handleVimTrie :: FilePath -> IO ()
+handleVimTrie path = do
+  vimContents <- readFile path
+  case parse vimASTParser path vimContents of
+       Left err -> putStrLn $ errorBundlePretty @_ @Void err
+       Right res -> forM_ (sort $ HM.toList $ collectVimTrie res) $ \(_:k, vs) -> putStrLn $ unwords (k : sort vs)
 
 main :: IO ()
 main = getArgs >>=
-  \case [path] -> handleEl path
-        _ -> putStrLn "Usage: tablegen <path to .el>"
+  \case ["el", path] -> handleEl path
+        ["vt", path] -> handleVimTrie path
+        _            -> putStrLn "Usage: tablegen <path to .el>"
