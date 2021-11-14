@@ -23,6 +23,7 @@ import Neovim.Agda.Input
 import Neovim.Agda.Interaction
 import Neovim.Agda.Start
 import Neovim.Agda.Types
+import Neovim.Agda.Util
 
 registerMappings :: Neovim AgdaEnv ()
 registerMappings = do
@@ -57,7 +58,7 @@ initializePlugin = do
   atomically $ writeTVar goalmarksTVar goalmarksId
 
   res <- try $ do
-    !trie <- liftIO $ loadInputTrie =<< getDataFileName "data/symbols.txt"
+    !trie <- liftIO $ loadInputTrie =<< getDataFileName "data/input/agda-emacs.txt"
     tvar <- asks symbolsTrie
     atomically $ writeTVar tvar trie
   case res of

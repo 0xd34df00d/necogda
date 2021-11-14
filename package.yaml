@@ -37,7 +37,7 @@ dependencies:
 - unliftio
 
 data-files:
-- data/symbols.txt
+- data/input/agda-emacs.txt
 
 ghc-options:
 - -Wall
