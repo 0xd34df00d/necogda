@@ -111,4 +111,4 @@ main :: IO ()
 main = getArgs >>=
   \case ["el", path] -> handleEl path
         ["vt", path] -> handleVimTrie path
-        _            -> putStrLn "Usage: tablegen <path to .el>"
+        _            -> putStrLn "Usage: tablegen (el <path to .el> | vt <path to vim trie>)"
