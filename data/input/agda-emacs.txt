@@ -1,25 +1,178 @@
 ! ¡
 !! ‼
 !? ⁉
+" ̈
+"' “
+"< «
+"> »
+"A Ä
+"E Ë
+"H Ḧ
+"I Ï
+"O Ö
+"U Ü
+"W Ẅ
+"X Ẍ
+"Y Ÿ
+"\'I Ḯ
+"\'U Ǘ
+"\'i ḯ
+"\'u ǘ
+"\'{I} Ḯ
+"\'{U} Ǘ
+"\'{i} ḯ
+"\'{u} ǘ
+"\=A Ǟ
+"\=O Ȫ
+"\=U Ǖ
+"\=a ǟ
+"\=o ȫ
+"\=u ǖ
+"\={A} Ǟ
+"\={O} Ȫ
+"\={U} Ǖ
+"\={a} ǟ
+"\={o} ȫ
+"\={u} ǖ
+"\`U Ǜ
+"\`u ǜ
+"\`{U} Ǜ
+"\`{u} ǜ
+"\vU Ǚ
+"\vu ǚ
+"\v{U} Ǚ
+"\v{u} ǚ
+"` „
+"a ä
+"e ë
+"h ḧ
+"i ï
+"o ö
+"t ẗ
+"u ü
+"w ẅ
+"x ẍ
+"y ÿ
+"{A} Ä
+"{E} Ë
+"{H} Ḧ
+"{I} Ï
+"{O} Ö
+"{U} Ü
+"{W} Ẅ
+"{X} Ẍ
+"{Y} Ÿ
+"{a} ä
+"{e} ë
+"{h} ḧ
+"{i} ï
+"{o} ö
+"{t} ẗ
+"{u} ü
+"{w} ẅ
+"{x} ẍ
+"{y} ÿ
+"{} ¨
 # ♯
 & ⅋
-' ′ ″ ‴ ⁗
-( ( [ { ⁅ ⁽ ₍ 〈 ⎴ ❪ ❬ ❮ ❰ ❲ ❴ ⟅ ⟦ ⟨ ⟪ ⟮ ⦃ ⦅ ⦇ ⦉ ⦗ ⧼ ⸨ 〈 《 「 『 【 〔 〖 〚 ︵ ︷ ︹ ︻ ︽ ︿ ﹁ ﹃ ﹙ ﹛ ﹝ （ ［ ｛ ｢
+' ́ ′ ″ ‴ ⁗
+'A Á
+'C Ć
+'E É
+'G Ǵ
+'I Í
+'K Ḱ
+'L Ĺ
+'M Ḿ
+'N Ń
+'O Ó
+'P Ṕ
+'R Ŕ
+'S Ś
+'U Ú
+'W Ẃ
+'Y Ý
+'Z Ź
+'\.S Ṥ
+'\.s ṥ
+'\.{S} Ṥ
+'\.{s} ṥ
+'\AE Ǽ
+'\O Ǿ
+'\ae ǽ
+'\o ǿ
+'a á
+'c ć
+'e é
+'g ǵ
+'i í
+'k ḱ
+'l ĺ
+'m ḿ
+'n ń
+'o ó
+'p ṕ
+'r ŕ
+'s ś
+'u ú
+'w ẃ
+'y ý
+'z ź
+'{A} Á
+'{C} Ć
+'{E} É
+'{G} Ǵ
+'{I} Í
+'{K} Ḱ
+'{L} Ĺ
+'{M} Ḿ
+'{N} Ń
+'{O} Ó
+'{P} Ṕ
+'{R} Ŕ
+'{S} Ś
+'{U} Ú
+'{W} Ẃ
+'{Y} Ý
+'{Z} Ź
+'{\AE} Ǽ
+'{\O} Ǿ
+'{\ae} ǽ
+'{\o} ǿ
+'{a} á
+'{c} ć
+'{e} é
+'{g} ǵ
+'{i} í
+'{k} ḱ
+'{l} ĺ
+'{m} ḿ
+'{n} ń
+'{o} ó
+'{p} ṕ
+'{r} ŕ
+'{s} ś
+'{u} ú
+'{w} ẃ
+'{y} ý
+'{z} ź
+'{} ´
+( ( [ { ⁅ ⁽ ₍ 〈 ⎴ ⟅ ⟦ ⟨ ⟪ ⦃ 〈 《 「 『 【 〔 〖 〚 ︵ ︷ ︹ ︻ ︽ ︿ ﹁ ﹃ ﹙ ﹛ ﹝ （ ［ ｛ ｢
 (( ⦅
-(0) ⓪ ⓿ 🄀 🄋 🄌
+(0) ⓪
 (1) ① ⑴ ⒈ ❶ ➀ ➊
 (10) ⑩ ⑽ ⒑ ❿ ➉ ➓
-(11) ⑪ ⑾ ⒒ ⓫
-(12) ⑫ ⑿ ⒓ ⓬
-(13) ⑬ ⒀ ⒔ ⓭
-(14) ⑭ ⒁ ⒕ ⓮
-(15) ⑮ ⒂ ⒖ ⓯
-(16) ⑯ ⒃ ⒗ ⓰
-(17) ⑰ ⒄ ⒘ ⓱
-(18) ⑱ ⒅ ⒙ ⓲
-(19) ⑲ ⒆ ⒚ ⓳
+(11) ⑪ ⑾ ⒒
+(12) ⑫ ⑿ ⒓
+(13) ⑬ ⒀ ⒔
+(14) ⑭ ⒁ ⒕
+(15) ⑮ ⒂ ⒖
+(16) ⑯ ⒃ ⒗
+(17) ⑰ ⒄ ⒘
+(18) ⑱ ⒅ ⒙
+(19) ⑲ ⒆ ⒚
 (2) ② ⑵ ⒉ ❷ ➁ ➋
-(20) ⑳ ⒇ ⒛ ⓴
+(20) ⑳ ⒇ ⒛
 (3) ③ ⑶ ⒊ ❸ ➂ ➌
 (4) ④ ⑷ ⒋ ❹ ➃ ➍
 (5) ⑤ ⑸ ⒌ ❺ ➄ ➎
@@ -28,41 +181,42 @@
 (8) ⑧ ⑻ ⒏ ❽ ➇ ➑
 (9) ⑨ ⑼ ⒐ ❾ ➈ ➒
 (= ≘
-(a) ⒜ Ⓐ ⓐ 🄰 🅐 🅰
+(a) ⒜ Ⓐ ⓐ
 (b ⟅
-(b) ⒝ Ⓑ ⓑ 🄱 🅑 🅱
-(c) ⒞ Ⓒ ⓒ 🄲 🅒 🅲
-(d) ⒟ Ⓓ ⓓ 🄳 🅓 🅳
-(e) ⒠ Ⓔ ⓔ 🄴 🅔 🅴
-(f) ⒡ Ⓕ ⓕ 🄵 🅕 🅵
-(g) ⒢ Ⓖ ⓖ 🄶 🅖 🅶
-(h) ⒣ Ⓗ ⓗ 🄷 🅗 🅷
-(i) ⒤ Ⓘ ⓘ 🄸 🅘 🅸
-(j) ⒥ Ⓙ ⓙ 🄹 🅙 🅹
-(k) ⒦ Ⓚ ⓚ 🄺 🅚 🅺
-(l) ⒧ Ⓛ ⓛ 🄻 🅛 🅻
-(m) ⒨ Ⓜ ⓜ 🄼 🅜 🅼
-(n) ⒩ Ⓝ ⓝ 🄽 🅝 🅽
-(o) ⒪ Ⓞ ⓞ 🄾 🅞 🅾
-(p) ⒫ Ⓟ ⓟ 🄿 🅟 🅿
-(q) ⒬ Ⓠ ⓠ 🅀 🅠 🆀
-(r) ⒭ Ⓡ ⓡ 🅁 🅡 🆁
-(s) ⒮ Ⓢ ⓢ 🅂 🅢 🆂
-(t) ⒯ Ⓣ ⓣ 🅃 🅣 🆃
-(u) ⒰ Ⓤ ⓤ 🅄 🅤 🆄
-(v) ⒱ Ⓥ ⓥ 🅅 🅥 🆅
-(w) ⒲ Ⓦ ⓦ 🅆 🅦 🆆
-(x) ⒳ Ⓧ ⓧ 🅇 🅧 🆇
-(y) ⒴ Ⓨ ⓨ 🅈 🅨 🆈
-(z) ⒵ Ⓩ ⓩ 🅉 🅩 🆉
+(b) ⒝ Ⓑ ⓑ
+(c) ⒞ Ⓒ ⓒ
+(d) ⒟ Ⓓ ⓓ
+(e) ⒠ Ⓔ ⓔ
+(f) ⒡ Ⓕ ⓕ
+(g) ⒢ Ⓖ ⓖ
+(h) ⒣ Ⓗ ⓗ
+(i) ⒤ Ⓘ ⓘ
+(j) ⒥ Ⓙ ⓙ
+(k) ⒦ Ⓚ ⓚ
+(l) ⒧ Ⓛ ⓛ
+(m) ⒨ Ⓜ ⓜ
+(n) ⒩ Ⓝ ⓝ
+(o) ⒪ Ⓞ ⓞ
+(p) ⒫ Ⓟ ⓟ
+(q) ⒬ Ⓠ ⓠ
+(r) ⒭ Ⓡ ⓡ
+(s) ⒮ Ⓢ ⓢ
+(t) ⒯ Ⓣ ⓣ
+(u) ⒰ Ⓤ ⓤ
+(v) ⒱ Ⓥ ⓥ
+(w) ⒲ Ⓦ ⓦ
+(x) ⒳ Ⓧ ⓧ
+(y) ⒴ Ⓨ ⓨ
+(z) ⒵ Ⓩ ⓩ
 (| ⦇
-) ) ] } ⁆ ⁾ ₎ 〉 ⎵ ❫ ❭ ❯ ❱ ❳ ❵ ⟆ ⟧ ⟩ ⟫ ⟯ ⦄ ⦆ ⦈ ⦊ ⦘ ⧽ ⸩ 〉 》 」 』 】 〕 〗 〛 ︶ ︸ ︺ ︼ ︾ ﹀ ﹂ ﹄ ﹚ ﹜ ﹞ ） ］ ｝ ｣
+) ) ] } ⁆ ⁾ ₎ 〉 ⎵ ⟆ ⟧ ⟩ ⟫ ⦄ 〉 》 」 』 】 〕 〗 〛 ︶ ︸ ︺ ︼ ︾ ﹀ ﹂ ﹄ ﹚ ﹜ ﹞ ） ］ ｝ ｣
 )) ⦆
 )b ⟆
 * ⋆
 *= ≛
 +  ⊹
-, ʻ ، ⸲ ⸴ ⹁ ⹉ 、 ︐ ︑ ﹐ ﹑ ， ､
+, ʻ ،   ⸲ ⸴ ⹁ ⹉ 、 ︐ ︑ ﹐ ﹑ ， ､
+- ­
 --- ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ ╭ ╮ ╯ ╰ ╱ ╲ ╳ ╴ ╵ ╶ ╷
 --. ┄ ┅ ┆ ┇ ┈ ┉ ┊ ┋ ╌ ╍ ╎ ╏
 --= ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬
@@ -74,20 +228,108 @@
 -o ⊸
 -| ⊣
 -~ ≂
-. ∙
+. ̇ ∙
 .+ ∔
 .- ∸
 ... ⋮ ⋯ ⋰ ⋱
 .= ≐
 .=. ≑
+.A Ȧ
+.B Ḃ
+.C Ċ
+.D Ḋ
+.E Ė
+.F Ḟ
+.G Ġ
+.H Ḣ
+.I İ
+.M Ṁ
+.N Ṅ
+.O Ȯ
+.P Ṗ
+.R Ṙ
+.S Ṡ
+.T Ṫ
+.W Ẇ
+.X Ẋ
+.Y Ẏ
+.Z Ż
+.\=A Ǡ
+.\=O Ȱ
+.\=a ǡ
+.\=o ȱ
+.\={A} Ǡ
+.\={O} Ȱ
+.\={a} ǡ
+.\={o} ȱ
+.a ȧ
+.b ḃ
+.c ċ
+.d ḋ
+.e ė
+.f ḟ
+.g ġ
+.h ḣ
+.m ṁ
+.n ṅ
+.o ȯ
+.p ṗ
+.r ṙ
+.s ṡ
+.t ṫ
+.w ẇ
+.x ẋ
+.y ẏ
+.z ż
+.{A} Ȧ
+.{B} Ḃ
+.{C} Ċ
+.{D} Ḋ
+.{E} Ė
+.{F} Ḟ
+.{G} Ġ
+.{H} Ḣ
+.{I} İ
+.{M} Ṁ
+.{N} Ṅ
+.{O} Ȯ
+.{P} Ṗ
+.{R} Ṙ
+.{S} Ṡ
+.{T} Ṫ
+.{W} Ẇ
+.{X} Ẋ
+.{Y} Ẏ
+.{Z} Ż
+.{a} ȧ
+.{b} ḃ
+.{c} ċ
+.{d} ḋ
+.{e} ė
+.{f} ḟ
+.{g} ġ
+.{h} ḣ
+.{m} ṁ
+.{n} ṅ
+.{o} ȯ
+.{p} ṗ
+.{r} ṙ
+.{s} ṡ
+.{t} ṫ
+.{w} ẇ
+.{x} ẋ
+.{y} ẏ
+.{z} ż
+.{} ˙
+/ ‌
 0 ∅
 8< ✂ ✄
-: ː ˸ ፥ ፦ ∶ ⦂ ꞉ ︓ ﹕ ：
+: ː ˸ ፥ ፦   ∶ ⦂ ꞉ ︓ ﹕ ：
 :: ∷
 ::- ∺
 := ≔
 :~ ∻
-; ; ؛ ፤ ⁏ ⍮ ⸵ ꛶ ︔ ﹔ ；
+; ; ؛ ፤   ⁏ ⍮ ⸵ ꛶ ︔ ﹔ ；
 < ⟨
 <- ←
 <-- ⟵
@@ -96,24 +338,76 @@
 <->n ↮
 <-n ↚
 << ⟪
-<= ⇐
 <= ≤
 <=> ⇔
 <=>n ⇎
 <=n ≰
 <n ≮
-<| ⦉
 <~ ≲
 <~n ⋦
 <~nn ≴
+= ̄
 =: ≕
 == ≡
 === ≣
 ==n ≢
 => ⇒
 =>n ⇏
+=A Ā
+=E Ē
+=G Ḡ
+=I Ī
+=O Ō
+=U Ū
+=Y Ȳ
+=\"U Ṻ
+=\"u ṻ
+=\"{U} Ṻ
+=\"{u} ṻ
+=\'E Ḗ
+=\'O Ṓ
+=\'e ḗ
+=\'o ṓ
+=\'{E} Ḗ
+=\'{O} Ṓ
+=\'{e} ḗ
+=\'{o} ṓ
+=\AE Ǣ
+=\`E Ḕ
+=\`O Ṑ
+=\`e ḕ
+=\`o ṑ
+=\`{E} Ḕ
+=\`{O} Ṑ
+=\`{e} ḕ
+=\`{o} ṑ
+=\ae ǣ
+=a ā
+=e ē
+=g ḡ
+=i ī
 =n ≠
-=o ≗
+=o ō ≗
+=u ū
+=y ȳ
+={A} Ā
+={E} Ē
+={G} Ḡ
+={I} Ī
+={O} Ō
+={U} Ū
+={Y} Ȳ
+={\AE} Ǣ
+={\ae} ǣ
+={\i} ī
+={a} ā
+={e} ē
+={g} ḡ
+={i} ī
+={o} ō
+={u} ū
+={y} ȳ
+={} ¯
 > ⟩
 >= ≥
 >=n ≱
@@ -126,6 +420,9 @@
 ?! ‽ ⁈
 ?= ≟
 ?? ⁇
+AA Å
+AE Æ
+Alpha Α
 And ⋀
 B0 𝟎
 B1 𝟏
@@ -137,7 +434,27 @@ B6 𝟔
 B7 𝟕
 B8 𝟖
 B9 𝟗
+Bbb{N} ℕ
+Bbb{P} ℙ
+Bbb{R} ℝ
+Bbb{Z} ℤ
+Beta Β
+Box □
+Bumpeq ≎
 C ∁
+Cap ⋒
+Chi Χ
+Cup ⋓
+DH Ð
+Dei Ϯ
+Delta Δ
+Diamond ◇
+Digamma Ϝ
+Downarrow ⇓
+Epsilon Ε
+Eta Η
+Fei Ϥ
+Frowny ☹
 GA Α
 GB Β
 GC Χ
@@ -161,6 +478,8 @@ GU Υ
 GX Ξ
 GZ Ζ
 Ga α
+Gamma Γ
+Gangia Ϫ
 Gb β
 Gc χ
 Gd δ
@@ -184,7 +503,37 @@ Gth θ
 Gu υ
 Gx ξ
 Gz ζ
+H ̋
+HO Ő
+HU Ű
+Heta Ͱ
+Ho ő
+Hori Ϩ
+Hu ű
+H{O} Ő
+H{U} Ű
+H{o} ő
+H{u} ű
+H{} ˝
 I ⋂
+Im ℑ
+Iota Ι
+Join ⋈
+Kappa Κ
+Khei Ϧ
+Koppa Ϟ
+L Ł
+Lambda Λ
+Lamda Λ
+Leftarrow ⇐
+Leftrightarrow ⇔
+Letter ✉
+Ll ⋘
+Lleftarrow ⇚
+Longleftarrow ⇐
+Longleftrightarrow ⇔
+Longrightarrow ⇒
+Lsh ↰
 Lub ⨆
 MCA 𝓐
 MCB 𝓑
@@ -344,13 +693,10 @@ Mcy 𝓎
 Mcz 𝓏
 MfA 𝔄
 MfB 𝔅
-MfC ℭ
 MfD 𝔇
 MfE 𝔈
 MfF 𝔉
 MfG 𝔊
-MfH ℌ
-MfI ℑ
 MfJ 𝔍
 MfK 𝔎
 MfL 𝔏
@@ -359,7 +705,6 @@ MfN 𝔑
 MfO 𝔒
 MfP 𝔓
 MfQ 𝔔
-MfR ℜ
 MfS 𝔖
 MfT 𝔗
 MfU 𝔘
@@ -367,7 +712,6 @@ MfV 𝔙
 MfW 𝔚
 MfX 𝔛
 MfY 𝔜
-MfZ ℨ
 Mfa 𝔞
 Mfb 𝔟
 Mfc 𝔠
@@ -427,7 +771,6 @@ Mid 𝑑
 Mie 𝑒
 Mif 𝑓
 Mig 𝑔
-Mih ℎ
 Mii 𝑖
 Mij 𝑗
 Mik 𝑘
@@ -446,90 +789,292 @@ Miw 𝑤
 Mix 𝑥
 Miy 𝑦
 Miz 𝑧
+Mu Μ
+Nu Ν
+O Ø
 O* ⍟
 O+ ⨁
 O. ⨀
+OE Œ
+Omega Ω
+Omicron Ο
 Or ⋁
 Ox ⨂
+P ¶
+Pi Π
+Psi Ψ
+Re ℜ
+Rho Ρ
+Rightarrow ⇒
+Rrightarrow ⇛
+Rsh ↱
+S §
+Sampi Ϡ
+San Ϻ
+Shei Ϣ
+Shima Ϭ
+Sho Ϸ
+Sigma Σ
+Smiley ☺
+Stigma Ϛ
+Subset ⋐
+Supset ⋑
 T ▲ △ ▶ ▷ ▼ ▽ ◀ ◁ ◬ ◭ ◮
+TH Þ
+Tau Τ
 Tb ▲ ▶ ▼ ◀
+Theta Θ
 Tw △ ▷ ▽ ◁
 U+ ⨄
 U. ⨃
 Un ⋃
+Uo ő
+Uparrow ⇑
+Updownarrow ⇕
+Upsilon Υ
+U{o} ő
+Vdash ⊩
+Vert ‖
+Vvdash ⊪
+Xi Ξ
+Yot Ϳ
+Zeta Ζ
 [[ ⟦
-\ \
 ]] ⟧
+^ ̂
+^( ⁽
+^) ⁾
+^+ ⁺
+^- ⁻
 ^-- ̅ ̿
 ^. ̇ ̈ ⃛ ⃜
-^A ᴬ
+^0 ⁰
+^1 ¹
+^2 ²
+^3 ³
+^4 ⁴
+^5 ⁵
+^6 ⁶
+^7 ⁷
+^8 ⁸
+^9 ⁹
+^= ⁼
+^A Â ᴬ
 ^B ᴮ
+^C Ĉ
 ^D ᴰ
-^E ᴱ
-^G ᴳ
-^Gb ᵝ
-^Gc ᵡ
-^Gd ᵟ
-^Ge ᵋ
-^Gf ᵠ
-^Gg ᵞ
-^Gth ᶿ
-^H ᴴ
-^I ᴵ
-^J ᴶ
+^E Ê ᴱ
+^G Ĝ ᴳ
+^H Ĥ ᴴ
+^I Î ᴵ
+^J Ĵ ᴶ
 ^K ᴷ
 ^L ᴸ
 ^M ᴹ
 ^N ᴺ
-^O ᴼ
+^O Ô ᴼ
 ^P ᴾ
 ^R ᴿ
+^S Ŝ
 ^T ᵀ
-^U ᵁ
+^U Û ᵁ
 ^V ⱽ
-^W ᵂ
+^W Ŵ ᵂ
+^Y Ŷ
+^Z Ẑ
+^\'A Ấ
+^\'E Ế
+^\'O Ố
+^\'a ấ
+^\'e ế
+^\'o ố
+^\'{A} Ấ
+^\'{E} Ế
+^\'{O} Ố
+^\'{a} ấ
+^\'{e} ế
+^\'{o} ố
+^\Ae ᴭ
+^\Barred B ᴯ
+^\H With Stroke ꟸ
+^\Ou ᴽ
+^\Reversed E ᴲ
+^\Reversed N ᴻ
+^\`A Ầ
+^\`E Ề
+^\`O Ồ
+^\`a ầ
+^\`e ề
+^\`o ồ
+^\`{A} Ầ
+^\`{E} Ề
+^\`{O} Ồ
+^\`{a} ầ
+^\`{e} ề
+^\`{o} ồ
+^\ain ᵜ
+^\alpha ᵅ
+^\barred o ᶱ
+^\beta ᵝ
+^\bottom half o ᵕ
+^\c with curl ᶝ
+^\capital i ᶦ
+^\capital i with stroke ᶧ
+^\capital inverted r ʶ
+^\capital l ᶫ
+^\capital n ᶰ
+^\capital u ᶸ
+^\chi ᵡ
+^\delta ᵟ
+^\dotless j with stroke ᶡ
+^\d{A} Ậ
+^\d{E} Ệ
+^\d{O} Ộ
+^\d{a} ậ
+^\d{e} ệ
+^\d{o} ộ
+^\eng ᵑ
+^\esh ᶴ
+^\eth ᶞ
+^\ezh ᶾ
+^\gamma ˠ
+^\greek gamma ᵞ
+^\greek phi ᵠ
+^\h hook ʱ
+^\h with hook ʱ
+^\heng ꭜ
+^\i with stroke ᶤ
+^\iota ᶥ
+^\j with crossed-tail ᶨ
+^\l with inverted lazy s ꭝ
+^\l with middle tilde ꭞ
+^\l with palatal hook ᶪ
+^\l with retroflex hook ᶩ
+^\ligature oe ꟹ
+^\m with hook ᶬ
+^\n with left hook ᶮ
+^\n with retroflex hook ᶯ
+^\open e ᵋ
+^\open o ᵓ
+^\phi ᶲ
+^\reversed glottal stop ˤ
+^\reversed open e ᶟ
+^\s with hook ᶳ
+^\schwa ᵊ
+^\script g ᶢ
+^\sideways u ᵙ
+^\t with palatal hook ᶵ
+^\theta ᶿ
+^\top half o ᵔ
+^\turned a ᵄ
+^\turned ae ᵆ
+^\turned alpha ᶛ
+^\turned h ᶣ
+^\turned i ᵎ
+^\turned m ᵚ
+^\turned m with long leg ᶭ
+^\turned open e ᵌ
+^\turned r ʴ
+^\turned r hook ʵ
+^\turned r with hook ʵ
+^\turned v ᶺ
+^\u bar ᶶ
+^\u with left hook ꭟ
+^\upsilon ᶷ
+^\v with hook ᶹ
+^\z with curl ᶽ
+^\z with retroflex hook ᶼ
+^\~A Ẫ
+^\~E Ễ
+^\~O Ỗ
+^\~a ẫ
+^\~e ễ
+^\~o ỗ
+^\~{A} Ẫ
+^\~{E} Ễ
+^\~{O} Ỗ
+^\~{a} ẫ
+^\~{e} ễ
+^\~{o} ỗ
 ^^ ̂ ̑ ͆
-^a ᵃ
+^a â ᵃ
 ^a_ ª
 ^b ᵇ
-^c ᶜ
+^c ĉ ᶜ
 ^d ᵈ
-^e ᵉ
+^e ê ᵉ
 ^f ᶠ
-^g ᵍ
-^h ʰ
-^i ⁱ
-^j ʲ
+^g ĝ ᵍ
+^h ĥ ʰ
+^i î ⁱ
+^j ĵ ʲ
 ^k ᵏ
-^l ˡ
-^l ⃐ ⃔ ⃖
+^l ˡ ⃐ ⃔ ⃖
 ^l- ⃖
 ^lr ⃡
 ^m ᵐ
 ^n ⁿ
-^o ᵒ
+^o ô ᵒ
 ^o_ º
 ^p ᵖ
-^r ʳ
-^r ⃑ ⃕ ⃗
+^r ʳ ⃑ ⃕ ⃗
 ^r- ⃗
-^s ˢ
+^s ŝ ˢ
 ^t ᵗ
-^u ᵘ
-^v ̆ ̌
-^v ᵛ
-^w ʷ
+^u û ᵘ
+^v ̆ ̌ ᵛ
+^w ŵ ʷ
 ^x ˣ
-^y ʸ
-^z ᶻ
+^y ŷ ʸ
+^z ᶻ ẑ
+^{A} Â
+^{C} Ĉ
+^{E} Ê
+^{G} Ĝ
+^{H} Ĥ
+^{I} Î
+^{J} Ĵ
+^{O} Ô
+^{SM} ℠
+^{S} Ŝ
+^{TEL} ℡
+^{TM} ™
+^{U} Û
+^{W} Ŵ
+^{Y} Ŷ
+^{Z} Ẑ
+^{\j} ĵ
+^{a} â
+^{c} ĉ
+^{e} ê
+^{g} ĝ
+^{h} ĥ
+^{i} î
+^{j} ĵ
+^{o} ô
+^{s} ŝ
+^{u} û
+^{w} ŵ
+^{y} ŷ
+^{z} ẑ
 ^~ ̃ ͌
+_( ₍
+_) ₎
+_+ ₊
+_- ₋
 _-- ̲ ̳
 _. ̣ ̤
-_Gb ᵦ
-_Gc ᵪ
-_Gf ᵩ
-_Gg ᵧ
-_Gr ᵨ
+_0 ₀
+_1 ₁
+_2 ₂
+_3 ₃
+_4 ₄
+_5 ₅
+_6 ₆
+_7 ₇
+_8 ₈
+_9 ₉
+_= ₌
 _^ ̪ ̭ ̯
 _a ₐ
 _e ₑ
@@ -547,18 +1092,61 @@ _r ᵣ
 _s ₛ
 _t ₜ
 _u ᵤ
-_v ̬ ̮ ̺
-_v ᵥ
+_v ̬ ̮ ̺ ᵥ
 _x ₓ
 _~ ̰
-` ‵ ‶ ‷
+` ̀ ‵ ‶ ‷
+`A À
+`E È
+`I Ì
+`N Ǹ
+`O Ò
+`U Ù
+`W Ẁ
+`Y Ỳ
+`a à
+`e è
+`i ì
+`n ǹ
+`o ò
+`u ù
+`w ẁ
+`y ỳ
+`{A} À
+`{E} È
+`{I} Ì
+`{N} Ǹ
+`{O} Ò
+`{U} Ù
+`{W} Ẁ
+`{Y} Ỳ
+`{a} à
+`{e} è
+`{i} ì
+`{n} ǹ
+`{o} ò
+`{u} ù
+`{w} ẁ
+`{y} ỳ
+aa å
+ae æ
+afghani ؋
+aleph ℵ
 all ∀
+alpha α
+amalg ∐
 and ∧
 and= ≙
-angle ∟ ∡ ∢ ⊾ ⊿
+angle ∟ ∠ ∡ ∢ ⊾ ⊿
+angstrom Å
 apl ⌶ ⌷ ⌸ ⌹ ⌺ ⌻ ⌼ ⌽ ⌾ ⌿ ⍀ ⍁ ⍂ ⍃ ⍄ ⍅ ⍆ ⍇ ⍈ ⍉ ⍊ ⍋ ⍌ ⍍ ⍎ ⍏ ⍐ ⍑ ⍒ ⍓ ⍔ ⍕ ⍖ ⍗ ⍘ ⍙ ⍚ ⍛ ⍜ ⍝ ⍞ ⍟ ⍠ ⍡ ⍢ ⍣ ⍤ ⍥ ⍦ ⍧ ⍨ ⍩ ⍪ ⍫ ⍬ ⍭ ⍮ ⍯ ⍰ ⍱ ⍲ ⍳ ⍴ ⍵ ⍶ ⍷ ⍸ ⍹ ⍺ ⎕
+approx ≈
+approxeq ≊
+ast ∗
 asterisk ⁂ ⁎ ⁑ ✢ ✣ ✤ ✥ ✱ ✲ ✳ ✺ ✻ ✼ ✽ ❃ ❉ ❊ ❋
-b ♭
+asymp ≍
+austral ₳
+b ̱ ♭
 b+ ⊞
 b- ⊟
 b. ⊡
@@ -604,98 +1192,403 @@ bX 𝕏
 bY 𝕐
 bZ ℤ
 ba 𝕒
+backcong ≌
+backepsilon ∍
+backprime ‵
+backsim ∽
+backsimeq ⋍
+barwedge ⊼
 bb 𝕓
 bc 𝕔
 bd 𝕕
 be 𝕖
+because ∵
+beta β
+beth ℶ
+between ≬
 bf 𝕗
 bg 𝕘
 bh 𝕙
 bi 𝕚
+bigcap ⋂
+bigcirc ◯
+bigcup ⋃
+bigstar ★
+bigtriangledown ▽
+bigtriangleup △
+bigvee ⋁
+bigwedge ⋀
+biohazard ☣
+bitcoin ₿
 bj 𝕛
 bk 𝕜
 bl 𝕝
+blacklozenge ✦
+blacksmiley ☻
+blacksquare ▪
+blacktriangle ▴
+blacktriangledown ▾
+blacktriangleleft ◂
+blacktriangleright ▸
 bm 𝕞
 bn 𝕟
 bo 𝕠
+bot ⊥
+bowtie ⋈
+boxminus ⊟
+boxplus ⊞
+boxtimes ⊠
 bp 𝕡
 bq 𝕢
 br 𝕣
 brokenbar ¦
 bs 𝕤
 bt 𝕥
-bu • ‣ ⁌ ⁍ ◦
-bu 𝕦
+bu • ‣ ⁌ ⁍ ◦ 𝕦
 bub •
+bumpeq ≏
 but ‣
 buw ◦
 bv 𝕧
 bw 𝕨
-bx ⊠
-bx 𝕩
+bx ⊠ 𝕩
 by 𝕪
 bz 𝕫
-c ⌈ ⌉ ⌊ ⌋ ⌜ ⌝ ⌞ ⌟
+c ̧ ⌈ ⌉ ⌊ ⌋ ⌜ ⌝ ⌞ ⌟
+cC Ç
+cD Ḑ
+cE Ȩ
+cG Ģ
+cH Ḩ
+cK Ķ
+cL Ļ
+cN Ņ
+cR Ŗ
+cS Ş
+cT Ţ
+c\'C Ḉ
+c\'c ḉ
+c\'{C} Ḉ
+c\'{c} ḉ
+c\uE Ḝ
+c\ue ḝ
+c\u{E} Ḝ
+c\u{e} ḝ
+cap ∩
+caution ☡
+cc ç
+cd ḑ
+cdot ·
+cdots ⋯
+ce ȩ
+cedi ₵
+celsius ℃
 cent ¢
+centerdot ·
+cg ģ
+ch ḩ
+checkmark ✓
+chi χ
 ci ○ ◌ ◍ ◎ ● ◐ ◑ ◒ ◓ ◔ ◕ ◖ ◗ ◠ ◡ ◯ ◴ ◵ ◶ ◷ ⚆ ⚇ ⚈ ⚉
 ci. ◎
 ci.. ◌
 ciO ◯
 cib ●
+circ ∘
+circeq ≗
+circlearrowleft ↺
+circlearrowright ↻
+circledR ®
+circledS Ⓢ
+circledast ⊛
+circledcirc ⊚
+circleddash ⊝
 ciw ○
-cl ⌊ ⌋ ⌞ ⌟
+ck ķ
+cl ļ ⌊ ⌋ ⌞ ⌟
 clL ⌊
 clR ⌋
 cll ⌞
 clr ⌟
+clubsuit ♣
+cn ņ
+colon ₡
+coloneq ≔
 comp ∘
+complement ∁
+cong ≅
+construction 🚧
+coprod ∐
+copyright ©
+cr ŗ
+cruzeiro ₢
+cs ş
+ct ţ
 cu ⌈ ⌉ ⌜ ⌝
 cuL ⌈
 cuR ⌉
 cul ⌜
+cup ∪
 cur ⌝
-d ↓ ↡ ↧ ↯ ↲ ↳ ↵ ⇂ ⇃ ⇊ ⇓ ⇟ ⇣ ⇩ ⇵ ➥ ⟱
+curlyeqprec ⋞
+curlyeqsucc ⋟
+curlypreceq ≼
+curlyvee ⋎
+curlywedge ⋏
+currency ¤
+curvearrowleft ↶
+curvearrowright ↷
+c{C} Ç
+c{D} Ḑ
+c{E} Ȩ
+c{G} Ģ
+c{H} Ḩ
+c{K} Ķ
+c{L} Ļ
+c{N} Ņ
+c{R} Ŗ
+c{S} Ş
+c{T} Ţ
+c{c} ç
+c{d} ḑ
+c{e} ȩ
+c{g} ģ
+c{h} ḩ
+c{k} ķ
+c{l} ļ
+c{n} ņ
+c{r} ŗ
+c{s} ş
+c{t} ţ
+c{} ¸
+d ̣ ↓ ↡ ↧ ↯ ↲ ↳ ↵ ⇂ ⇃ ⇊ ⇓ ⇟ ⇣ ⇩ ⇵ ➥ ⟱
 d- ↓
 d-2 ⇊
 d-u- ⇵
 d-| ↧
 d= ⇓
 d== ⟱
+d\.S Ṩ
+d\.s ṩ
+d\.{S} Ṩ
+d\.{s} ṩ
+d\=L Ḹ
+d\=R Ṝ
+d\=l ḹ
+d\=r ṝ
+d\={L} Ḹ
+d\={R} Ṝ
+d\={l} ḹ
+d\={r} ṝ
+dag †
+dagger †
+daleth ℸ
+dashv ⊣
 dd- ↡
+ddag ‡
+ddagger ‡
+ddots ⋱
 def= ≝
+defs ≙
 degree °
+dei ϯ
+delta δ
+dh ð
 di ◆ ◇ ◈
 di. ◈
+diameter ⌀
+diamond ⋄
+diamondsuit ♢
 dib ◆
 die ⚀ ⚁ ⚂ ⚃ ⚄ ⚅
+digamma ϝ
+div ÷
+divideontimes ⋇
+division ÷
 diw ◇
 dl ↙ ⇙
 dl- ↙
 dl= ⇙
+dong ₫
+doteq ≐
+doteqdot ≑
+dotplus ∔
+dotsquare ⊡
+downarrow ↓
+downdownarrows ⇊
+downleftharpoon ⇃
+downrightharpoon ⇂
 dr ↘ ⇘ ⇲ ➘ ➴ ➷
 dr- ↘
 dr= ⇘
+drachma ₯
 dz ↯
+d{A} Ạ
+d{B} Ḅ
+d{D} Ḍ
+d{E} Ẹ
+d{H} Ḥ
+d{I} Ị
+d{K} Ḳ
+d{L} Ḷ
+d{M} Ṃ
+d{N} Ṇ
+d{O} Ọ
+d{R} Ṛ
+d{S} Ṣ
+d{T} Ṭ
+d{U} Ụ
+d{V} Ṿ
+d{W} Ẉ
+d{Y} Ỵ
+d{Z} Ẓ
+d{a} ạ
+d{b} ḅ
+d{d} ḍ
+d{e} ẹ
+d{h} ḥ
+d{i} ị
+d{k} ḳ
+d{l} ḷ
+d{m} ṃ
+d{n} ṇ
+d{o} ọ
+d{r} ṛ
+d{s} ṣ
+d{t} ṭ
+d{u} ụ
+d{v} ṿ
+d{w} ẉ
+d{y} ỵ
+d{z} ẓ
+ell ℓ
 em —
+emptyset ∅
 en –
 entails ⊢ ⊣ ⊤ ⊥ ⊦ ⊧ ⊨ ⊩ ⊪ ⊫ ⊬ ⊭ ⊮ ⊯
+epsilon ε
 eq = ∻ ∼ ∽ ∾ ∿ ≀ ≂ ≃ ≅ ≈ ≊ ≋ ≌ ≍ ≎ ≏ ≐ ≑ ≒ ≓ ≔ ≕ ≖ ≗ ≘ ≙ ≚ ≛ ≜ ≝ ≞ ≟ ≡ ≣ ≬ ⋍ ⋕
+eqcirc ≖
+eqcolon ≕
 eqn ≁ ≄ ≆ ≇ ≉ ≠ ≢ ≭
+eqslantgtr ⋝
+eqslantless ⋜
+equiv ≡
+eta η
+euro €
 ex ∃
+exists ∃
 exn ∄
+facsimile ℻
+fallingdotseq ≒
+fei ϥ
+female ♀
+flat ♭
+flq ‹
+flqq «
+forall ∀
 frac ¼ ½ ¾ ⅓ ⅔ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞ ⅟
+frac1 ⅟
+frac12 ½
+frac13 ⅓
+frac14 ¼
+frac15 ⅕
+frac16 ⅙
+frac18 ⅛
+frac23 ⅔
+frac25 ⅖
+frac34 ¾
+frac35 ⅗
+frac38 ⅜
+frac45 ⅘
+frac56 ⅚
+frac58 ⅝
+frac78 ⅞
+frown ⌢
+frq ›
+frqq »
+gamma γ
+gangia ϫ
+ge ≥
 gen ≱
 geq > ≥ ≧ ≫ ≳ ≷ ≻ ≽ ≿ ⊃ ⊇ ⊐ ⊒ ⊱ ⊳ ⊵ ⋑ ⋗ ⋙ ⋛ ⋝ ⋟
 geqn ≩ ≯ ≱ ≵ ≹ ⊁ ⊅ ⊉ ⊋ ⋡ ⋣ ⋥ ⋧ ⋩ ⋫ ⋭
+geqq ≧
+geqslant ≥
+gets ←
+gg ≫
+ggg ⋙
+gimel ℷ
 glb ⊓
-i ∩
+glq ‚
+glqq „
+gnapprox ⋧
+gneq ≩
+gneqq ≩
+gnsim ⋧
+grq ‘
+grqq “
+gtrapprox ≳
+gtrdot ⋗
+gtreqless ⋛
+gtreqqless ⋛
+gtrless ≷
+gtrsim ≳
+guarani ₲
+gvertneqq ≩
+hbar ℏ
+heartsuit ♥
+heta ͱ
+hookleftarrow ↩
+hookrightarrow ↪
+hori ϩ
+hryvnia ₴
+i ı ∩
+iff ⇔
+imath ı
+in ∈
 increment ∆
 inf ∞
+infty ∞
 inn ∉
+int ∫
 integral ∫ ∬ ∭ ∮ ∯ ∰ ∱ ∲ ∳
+intercal ⊺
 intersection ∏ ∧ ∩ ⊓ ⊼ ⋀ ⋂ ⋏ ⋒ ⨅ ⨇ ⨉
+iota ι
 join ⋈ ⋉ ⋊ ⋋ ⋌ ⟕ ⟖ ⟗ ⨝
-l ← ↚ ↜ ↞ ↢ ↤ ↩ ↫ ↶ ↹ ↺ ↼ ↽ ⇆ ⇇ ⇋ ⇍ ⇐ ⇚ ⇜ ⇠ ⇤ ⇦ ⇷ ⇺ ⇽ ⟲ ⟵ ⟸ ⟻ ⟽ ⤆
+k ̨
+kA Ą
+kE Ę
+kI Į
+kO Ǫ
+kU Ų
+k\=O Ǭ
+k\=o ǭ
+k\={O} Ǭ
+k\={o} ǭ
+ka ą
+kappa κ
+ke ę
+kelvin K
+khei ϧ
+ki į
+kip ₭
+ko ǫ
+koppa ϟ
+ku ų
+k{A} Ą
+k{E} Ę
+k{I} Į
+k{O} Ǫ
+k{U} Ų
+k{a} ą
+k{e} ę
+k{i} į
+k{o} ǫ
+k{u} ų
+k{} ˛
+l ł ← ↚ ↜ ↞ ↢ ↤ ↩ ↫ ↶ ↹ ↺ ↼ ↽ ⇆ ⇇ ⇋ ⇍ ⇐ ⇚ ⇜ ⇠ ⇤ ⇦ ⇷ ⇺ ⇽ ⟲ ⟵ ⟸ ⟻ ⟽ ⤆
 l- ←
 l-- ⟵
 l-2 ⇇
@@ -706,25 +1599,149 @@ l-| ↤
 l= ⇐
 l== ⇚
 l=n ⇍
+lambda λ
+lambdabar ƛ
+lamda λ
+langle ⟨
+lari ₾
 lbag ⟅
+lceil ⌈
+ldata 《
+ldots …
+ldq “
+le ≤
+leadsto ↝
+leftarrow ←
+leftarrowtail ↢
+leftharpoondown ↽
+leftharpoonup ↼
+leftleftarrows ⇇
+leftrightarrow ↔
+leftrightarrows ⇆
+leftrightharpoons ⇋
+leftrightsquigarrow ↭
+leftthreetimes ⋋
 len ≰
 leq < ≤ ≦ ≪ ≲ ≶ ≺ ≼ ≾ ⊂ ⊆ ⊏ ⊑ ⊰ ⊲ ⊴ ⋐ ⋖ ⋘ ⋚ ⋜ ⋞
 leqn ≨ ≮ ≰ ≴ ≸ ⊀ ⊄ ⊈ ⊊ ⋠ ⋢ ⋤ ⋦ ⋨ ⋪ ⋬
+leqq ≦
+leqslant ≤
+lessapprox ≲
+lessdot ⋖
+lesseqgtr ⋚
+lesseqqgtr ⋚
+lessgtr ≶
+lesssim ≲
+lfloor ⌊
+lhd ◁
+lira ₤
+ll ≪
 ll- ↞
+llbracket 〚
+llcorner ⌞
+lnapprox ⋦
+lneq ≨
+lneqq ≨
+lnot ¬
+lnsim ⋦
+longleftarrow ←
+longleftrightarrow ↔
+longmapsto ↦
+longrightarrow →
+looparrowleft ↫
+looparrowright ↬
+lozenge ✧
+lq ‘
 lr ↔ ↭ ↮ ⇎ ⇔ ⇹ ⇼ ⇿ ⟷ ⟺
 lr- ↔
 lr-- ⟷
 lr-n ↮
 lr= ⇔
 lr=n ⇎
+lrcorner ⌟
 lr~ ↭
+ltimes ⋉
 lub ⊔
+lvertneqq ≨
 l~ ↜ ⇜
 m= ≞
+male ♂
+maltese ✠
+manat ₼
+mapsto ↦
+mathscr{I} ℐ
+measuredangle ∡
 member ∈ ∉ ∊ ∋ ∌ ∍ ⋲ ⋳ ⋴ ⋵ ⋶ ⋷ ⋸ ⋹ ⋺ ⋻ ⋼ ⋽ ⋾ ⋿
+mho ℧
+micro µ
+mid ∣
+mill ₥
+minus −
+models ⊧
+mp ∓
+mu μ
+multimap ⊸
+multiplication ×
+nLeftarrow ⇍
+nLeftrightarrow ⇎
+nRightarrow ⇏
+nVDash ⊯
+nVdash ⊮
+nabla ∇
+naira ₦
+napprox ≉
+natural ♮
+ncong ≇
+ne ≠
+nearrow ↗
+neg ¬
+neq ≠
+nequiv ≢
+newline  
+nexists ∄
+ngeq ≱
+ngeqq ≱
+ngeqslant ≱
+ngtr ≯
+ni ∋
 nin ∌
+nleftarrow ↚
+nleftrightarrow ↮
+nleq ≰
+nleqq ≰
+nleqslant ≰
+nless ≮
+nmid ∤
+nomisma 𐆎
+not ̸
 note ♩ ♪ ♫ ♬
-o ∘
+notin ∉
+nparallel ∦
+nprec ⊀
+npreceq ⋠
+nrightarrow ↛
+nshortmid ∤
+nshortparallel ∦
+nsim ≁
+nsimeq ≄
+nsubset ⊄
+nsubseteq ⊈
+nsubseteqq ⊈
+nsucc ⊁
+nsucceq ⋡
+nsupset ⊅
+nsupseteq ⊉
+nsupseteqq ⊉
+ntriangleleft ⋪
+ntrianglelefteq ⋬
+ntriangleright ⋫
+ntrianglerighteq ⋭
+nu ν
+numero №
+nvDash ⊭
+nvdash ⊬
+nwarrow ↖
+o ø ∘
 o* ⊛
 o+ ⊕
 o- ⊝
@@ -732,14 +1749,56 @@ o-- ⊖
 o. ⊙
 o/ ⊘
 o= ⊜
+octagonal 🛑
+odot ⊙
+oe œ
+ohm Ω
+oint ∮
+omega ω
+omicron ο
+ominus ⊖
 oo ⊚
+oplus ⊕
 or ∨
 or= ≚
+ordfeminine ª
+ordmasculine º
+oslash ⊘
+otimes ⊗
+ounce ℥
 ox ⊗
 pa ▰ ▱
 pab ▰
+paragraph ¶
+parallel ∥
+partial ∂
+partnership ㉐
 paw ▱
+per ⅌
+permil ‰
+perp ⊥
+peseta ₧
+peso ₱
+phi ϕ
+pi π
+pilcrow ¶
+pitchfork ⋔
+pm ±
+pound £
+pounds £
+prec ≺
+precapprox ≾
+preceq ≼
+precnapprox ⋨
+precnsim ⋨
+precsim ≾
+prime ′
+prod ∏
+prohibited 🛇
+propto ∝
+psi ψ
 qed ∎
+quad  
 r → ↛ ↝ ↠ ↣ ↦ ↪ ↬ ↴ ↷ ↻ ⇀ ⇁ ⇄ ⇉ ⇌ ⇏ ⇒ ⇛ ⇝ ⇢ ⇥ ⇨ ⇰ ⇴ ⇶ ⇸ ⇻ ⇾ ⊸ ➔ ➙ ➛ ➜ ➝ ➞ ➟ ➠ ➡ ➢ ➣ ➤ ➧ ➨ ➩ ➪ ➫ ➬ ➭ ➮ ➯ ➱ ➲ ➳ ➵ ➸ ➺ ➻ ➼ ➽ ➾ ⟳ ⟴ ⟶ ⟹ ⟼ ⟾ ⟿ ⤇
 r- →
 r-- ⟶
@@ -753,44 +1812,165 @@ r-| ↦
 r= ⇒
 r== ⇛
 r=n ⇏
+radioactive ☢
+rangle ⟩
 rbag ⟆
+rceil ⌉
+rdata 》
+rdq ”
 re ▬ ▭ ▮ ▯
 reb ▬ ▮
+registered ®
 rew ▭ ▯
+rfloor ⌋
+rhd ▷
+rho ρ
+rial ﷼
+rightarrow →
+rightarrowtail ↣
+rightharpoondown ⇁
+rightharpoonup ⇀
+rightleftarrows ⇄
+rightleftharpoons ⇌
+rightrightarrows ⇉
+rightthreetimes ⋌
+risingdotseq ≓
+rq ’
 rr- ↠
+rrbracket 〛
+rtimes ⋊
+ruble ₽
+rupee ₨
 r~ ↝ ⇝ ⟿
+sampi ϡ
+san ϻ
+sbs ﹨
+searrow ↘
+section §
+setminus ∖
+sharp ♯
+shei ϣ
+shima ϭ
+sho ϸ
+shortmid ∣
+shortparallel ∥
+sigma σ
+sim ∼
+simeq ≃
+smallamalg ∐
+smallsetminus ∖
+smallsmile ⌣
+smile ⌣
+spadesuit ♠
+spesmilo ₷
+sphericalangle ∢
 sq ■ □ ▢ ▣ ▤ ▥ ▦ ▧ ▨ ▩ ◧ ◨ ◩ ◪ ◫ ◰ ◱ ◲ ◳ ◻ ◼ ◽ ◾
 sq. ▣
 sqb ■ ◼ ◾
+sqcap ⊓
+sqcup ⊔
 sqo ▢
+sqsubset ⊏
+sqsubseteq ⊑
+sqsupset ⊐
+sqsupseteq ⊒
+square □
 squb ⊏
 squb= ⊑
 squb=n ⋢
+squigarrowright ⇝
 squp ⊐
 squp= ⊒
 squp=n ⋣
 sqw □ ◻ ◽
+ss ß
 st ⋆ ★ ☆ ✦ ✧ ✪ ✫ ✯ ✰ ✴ ✵ ✶ ✷ ✸ ✹
 st12 ✹
 st4 ✦ ✧
 st6 ✶
 st8 ✴
+star ⋆
+stigma ϛ
+straightphi φ
 sub ⊂
 sub= ⊆
 sub=n ⊈
 subn ⊄
+subset ⊂
+subseteq ⊆
+subseteqq ⊆
+subsetneq ⊊
+subsetneqq ⊊
+succ ≻
+succapprox ≿
+succcurlyeq ≽
+succeq ≽
+succnapprox ⋩
+succnsim ⋩
+succsim ≿
+sum ∑
 sup ⊃
 sup= ⊇
 sup=n ⊉
 supn ⊅
+supset ⊃
+supseteq ⊇
+supseteqq ⊇
+supsetneq ⊋
+supsetneqq ⊋
+surd √
 surd3 ∛
 surd4 ∜
+swarrow ↙
 t ▴ ▵ ▸ ▹ ► ▻ ▾ ▿ ◂ ◃ ◄ ◅ ◢ ◣ ◤ ◥ ◸ ◹ ◺ ◿
 t= ≜
+tau τ
 tb ▴ ▸ ► ▾ ◂ ◄ ◢ ◣ ◤ ◥
+telephone ℡
+tenge ₸
+textbaht ฿
+textbigcircle ⃝
+textcircledP ℗
+textcolonmonetary ₡
+textdied ✝
+textdiscount ⁒
+textestimated ℮
+textfractionsolidus ⁄
+textinterrobang ‽
+textlira ₤
+textlquill ⁅
+textmu µ
+textmusicalnote ♪
+textnaira ₦
+textnumero №
+textopenbullet ◦
+textpertenthousand ‱
+textpeso ₱
+textrecipe ℞
+textreferencemark ※
+textrquill ⁆
+textwon ₩
+th þ
+therefore ∴
+theta θ
+thickapprox ≈
+thicksim ∼
 tie ⁀
+times ×
+to →
+top ⊤
+triangle ▵
+triangledown ▿
+triangleleft ◃
+trianglelefteq ⊴
+triangleq ≜
+triangleright ▹
+trianglerighteq ⊵
+tugrik ₮
 tw ▵ ▹ ▻ ▿ ◃ ◅ ◸ ◹ ◺ ◿
-u ↑ ↟ ↥ ↰ ↱ ↾ ↿ ⇅ ⇈ ⇑ ⇞ ⇡ ⇧ ⇪ ⇫ ⇬ ⇭ ⇮ ⇯ ➦ ⟰
+twoheadleftarrow ↞
+twoheadrightarrow ↠
+u ̆ ↑ ↟ ↥ ↰ ↱ ↾ ↿ ⇅ ⇈ ⇑ ⇞ ⇡ ⇧ ⇪ ⇫ ⇬ ⇭ ⇮ ⇯ ➦ ⟰
 u+ ⊎
 u- ↑
 u-2 ⇈
@@ -799,23 +1979,170 @@ u-| ↥
 u. ⊍
 u= ⇑
 u== ⟰
+uA Ă
+uE Ĕ
+uG Ğ
+uI Ĭ
+uO Ŏ
+uU Ŭ
+u\'A Ắ
+u\'a ắ
+u\'{A} Ắ
+u\'{a} ắ
+u\`A Ằ
+u\`a ằ
+u\`{A} Ằ
+u\`{a} ằ
+u\d{A} Ặ
+u\d{a} ặ
+u\~A Ẵ
+u\~a ẵ
+u\~{A} Ẵ
+u\~{a} ẵ
+ua ă
 ud ↕ ↨ ⇕ ⇳
 ud- ↕
 ud-| ↨
 ud= ⇕
+ue ĕ
+ug ğ
+ui ĭ
 ul ↖ ↸ ⇖ ⇱
 ul- ↖
 ul= ⇖
+ulcorner ⌜
 un ∪
+uncertainty ⯑
 undertie ‿
 union ⅀ ∐ ∑ ∨ ∪ ⊌ ⊍ ⊎ ⊔ ⊻ ⊽ ⋁ ⋃ ⋎ ⋓ ⨃ ⨄ ⨆ ⨈ ⨿
+uo ŏ
+uparrow ↑
+updownarrow ↕
+upleftharpoon ↿
+uplus ⊎
+uprightharpoon ↾
+upsilon υ
+upuparrows ⇈
 ur ↗ ⇗ ➚ ➶ ➹
 ur- ↗
 ur= ⇗
+urcorner ⌝
+uu ŭ
 uu- ↟
+u{A} Ă
+u{E} Ĕ
+u{G} Ğ
+u{I} Ĭ
+u{O} Ŏ
+u{U} Ŭ
+u{\i} ĭ
+u{a} ă
+u{e} ĕ
+u{g} ğ
+u{i} ĭ
+u{o} ŏ
+u{u} ŭ
+u{} ˘
+v ̌
+vA Ǎ
+vC Č
+vD Ď
+vDash ⊨
+vE Ě
+vG Ǧ
+vH Ȟ
+vI Ǐ
+vK Ǩ
+vL Ľ
+vN Ň
+vO Ǒ
+vR Ř
+vS Š
+vT Ť
+vU Ǔ
+vZ Ž
+v\.S Ṧ
+v\.s ṧ
+v\.{S} Ṧ
+v\.{s} ṧ
+va ǎ
+varbeta ϐ
+varkai ϗ
+varkappa ϰ
+varphi φ
+varpi ϖ
+varprime ′
+varpropto ∝
+varrho ϱ
+varsigma ς
+vartheta ϑ
+vartriangleleft ⊲
+vartriangleright ⊳
+vc č
+vd ď
+vdash ⊢
+vdots ⋮
+ve ě
+vee ∨
+veebar ⊻
+vg ǧ
+vh ȟ
+vi ǐ
+vj ǰ
+vk ǩ
+vl ľ
+vn ň
+vo ǒ
+vr ř
+vs š
+vt ť
+vu ǔ
+vz ž
+v{A} Ǎ
+v{C} Č
+v{D} Ď
+v{E} Ě
+v{G} Ǧ
+v{H} Ȟ
+v{I} Ǐ
+v{K} Ǩ
+v{L} Ľ
+v{N} Ň
+v{O} Ǒ
+v{R} Ř
+v{S} Š
+v{T} Ť
+v{U} Ǔ
+v{Z} Ž
+v{\i} ǐ
+v{\j} ǰ
+v{a} ǎ
+v{c} č
+v{d} ď
+v{e} ě
+v{g} ǧ
+v{h} ȟ
+v{i} ǐ
+v{j} ǰ
+v{k} ǩ
+v{l} ľ
+v{n} ň
+v{o} ǒ
+v{r} ř
+v{s} š
+v{t} ť
+v{u} ǔ
+v{z} ž
+v{} ˇ
+warning ⚠
+wedge ∧
+won ₩
+wp ℘
+wr ≀
 x ×
-z: ⦂
-z; ⨟
+xi ξ
+yen ¥
+zeta ζ
 {{ ⦃
 | ∣
 |) ⦈
@@ -823,7 +2150,6 @@ z; ⨟
 |-n ⊬
 |= ⊨
 |=n ⊭
-|> ⦊
 |n ∤
 || ∥
 ||- ⊩
@@ -833,12 +2159,61 @@ z; ⨟
 ||n ∦
 |||- ⊪
 }} ⦄
-~ ∼
+~ ̃ ∼
 ~- ≃
 ~-n ≄
 ~= ≅
 ~=n ≇
-~n ≁
+~A Ã
+~E Ẽ
+~I Ĩ
+~N Ñ
+~O Õ
+~U Ũ
+~V Ṽ
+~Y Ỹ
+~\"O Ṏ
+~\"o ṏ
+~\"{O} Ṏ
+~\"{o} ṏ
+~\'O Ṍ
+~\'U Ṹ
+~\'o ṍ
+~\'u ṹ
+~\'{O} Ṍ
+~\'{U} Ṹ
+~\'{o} ṍ
+~\'{u} ṹ
+~\=O Ȭ
+~\=o ȭ
+~\={O} Ȭ
+~\={o} ȭ
+~a ã
+~e ẽ
+~i ĩ
+~n ñ ≁
+~o õ
+~u ũ
+~v ṽ
+~y ỹ
+~{A} Ã
+~{E} Ẽ
+~{I} Ĩ
+~{N} Ñ
+~{O} Õ
+~{U} Ũ
+~{V} Ṽ
+~{Y} Ỹ
+~{\i} ĩ
+~{a} ã
+~{e} ẽ
+~{i} ĩ
+~{n} ñ
+~{o} õ
+~{u} ũ
+~{v} ṽ
+~{y} ỹ
+~{} ˜
 ~~ ≈
 ~~- ≊
 ~~n ≉
