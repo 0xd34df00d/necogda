@@ -76,10 +76,10 @@ maybeStartSymbol = do
   curCol <- col <$> getCursorI
   unless (curCol == 0) $ do
     marker <- getMarker
-    when (line `BS.index` (curCol - 1) == marker) $ startSymbol (curCol - 1)
+    when (line `BS.index` (curCol - 1) == marker) $ setStartSymbol (curCol - 1)
 
-startSymbol :: Int -> Neovim AgdaEnv ()
-startSymbol curCol = asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
+setStartSymbol :: Int -> Neovim AgdaEnv ()
+setStartSymbol curCol = asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
 
 split3 :: BS.ByteString -> Int -> Int -> (BS.ByteString, BS.ByteString, BS.ByteString)
 split3 str start len = (left, mid, right)
