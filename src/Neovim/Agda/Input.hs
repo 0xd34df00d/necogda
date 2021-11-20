@@ -63,8 +63,7 @@ getInputTrie = asks symbolsTrie >>= readTVarIO
 getCursorI :: Neovim env Cursor
 getCursorI = do
   (r, c) <- nvim_win_get_cursor =<< nvim_get_current_win
-  pure $ Cursor (fromIntegral r) (fromIntegral c - 1)
-  -- -1 because the cursor points to the next symbol after insertion
+  pure $ Cursor (fromIntegral r) (fromIntegral c)
 
 handleInput :: Neovim AgdaEnv ()
 handleInput = do
@@ -74,10 +73,10 @@ handleInput = do
 maybeStartSymbol :: Neovim AgdaEnv ()
 maybeStartSymbol = do
   line <- nvim_get_current_line
-  unless (BS.null line) $ do
-    curCol <- col <$> getCursorI
+  curCol <- col <$> getCursorI
+  unless (curCol == 0) $ do
     marker <- getMarker
-    when (line `BS.index` curCol == marker) $ startSymbol curCol
+    when (line `BS.index` (curCol - 1) == marker) $ startSymbol (curCol - 1)
 
 startSymbol :: Int -> Neovim AgdaEnv ()
 startSymbol curCol = asks symbolInputCol >>= \var -> atomically $ writeTVar var (Just curCol)
@@ -91,7 +90,7 @@ split3 str start len = (left, mid, right)
 handleSubstr :: Char -> Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
 handleSubstr marker start Cursor { .. } line = getInputTrie >>= Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid)
   where
-    (left, BS.tail -> mid, right) = split3 line start (col - start + 1)
+    (left, BS.tail -> mid, right) = split3 line start (col - start)
     isComplete = not (BS.null mid) && BS.last mid `elem` [marker, ' ']
 
     handleTrieResult (Just [sub]) children
@@ -111,14 +110,14 @@ handleSubstr marker start Cursor { .. } line = getInputTrie >>= Trie.lookupBy ha
            ObjectString "undo" -> do nvim_set_current_line $ left <> bytes <> right
                                      win <- nvim_get_current_win
                                      nvim_win_set_cursor win (fromIntegral row, fromIntegral $ start + BS.length bytes)
-           _                   -> void $ nvim_input [i|<ESC>v#{col - start}hs#{bytes}|]
+           _                   -> void $ nvim_input [i|<ESC>v#{col - start - 1}hs#{bytes}|]
       cancelInput
 
 handleNextSymbol :: Int -> Neovim AgdaEnv ()
 handleNextSymbol start = do
   cur@Cursor { .. } <- getCursorI
   marker <- getMarker
-  if col < start
+  if col <= start
   then cancelInput
   else nvim_get_current_line >>= handleSubstr marker start cur
 
@@ -149,7 +148,7 @@ checkCompletionStart = do
   line <- nvim_get_current_line
   col <- col <$> getCursorI
   marker <- getMarker
-  pure $ case marker `BS.elemIndexEnd` BS.take (col + 1) line of
+  pure $ case marker `BS.elemIndexEnd` BS.take col line of
               Just idx -> ObjectInt $ fromIntegral idx
               Nothing  -> ObjectInt (-3)
 
