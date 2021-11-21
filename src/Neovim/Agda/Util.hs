@@ -5,6 +5,9 @@
 
 module Neovim.Agda.Util where
 
+import qualified Data.ByteString.Char8 as BS
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import Control.Monad.Extra (mconcatMapM)
 
 import Neovim
@@ -38,3 +41,7 @@ instance ConvertAPI AB.Buffer AT.Buffer where
 
 instance ConvertAPI AT.Buffer AB.Buffer where
   convertAPI (AT.Buffer bs) = AB.Buffer bs
+
+infix 1 @|
+(@|) :: (Integral a, Num b) => T.Text -> a -> b
+str @| pos = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral pos) str
