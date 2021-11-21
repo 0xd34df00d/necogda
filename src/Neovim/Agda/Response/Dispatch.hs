@@ -82,18 +82,20 @@ dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ct
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
 
+expandHoles :: T.Text -> T.Text
+expandHoles = T.replace "?" "{! !}"
 
 handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
 handleMakeCase "Function" ctx clauses = withRange ctx f
   where
-    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . T.replace "?" "{! !}" <$> clauses
+    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . expandHoles <$> clauses
 handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
 insertGivenResult ctx GiveResult { .. } = withRange ctx f
   where
-    f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 str'given)
+    f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 $ expandHoles str'given)
 
 
 withRange :: DispatchContext -> (Cursor64 -> Cursor64 -> Neovim AgdaEnv ()) -> RangeWithId -> Neovim AgdaEnv ()
