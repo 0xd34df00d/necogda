@@ -23,7 +23,6 @@ import Neovim.Agda.Input
 import Neovim.Agda.Interaction
 import Neovim.Agda.Start
 import Neovim.Agda.Types
-import Neovim.Agda.Util
 
 registerMappings :: Neovim AgdaEnv ()
 registerMappings = do
