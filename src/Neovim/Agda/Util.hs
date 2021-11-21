@@ -1,12 +1,15 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Neovim.Agda.Util where
 
 import Control.Monad.Extra (mconcatMapM)
 
 import Neovim
+import qualified Neovim.API.ByteString as AB
+import qualified Neovim.API.Text as AT
 
 data CursorT a = Cursor { row :: a, col :: a }
   deriving (Eq, Ord, Show, Functor)
@@ -26,3 +29,12 @@ onRange from to f
       e <- f (row to)   Nothing           (Just $ col to)
       mid <- mconcatMapM (\r -> f r Nothing Nothing) [row from + 1 .. row to - 1]
       pure $ s <> mid <> e
+
+class ConvertAPI from to where
+  convertAPI :: from -> to
+
+instance ConvertAPI AB.Buffer AT.Buffer where
+  convertAPI (AB.Buffer bs) = AT.Buffer bs
+
+instance ConvertAPI AT.Buffer AB.Buffer where
+  convertAPI (AT.Buffer bs) = AB.Buffer bs
