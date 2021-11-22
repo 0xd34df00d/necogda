@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveGeneric, DerivingStrategies, DerivingVia, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveGeneric, DerivingVia, GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
 module Neovim.Agda.Response.Types where
