@@ -5,9 +5,7 @@ module Main where
 import Neovim
 
 import qualified Neovim.Agda as P
-import qualified Neovim.Agda.Input as I
 import qualified Neovim.Agda.Request.Commands as C
-import Neovim.Agda.Types
 
 main :: IO ()
 main = do
