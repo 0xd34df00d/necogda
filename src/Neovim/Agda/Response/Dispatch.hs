@@ -126,9 +126,12 @@ fmtGoalContextEntry GoalContextEntry { .. } = [i|#{originalName}#{reifyMarker}: 
     reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
-dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header : (fmtGoalContextEntry <$> entries)
+dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ typeAuxInfo : header : (fmtGoalContextEntry <$> entries)
   where
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
+    typeAuxInfo = case typeAux of
+                       Just GoalAndHave { .. } -> "Have: " <> expr
+                       _ -> ""
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
 
