@@ -137,10 +137,10 @@ dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal:
 addHlBit :: Buffer -> Position2Cursor -> Int64 -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf pos2cur hlId (HlBit atoms [fromPos, toPos])
   | Just from <- position2cursor pos2cur fromPos
-  , Just to <- position2cursor pos2cur toPos = mapM_ (onRange (uncurry Cursor from) (uncurry Cursor to) . highlight) atoms
+  , Just to <- position2cursor pos2cur toPos = onRange (uncurry Cursor from) (uncurry Cursor to) highlight
   | otherwise = pure ()
   where
-    highlight atom row fromCol toCol = void $ nvim_buf_add_highlight buf hlId [i|agda_atom_#{atom}|] row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
+    highlight row fromCol toCol = forM_ atoms $ \atom -> nvim_buf_add_highlight buf hlId ("agda_atom_" <> T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
 addHlBit _   _       _    (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
 
