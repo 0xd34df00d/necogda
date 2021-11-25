@@ -137,7 +137,7 @@ dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal:
 addHlBit :: Buffer -> Position2Cursor -> Int64 -> HlBit -> Neovim AgdaEnv ()
 addHlBit buf pos2cur hlId (HlBit atoms [fromPos, toPos])
   | Just from <- position2cursor pos2cur fromPos
-  , Just to <- position2cursor pos2cur toPos = onRange (uncurry Cursor from) (uncurry Cursor to) highlight
+  , Just to <- position2cursor pos2cur toPos = onRange from to highlight
   | otherwise = pure ()
   where
     highlight row fromCol toCol = forM_ atoms $ \atom -> nvim_buf_add_highlight buf hlId ("agda_atom_" <> T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
@@ -155,12 +155,12 @@ preparePosition2Cursor buf = do
   let linesOffsets = scanl (\acc str -> acc + fromIntegral (T.length str) + 1) 0 $ toList linesContents
   pure Position2Cursor { .. }
 
-position2cursor :: Position2Cursor -> Int64 -> Maybe (Int64, Int64)
+position2cursor :: Position2Cursor -> Int64 -> Maybe Cursor64
 position2cursor Position2Cursor { .. } pos = do
   lineIdx <- subtract 1 <$> findIndex (>= pos) linesOffsets
   let lineOffset = linesOffsets !! lineIdx
       colIdx = codepoint2byte (linesContents !! lineIdx) (pos - lineOffset - 1)
-  pure (fromIntegral lineIdx, colIdx)
+  pure $ Cursor (fromIntegral lineIdx) colIdx
 
 codepoint2byte :: T.Text -> Int64 -> Int64
 codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
