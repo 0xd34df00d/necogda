@@ -177,11 +177,8 @@ position2cursor :: Position2Cursor -> Int64 -> Maybe Cursor64
 position2cursor Position2Cursor { .. } pos = do
   lineIdx <- subtract 1 <$> findIndex (>= pos) linesOffsets
   let lineOffset = linesOffsets !! lineIdx
-      colIdx = codepoint2byte (linesContents !! lineIdx) (pos - lineOffset - 1)
+      colIdx = linesContents !! lineIdx @| pos - lineOffset - 1
   pure $ Cursor (fromIntegral lineIdx) colIdx
-
-codepoint2byte :: T.Text -> Int64 -> Int64
-codepoint2byte line cp = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral cp) line
 
 
 setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
