@@ -37,7 +37,7 @@ _norm_ prefixes affect normalisation and are as follows:
 | `s`  | Simplified   |
 | `n`  | Normalised   |
 
-For example, to show normalised goal type, do `<LL>nt`, or `<LL>n.` for the inferred type.
+For example, to show normalised goal type, do `<LL>nt`, or do `<LL>n.` to see everything normalised in the goal context too.
 
 You might have noticed the key is the lowercased first letter of the corresponding strategy.
 This is not a coincidence.
