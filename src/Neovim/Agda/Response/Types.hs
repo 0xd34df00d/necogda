@@ -94,14 +94,14 @@ data GoalInfo
 data DisplayInfo
   = AllGoalsWarnings
     { visibleGoals :: [Goal RangeWithId]
-    , warnings :: [()]
     , invisibleGoals :: [Goal RangeWithName]
-    , errors :: [()]
+    , warnings :: [Message]
+    , errors :: [Message]
     }
   | Version { version :: T.Text }
   | Error
     { error' :: Message
-    , warnings :: [()]
+    , warnings :: [Message]
     }
   | GoalSpecific { goalInfo :: GoalInfo }
   deriving (Show, Generic)

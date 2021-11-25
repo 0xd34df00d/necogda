@@ -63,6 +63,8 @@ dispatchResponse ctx (InteractionPoints pts) = do
 dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
+                     <> fmtMessages "Errors" errors
+                     <> fmtMessages "Warnings" warnings
   where
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
@@ -71,7 +73,10 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
         fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{T.replace "\n" "\n    " type'goal}|] :: T.Text
         fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
-dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx (Identity $ message'error error')
+dispatchResponse ctx (DisplayInfo Error { .. })
+  | null warnings = setOutputBuffer ctx (Identity $ message error')
+  | otherwise = setOutputBuffer ctx $ fmtMessages "Error" [error']
+                                   <> fmtMessages "Warnings" warnings
 dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
 dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
@@ -80,6 +85,11 @@ dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{T.encodeUtf8
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
+
+
+fmtMessages :: T.Text -> [Message] -> V.Vector T.Text
+fmtMessages _    [] = mempty
+fmtMessages name msgs = V.fromList $ name <> ":" : fmap message msgs
 
 expandHoles :: T.Text -> T.Text
 expandHoles = T.replace "?" "{! !}"
