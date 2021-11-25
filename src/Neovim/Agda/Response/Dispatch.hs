@@ -77,7 +77,9 @@ dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses intera
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   highlightId <- asks highlightNs >>= readTVarIO
   p2c <- preparePosition2Cursor $ agdaBuffer ctx
-  mapM_ (addHlBit (agdaBuffer ctx) p2c highlightId) bits
+  case concat <$> mapM (prepareHlBit p2c) bits of
+       Left e    -> nvim_err_writeln e
+       Right res -> void $ time "call atomic" $ nvim_call_atomic $ serializePreparedHighlights (agdaBuffer ctx) highlightId res
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
@@ -133,16 +135,32 @@ dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
+data PreparedHighlight = PreparedHighlight
+  { phAtom :: BS.ByteString
+  , phRow :: Int64
+  , phFromCol :: Int64
+  , phToCol :: Int64
+  } deriving (Eq, Show)
 
-addHlBit :: Buffer -> Position2Cursor -> Int64 -> HlBit -> Neovim AgdaEnv ()
-addHlBit buf pos2cur hlId (HlBit atoms [fromPos, toPos])
+prepareHlBit :: Position2Cursor -> HlBit -> Either BS.ByteString [PreparedHighlight]
+prepareHlBit pos2cur (HlBit atoms [fromPos, toPos])
   | Just from <- position2cursor pos2cur fromPos
   , Just to <- position2cursor pos2cur toPos = onRange from to highlight
-  | otherwise = pure ()
+  | otherwise = Right []
   where
-    highlight row fromCol toCol = forM_ atoms $ \atom -> nvim_buf_add_highlight buf hlId ("agda_atom_" <> T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
-addHlBit _   _       _    (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
+    highlight row fromCol toCol = Right $ (\atom -> PreparedHighlight (T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)) <$> atoms
+prepareHlBit _       (HlBit _     range) = Left [i|Unexpected range format: #{range}|]
 
+serializePreparedHighlights :: Buffer -> Int64 -> [PreparedHighlight] -> V.Vector Object
+serializePreparedHighlights buf hlNs = V.fromList . fmap (\ph -> ObjectArray [ObjectString "nvim_buf_add_highlight", args ph])
+  where
+    args PreparedHighlight { .. } = ObjectArray [ toObject buf
+                                                , ObjectInt hlNs
+                                                , ObjectString $ "agda_atom_" <> phAtom
+                                                , ObjectInt phRow
+                                                , ObjectInt phFromCol
+                                                , ObjectInt phToCol
+                                                ]
 
 data Position2Cursor = Position2Cursor
   { linesOffsets :: [Int64]
