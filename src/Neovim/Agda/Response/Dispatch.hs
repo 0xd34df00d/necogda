@@ -68,7 +68,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
       where
-        fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|] :: T.Text
+        fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{T.replace "\n" "\n    " type'goal}|] :: T.Text
         fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
 dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx (Identity $ message'error error')
