@@ -16,6 +16,8 @@ module Neovim.Agda.Start
 
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import Control.Monad.Reader
 import Data.Default
 import Data.Functor
@@ -89,7 +91,7 @@ startAgdaForFile payload filename = do
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
-  name <- BS.unpack <$> buffer_get_name buf
+  name <- T.unpack . T.decodeUtf8 <$> buffer_get_name buf
 
   nvim_command [i|belowright pedit! Goals|]
   nvim_command [i|wincmd P|]
