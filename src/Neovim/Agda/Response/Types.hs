@@ -75,10 +75,17 @@ data GoalContextEntry = GoalContextEntry
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson GoalContextEntry)
 
+data TypeAux
+  = GoalOnly
+  | GoalAndHave { expr :: T.Text }
+  deriving (Show, Generic)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson TypeAux)
+
 data GoalInfo
   = GoalType
     { type'goal :: T.Text
     , entries :: [GoalContextEntry]
+    , typeAux :: Maybe TypeAux
     }
   | CurrentGoal { type'goal :: T.Text }
   deriving (Show, Generic)
