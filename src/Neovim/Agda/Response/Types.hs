@@ -62,9 +62,9 @@ data Goal range
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson (Goal range))
 
-newtype ErrorObj = ErrorObj { message'error :: T.Text }
+newtype Message = Message { message :: T.Text }
   deriving (Show, Generic)
-  deriving (A.FromJSON, A.ToJSON) via (AgdaJson ErrorObj)
+  deriving (A.FromJSON, A.ToJSON) via (AgdaJson Message)
 
 data GoalContextEntry = GoalContextEntry
   { inScope :: Bool
@@ -100,7 +100,7 @@ data DisplayInfo
     }
   | Version { version :: T.Text }
   | Error
-    { error' :: ErrorObj
+    { error' :: Message
     , warnings :: [()]
     }
   | GoalSpecific { goalInfo :: GoalInfo }
@@ -132,7 +132,7 @@ data Response
   | GiveAction { giveResult :: GiveResult, interactionPoint :: RangeWithId }
   | MakeCase { variant :: String, clauses :: [T.Text], interactionPoint :: RangeWithId }
   | HighlightingInfo { info'hl :: HlInfo }
-  | RunningInfo { debugLevel :: Int, message :: T.Text }
+  | RunningInfo { debugLevel :: Int, message'ri :: T.Text }
   | ClearRunningInfo
   | ClearHighlighting
   | JumpToError { filepath :: T.Text, position :: Int }
