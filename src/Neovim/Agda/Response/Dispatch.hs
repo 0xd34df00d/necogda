@@ -65,7 +65,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
                      <> fmtGoals "Invisible" name'range invisibleGoals
   where
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
-    fmtGoals _    _        [] = V.empty
+    fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
       where
         fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{type'goal}|] :: T.Text
