@@ -34,12 +34,14 @@ data AgdaEnvT payload = AgdaEnv
   , symbolsTrie :: TVar InputTrie
 
   , goalmarksNs :: TVar Int64
+  , highlightNs :: TVar Int64
   }
 
 defaultEnv :: MonadIO m => m (AgdaEnvT payload)
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
                                   <*> newTVar Nothing
                                   <*> newTVar mempty
+                                  <*> newTVar (-1)
                                   <*> newTVar (-1)
 
 type MarkId2InteractionPoint = HM.HashMap Int64 RangeId

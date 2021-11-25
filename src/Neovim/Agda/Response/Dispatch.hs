@@ -75,8 +75,9 @@ dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx go
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
 dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
 dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
+  highlightId <- asks highlightNs >>= readTVarIO
   p2c <- preparePosition2Cursor $ agdaBuffer ctx
-  mapM_ (addHlBit (agdaBuffer ctx) p2c) bits
+  mapM_ (addHlBit (agdaBuffer ctx) p2c highlightId) bits
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
@@ -133,14 +134,14 @@ dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
 
-addHlBit :: Buffer -> Position2Cursor -> HlBit -> Neovim AgdaEnv ()
-addHlBit buf pos2cur (HlBit atoms [fromPos, toPos])
+addHlBit :: Buffer -> Position2Cursor -> Int64 -> HlBit -> Neovim AgdaEnv ()
+addHlBit buf pos2cur hlId (HlBit atoms [fromPos, toPos])
   | Just from <- position2cursor pos2cur fromPos
   , Just to <- position2cursor pos2cur toPos = mapM_ (onRange (uncurry Cursor from) (uncurry Cursor to) . highlight) atoms
   | otherwise = pure ()
   where
-    highlight atom row fromCol toCol = void $ nvim_buf_add_highlight buf (-1) [i|agda_atom_#{atom}|] row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
-addHlBit _   _       (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
+    highlight atom row fromCol toCol = void $ nvim_buf_add_highlight buf hlId [i|agda_atom_#{atom}|] row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)
+addHlBit _   _       _    (HlBit _     range) = nvim_err_writeln [i|Unexpected range format: #{range}|]
 
 
 data Position2Cursor = Position2Cursor

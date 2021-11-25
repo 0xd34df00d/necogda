@@ -60,6 +60,7 @@ initNamespace name tvar = do
 initializePlugin :: Neovim AgdaEnv ()
 initializePlugin = do
   initNamespace "necogda_goalmarks" goalmarksNs
+  initNamespace "necogda_highlight" highlightNs
 
   res <- try $ do
     !trie <- liftIO $ loadInputTrie =<< getDataFileName "data/input/agda-emacs.txt"
