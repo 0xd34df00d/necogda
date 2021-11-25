@@ -75,12 +75,7 @@ dispatchResponse ctx (DisplayInfo Error { .. }) = setOutputBuffer ctx (Identity 
 dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
 dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
-dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
-  highlightId <- asks highlightNs >>= readTVarIO
-  p2c <- preparePosition2Cursor $ agdaBuffer ctx
-  case concat <$> mapM (prepareHlBit p2c) bits of
-       Left e    -> nvim_err_writeln e
-       Right res -> void $ time "call atomic" $ nvim_call_atomic $ serializePreparedHighlights (agdaBuffer ctx) highlightId res
+dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = handleHighlights ctx bits
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
@@ -135,6 +130,15 @@ dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ header
   where
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
+
+
+handleHighlights :: DispatchContext -> [HlBit] -> Neovim AgdaEnv ()
+handleHighlights ctx bits = do
+  highlightId <- asks highlightNs >>= readTVarIO
+  p2c <- preparePosition2Cursor $ agdaBuffer ctx
+  case concat <$> mapM (prepareHlBit p2c) bits of
+       Left e    -> nvim_err_writeln e
+       Right res -> void $ nvim_call_atomic $ serializePreparedHighlights (agdaBuffer ctx) highlightId res
 
 data PreparedHighlight = PreparedHighlight
   { phAtom :: BS.ByteString
