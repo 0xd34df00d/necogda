@@ -61,7 +61,7 @@ dispatchResponse ctx (InteractionPoints pts) = do
                               , interactionPoint2markIds = id2marks
                               }
 dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
-  setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . id'range) visibleGoals
+  setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
   where
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
