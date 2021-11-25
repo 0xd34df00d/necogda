@@ -10,6 +10,7 @@ module Neovim.Agda
 , necogdaComplete
 ) where
 
+import qualified Data.ByteString.Char8 as BS
 import Control.Monad
 import Data.Char (toLower)
 import Data.String.Interpolate.IsString
@@ -50,11 +51,15 @@ loadNecogda = do
   startInput
   registerMappings
 
+initNamespace :: BS.ByteString -> (AgdaEnv -> TVar Int64) -> Neovim AgdaEnv ()
+initNamespace name tvar = do
+  nsId <- nvim_create_namespace name
+  nsTvar <- asks tvar
+  atomically $ writeTVar nsTvar nsId
+
 initializePlugin :: Neovim AgdaEnv ()
 initializePlugin = do
-  goalmarksId <- nvim_create_namespace "necogda_goalmarks"
-  goalmarksTVar <- asks goalmarksNs
-  atomically $ writeTVar goalmarksTVar goalmarksId
+  initNamespace "necogda_goalmarks" goalmarksNs
 
   res <- try $ do
     !trie <- liftIO $ loadInputTrie =<< getDataFileName "data/input/agda-emacs.txt"
