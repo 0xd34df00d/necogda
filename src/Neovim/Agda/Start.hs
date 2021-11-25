@@ -110,7 +110,7 @@ startAgda = do
         atomically $ modifyTVar' agdasTVar $ HM.adjust (\inst -> inst { payload = f $ payload inst }) name
 
   let parseDispatch line = case parseResponse line of
-                                Left errStr -> nvim_err_writeln $ BS.pack errStr
+                                Left errStr -> nvim_err_writeln $ T.encodeUtf8 $ T.pack errStr
                                 Right resp  -> dispatchResponse (DispatchContext { agdaBuffer = buf, .. }) resp
 
   agdasTVar <- asks agdas
