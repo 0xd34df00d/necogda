@@ -52,9 +52,7 @@ data DispatchContext = DispatchContext
   }
 
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
-dispatchResponse _   (Status (StatusInfo checked _ _))
-  | checked = nvim_command "echo ''"
-  | otherwise = pure ()
+dispatchResponse _   (Status StatusInfo {}) = nvim_command "echo ''"
 dispatchResponse ctx (InteractionPoints pts) = do
   (mark2id, id2marks) <- setInteractionMarks (agdaBuffer ctx) pts
   modifyPayload ctx $ \p -> p { markId2interactionPoint = mark2id
