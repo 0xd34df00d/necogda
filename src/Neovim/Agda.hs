@@ -37,6 +37,9 @@ registerMappings = do
   void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>r :call NecogdaRefine()<CR>|] False
   void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>c :call NecogdaMakeCase()<CR>|] False
   void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>a :call NecogdaAutoOne()<CR>|] False
+
+  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>gp :call NecogdaGoalPrev()<CR>|] False
+  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>gn :call NecogdaGoalNext()<CR>|] False
   where
     goalCommands :: [(String, String)]
     goalCommands = [ ("TypeContextInfer", ".")

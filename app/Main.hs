@@ -6,6 +6,7 @@ import Neovim
 
 import qualified Neovim.Agda as P
 import qualified Neovim.Agda.Request.Commands as C
+import qualified Neovim.Agda.Request.NvimActions as N
 
 main :: IO ()
 main = do
@@ -22,6 +23,9 @@ main = do
                               , $(function "NecogdaRefine" 'C.refine) Async
                               , $(function "NecogdaMakeCase" 'C.makeCase) Async
                               , $(function "NecogdaAutoOne" 'C.autoOne) Async
+
+                              , $(function "NecogdaGoalNext" 'N.goalNext) Async
+                              , $(function "NecogdaGoalPrev" 'N.goalPrev) Async
                               ]
                   }
   neovim defaultConfig { plugins = [plugin], logOptions = Just ("nvim.log", DEBUG) }

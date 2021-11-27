@@ -22,6 +22,10 @@ data CursorT a = Cursor { row :: a, col :: a }
 type Cursor = CursorT Int
 type Cursor64 = CursorT Int64
 
+curToPair :: CursorT a -> (a, a)
+curToPair Cursor { .. } = (row, col)
+
+
 onRange :: (Monad m, Monoid r, Eq a, Enum a, Num a)
         => CursorT a
         -> CursorT a
