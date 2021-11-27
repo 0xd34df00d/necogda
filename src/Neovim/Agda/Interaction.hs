@@ -67,8 +67,7 @@ getGoalMarks buf = do
 getCurrentInteractionId :: AgdaInstance -> Neovim AgdaEnv (Maybe (InteractionId, T.Text))
 getCurrentInteractionId AgdaInstance { .. } = do
   buf <- nvim_get_current_buf
-  win <- nvim_get_current_win
-  (curRow, curCol) <- nvim_win_get_cursor win
+  (curRow, curCol) <- nvim_win_get_cursor =<< nvim_get_current_win
   marks <- getGoalMarks buf
   let extractLines (iid, (from, to)) = do
         ls <- nvim_buf_get_lines buf (fromIntegral $ row from) (fromIntegral $ row to + 1) False
