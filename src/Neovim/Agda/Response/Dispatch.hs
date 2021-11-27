@@ -68,8 +68,7 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
       where
-        fmtGoal OfType {..} = [i|?#{fmtRange constraintObj}: #{T.replace "\n" "\n    " type'goal}|] :: T.Text
-        fmtGoal JustSort { .. } = [i|?#{fmtRange constraintObj}: Sort|]
+        fmtGoal goal = [i|?#{fmtRange $ constraintObj goal}: #{T.replace "\n" "\n    " $ fmtGoalType goal}|] :: T.Text
 dispatchResponse _   (DisplayInfo Version {}) = pure ()
 dispatchResponse ctx (DisplayInfo Error { .. })
   | null warnings = setOutputBuffer ctx (Identity $ message error')
@@ -84,10 +83,14 @@ dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ct
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
 
+fmtGoalType :: Goal a -> T.Text
+fmtGoalType OfType { .. } = type'goal
+fmtGoalType JustSort {} = "Sort"
 
 fmtMessages :: T.Text -> [Message] -> V.Vector T.Text
 fmtMessages _    [] = mempty
 fmtMessages name msgs = V.fromList $ name <> ":" : fmap message msgs
+
 
 expandHoles :: T.Text -> T.Text
 expandHoles = T.replace "?" "{! !}"
