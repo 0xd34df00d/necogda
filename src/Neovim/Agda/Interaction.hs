@@ -6,6 +6,7 @@ module Neovim.Agda.Interaction
 
 , setInteractionMarks
 , getCurrentInteractionId
+, getGoalMarks
 ) where
 
 import qualified Data.ByteString.Char8 as BS
@@ -58,14 +59,17 @@ setInteractionMarks buffer pts = do
 maybeFallback :: (a -> Maybe a) -> a -> a
 maybeFallback f txt = fromMaybe txt $ f txt
 
+getGoalMarks :: Buffer -> Neovim AgdaEnv (V.Vector MarkObject)
+getGoalMarks buf = do
+  goalmarksId <- asks goalmarksNs >>= readTVarIO
+  V.mapMaybe parseMarkObject <$> nvim_buf_get_extmarks buf goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
+
 getCurrentInteractionId :: AgdaInstance -> Neovim AgdaEnv (Maybe (InteractionId, T.Text))
 getCurrentInteractionId AgdaInstance { .. } = do
-  goalmarksId <- asks goalmarksNs >>= readTVarIO
-
   buf <- nvim_get_current_buf
   win <- nvim_get_current_win
   (curRow, curCol) <- nvim_win_get_cursor win
-  marks <- V.mapMaybe parseMarkObject <$> nvim_buf_get_extmarks buf goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
+  marks <- getGoalMarks buf
   let extractLines (iid, (from, to)) = do
         ls <- nvim_buf_get_lines buf (fromIntegral $ row from) (fromIntegral $ row to + 1) False
         let origText = BS.strip $ runIdentity $ onRange from to $ extractLine (row from) ls
