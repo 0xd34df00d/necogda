@@ -139,6 +139,7 @@ dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ typeAu
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
     typeAuxInfo = case typeAux of
                        Just GoalAndHave { .. } -> "Have: " <> expr
+                       Just GoalAndElaboration { .. } -> "Elab: " <> term
                        _ -> ""
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 

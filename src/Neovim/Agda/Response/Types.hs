@@ -78,6 +78,7 @@ data GoalContextEntry = GoalContextEntry
 data TypeAux
   = GoalOnly
   | GoalAndHave { expr :: T.Text }
+  | GoalAndElaboration { term :: T.Text }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson TypeAux)
 
