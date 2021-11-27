@@ -114,14 +114,8 @@ iipRange ctx range = withPayload ctx $ \payload -> do
   marks <- nvim_buf_get_extmarks (agdaBuffer ctx) goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
   pure $ do
     [markId] <- id'range range `HM.lookup` interactionPoint2markIds payload
-    ObjectArray [ _
-                , ObjectInt markRow
-                , ObjectInt markCol
-                , ObjectMap extras
-                ] <- V.find (findById markId) marks
-    ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
-    ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
-    pure (Cursor markRow markCol, Cursor endRow endCol)
+    MarkObject { markId = _, .. } <- parseMarkObject =<< V.find (findById markId) marks
+    pure (markStart, markEnd)
   where
     findById markId (ObjectArray ((ObjectInt markId') : _)) = markId == markId'
     findById _ _ = False
