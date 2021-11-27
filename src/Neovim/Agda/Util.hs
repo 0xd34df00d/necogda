@@ -49,10 +49,10 @@ infix 1 @|
 str @| pos = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral pos) str
 
 data MarkObject = MarkObject
-  { markId :: Int64
-  , markStart :: Cursor64
+  { markStart :: Cursor64
   , markEnd :: Cursor64
-  } deriving (Show)
+  , markId :: Int64
+  } deriving (Show, Eq, Ord)
 
 parseMarkObject :: Object -> Maybe MarkObject
 parseMarkObject obj = do
