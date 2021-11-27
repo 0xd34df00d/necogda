@@ -65,7 +65,7 @@ getCurrentInteractionId AgdaInstance { .. } = do
   buf <- nvim_get_current_buf
   win <- nvim_get_current_win
   (curRow, curCol) <- nvim_win_get_cursor win
-  marks <- nvim_buf_get_extmarks buf goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
+  marks <- V.mapMaybe parseMarkObject <$> nvim_buf_get_extmarks buf goalmarksId (ObjectInt 0) (ObjectInt (-1)) [("details", ObjectBool True)]
   let extractLines (iid, (from, to)) = do
         ls <- nvim_buf_get_lines buf (fromIntegral $ row from) (fromIntegral $ row to + 1) False
         let origText = BS.strip $ runIdentity $ onRange from to $ extractLine (row from) ls
@@ -73,23 +73,16 @@ getCurrentInteractionId AgdaInstance { .. } = do
                    then mempty
                    else BS.strip $ maybeFallback (BS.stripPrefix "{!") $ maybeFallback (BS.stripSuffix "!}") origText
         pure (iid, T.decodeUtf8 text)
-  traverse extractLines $ findMark (markId2interactionPoint payload) (curRow - 1) curCol marks
+  traverse extractLines $ findMark (markId2interactionPoint payload) (Cursor (curRow - 1) curCol) marks
   where
     extractLine start ls row maybeStart maybeEnd = pure $ maybe id BS.drop maybeStart
                                                         $ maybe id BS.take maybeEnd
                                                         $ ls V.! (row - start)
 
-findMark :: Foldable f => MarkId2InteractionPoint -> Int64 -> Int64 -> f Object -> Maybe (InteractionId, (Cursor, Cursor))
-findMark id2ip row col = listToMaybe . mapMaybe f . toList >=> getInteractionId
+findMark :: Foldable f => MarkId2InteractionPoint -> Cursor64 -> f MarkObject -> Maybe (InteractionId, (Cursor, Cursor))
+findMark id2ip cursor = listToMaybe . mapMaybe f . toList >=> getInteractionId
   where
-    f (ObjectArray [ ObjectInt markId
-                   , ObjectInt markRow
-                   , ObjectInt markCol
-                   , ObjectMap extras
-                   ])
-      | Just (ObjectInt endRow) <- ObjectString "end_row" `M.lookup` extras
-      , Just (ObjectInt endCol) <- ObjectString "end_col" `M.lookup` extras
-      , (row, col) `between` ((markRow, markCol), (endRow, endCol)) = Just (markId, (fromIntegral <$> Cursor markRow markCol, fromIntegral <$> Cursor endRow endCol))
+    f MarkObject { .. } | cursor `between` (markStart, markEnd) = Just (markId, (fromIntegral <$> markStart, fromIntegral <$> markEnd))
     f _ = Nothing
 
     getInteractionId :: (Int64, a) -> Maybe (InteractionId, a)

@@ -2,10 +2,12 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Neovim.Agda.Util where
 
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Control.Monad.Extra (mconcatMapM)
@@ -45,3 +47,18 @@ instance ConvertAPI AT.Buffer AB.Buffer where
 infix 1 @|
 (@|) :: (Integral a, Num b) => T.Text -> a -> b
 str @| pos = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral pos) str
+
+data MarkObject = MarkObject
+  { markId :: Int64
+  , markStart :: Cursor64
+  , markEnd :: Cursor64
+  } deriving (Show)
+
+parseMarkObject :: Object -> Maybe MarkObject
+parseMarkObject obj = do
+  ObjectArray [ObjectInt markId, ObjectInt markRow, ObjectInt markCol, ObjectMap extras] <- Just obj
+  ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
+  ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
+  let markStart = Cursor markRow markCol
+  let markEnd = Cursor endRow endCol
+  pure $ MarkObject { .. }
