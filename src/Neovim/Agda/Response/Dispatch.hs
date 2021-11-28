@@ -55,19 +55,6 @@ data DispatchContext = DispatchContext
   , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 
-addMarks :: DispatchContext -> [(R.Range, T.Text)] -> Neovim AgdaEnv ()
-addMarks DispatchContext { agdaBuffer = buf } marks = do
-  hlId <- asks highlightNs >>= readTVarIO
-  forM_ marks $ \(R.Range { .. }, text) -> do
-    let virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
-                                             , ObjectString "agdaHoleVirtualText"
-                                             ]
-                               ]
-    nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
-                                                                   , ("end_col", ObjectInt $ R.col end)
-                                                                   , ("virt_text", virtText)
-                                                                   ]
-
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status StatusInfo {}) = nvim_command "echo ''"
 dispatchResponse ctx (InteractionPoints pts) = do
@@ -75,7 +62,18 @@ dispatchResponse ctx (InteractionPoints pts) = do
   modifyPayload ctx $ \p -> p { markId2interactionPoint = mark2id
                               , interactionPoint2markIds = id2marks
                               }
-dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) = do
+dispatchResponse ctx (DisplayInfo di) = handleDisplayInfo ctx di
+dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
+dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
+dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = handleHighlights ctx bits
+dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{T.encodeUtf8 msg}'|]
+dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
+dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
+dispatchResponse _   JumpToError { .. } = pure ()
+
+
+handleDisplayInfo :: DispatchContext -> DisplayInfo -> Neovim AgdaEnv ()
+handleDisplayInfo ctx AllGoalsWarnings { .. } = do
   addGoalMarks visibleGoals
   addGoalMarks invisibleGoals
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
@@ -89,19 +87,12 @@ dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) = do
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
       where
         fmtGoal goal = [i|?#{fmtRange $ constraintObj goal}: #{T.replace "\n" "\n    " $ fmtGoalType goal}|] :: T.Text
-dispatchResponse _   (DisplayInfo Version {}) = pure ()
-dispatchResponse ctx (DisplayInfo Error { .. })
+handleDisplayInfo _   Version {} = pure ()
+handleDisplayInfo ctx Error { .. }
   | null warnings = setOutputBuffer ctx (Identity $ message error')
   | otherwise = setOutputBuffer ctx $ fmtMessages "Error" [error']
                                    <> fmtMessages "Warnings" warnings
-dispatchResponse ctx (DisplayInfo GoalSpecific { .. }) = dispatchGoalInfo ctx goalInfo
-dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
-dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
-dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = handleHighlights ctx bits
-dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{T.encodeUtf8 msg}'|]
-dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
-dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
-dispatchResponse _   JumpToError { .. } = pure ()
+handleDisplayInfo ctx GoalSpecific { .. } = dispatchGoalInfo ctx goalInfo
 
 fmtGoalType :: Goal a -> T.Text
 fmtGoalType OfType { .. } = type'goal
@@ -110,6 +101,20 @@ fmtGoalType JustSort {} = "Sort"
 fmtMessages :: T.Text -> [Message] -> V.Vector T.Text
 fmtMessages _    [] = mempty
 fmtMessages name msgs = V.fromList $ name <> ":" : fmap message msgs
+
+
+addMarks :: DispatchContext -> [(R.Range, T.Text)] -> Neovim AgdaEnv ()
+addMarks DispatchContext { agdaBuffer = buf } marks = do
+  hlId <- asks highlightNs >>= readTVarIO
+  forM_ marks $ \(R.Range { .. }, text) -> do
+    let virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
+                                             , ObjectString "agdaHoleVirtualText"
+                                             ]
+                               ]
+    nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
+                                                                   , ("end_col", ObjectInt $ R.col end)
+                                                                   , ("virt_text", virtText)
+                                                                   ]
 
 
 expandHoles :: T.Text -> T.Text
