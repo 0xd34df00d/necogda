@@ -12,7 +12,7 @@ syn keyword agdaTODO         contained TODO
 syn keyword agdaFIXME        contained FIXME
 syn keyword agdaXXX          contained XXX
 
-hi def link agdaHoleVirtualText  CocWarningVirtualText
+hi def link agdaHoleVirtualText  CocWarningSign
 hi def      agdaTODO             cterm=bold,underline ctermfg=2 " green
 hi def      agdaFIXME            cterm=bold,underline ctermfg=3 " yellow
 hi def      agdaXXX              cterm=bold,underline ctermfg=1 " red
