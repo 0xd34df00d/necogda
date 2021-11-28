@@ -4,6 +4,9 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Neovim.Agda.Response.Dispatch
 ( parseResponse
@@ -23,6 +26,7 @@ import Data.Foldable
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
+import GHC.Records
 import UnliftIO
 
 import Neovim
@@ -51,24 +55,18 @@ data DispatchContext = DispatchContext
   , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 
-addMarks :: DispatchContext -> (range -> [R.Range]) -> [Goal range] -> Neovim AgdaEnv ()
-addMarks ctx getRange = mapM_ $ \goal -> setVirtualText (getRange $ constraintObj goal) (fmtGoalType goal)
-  where
-    buf = agdaBuffer ctx
-
-    setVirtualText :: [R.Range] -> T.Text -> Neovim AgdaEnv ()
-    setVirtualText [R.Range { .. }] text = do
-      hlId <- asks highlightNs >>= readTVarIO
-      void $ nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
-                                                                            , ("end_col", ObjectInt $ R.col end)
-                                                                            , ("virt_text", virtText)
-                                                                            ]
-      where
-        virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
+addMarks :: DispatchContext -> [(R.Range, T.Text)] -> Neovim AgdaEnv ()
+addMarks DispatchContext { agdaBuffer = buf } marks = do
+  hlId <- asks highlightNs >>= readTVarIO
+  forM_ marks $ \(R.Range { .. }, text) -> do
+    let virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
                                              , ObjectString "agdaHoleVirtualText"
                                              ]
                                ]
-    setVirtualText _ _ = pure ()
+    nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
+                                                                   , ("end_col", ObjectInt $ R.col end)
+                                                                   , ("virt_text", virtText)
+                                                                   ]
 
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status StatusInfo {}) = nvim_command "echo ''"
@@ -78,13 +76,14 @@ dispatchResponse ctx (InteractionPoints pts) = do
                               , interactionPoint2markIds = id2marks
                               }
 dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) = do
-  addMarks ctx (R.range :: RangeWithId -> [R.Range]) visibleGoals
-  addMarks ctx (R.range :: RangeWithName -> [R.Range]) invisibleGoals
+  addGoalMarks visibleGoals
+  addGoalMarks invisibleGoals
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
                      <> fmtMessages "Errors" errors
                      <> fmtMessages "Warnings" warnings
   where
+    addGoalMarks goals = addMarks ctx [ (head $ getField @"range" $ constraintObj goal, "  ⛳" <> fmtGoalType goal) | goal <- goals ]
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
