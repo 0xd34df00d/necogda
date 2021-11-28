@@ -65,7 +65,7 @@ addMarks ctx getRange = mapM_ $ \goal -> setVirtualText (getRange $ constraintOb
                                                                             ]
       where
         virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
-                                             , ObjectString "agdaHole"
+                                             , ObjectString "agdaHoleVirtualText"
                                              ]
                                ]
     setVirtualText _ _ = pure ()
