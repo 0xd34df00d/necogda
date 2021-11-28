@@ -65,7 +65,10 @@ dispatchResponse ctx (InteractionPoints pts) = do
 dispatchResponse ctx (DisplayInfo di) = handleDisplayInfo ctx di
 dispatchResponse ctx GiveAction { .. } = insertGivenResult ctx giveResult interactionPoint
 dispatchResponse ctx MakeCase { .. } = handleMakeCase variant ctx clauses interactionPoint
-dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = handleHighlights ctx bits
+dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
+  p2c <- preparePosition2Cursor $ agdaBuffer ctx
+  handleHighlights ctx p2c bits
+  extractHlMarks ctx p2c bits
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{T.encodeUtf8 msg}'|]
 dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
@@ -172,10 +175,31 @@ dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ typeAu
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
 
-handleHighlights :: DispatchContext -> [HlBit] -> Neovim AgdaEnv ()
-handleHighlights ctx bits = do
+extractHlMarks :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
+extractHlMarks ctx p2c bits = addMarks ctx $ mapMaybe marking bits
+  where
+    atom2message = [ ("error", "Error")
+                   , ("unsolvedmeta", "Unsolved meta")
+                   , ("unsolvedconstraint", "Unsolved constraint")
+                   , ("terminationproblem", "Termination problem")
+                   , ("deadcode", "Dead code")
+                   , ("coverageproblem", "Coverage problem")
+                   , ("positivityproblem", "Positivity problem")
+                   , ("incompletepattern", "Incomplete pattern")
+                   , ("confluenceproblem", "Confluence problem")
+                   , ("missingdefinition", "Missing definition")
+                   ]
+    marking (HlBit atoms ranges) = do
+      [fromPos, toPos] <- Just ranges
+      text <- msum $ (`HM.lookup` atom2message) <$> atoms
+      from <- position2cursor p2c fromPos
+      to <- position2cursor p2c toPos
+      pure (from, to, text)
+
+
+handleHighlights :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
+handleHighlights ctx p2c bits = do
   highlightId <- asks highlightNs >>= readTVarIO
-  p2c <- preparePosition2Cursor $ agdaBuffer ctx
   case concat <$> mapM (prepareHlBit p2c) bits of
        Left e    -> nvim_err_writeln e
        Right res -> void $ nvim_call_atomic $ serializePreparedHighlights (agdaBuffer ctx) highlightId res
