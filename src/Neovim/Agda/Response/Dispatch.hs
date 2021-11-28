@@ -81,7 +81,13 @@ handleDisplayInfo ctx AllGoalsWarnings { .. } = do
                      <> fmtMessages "Errors" errors
                      <> fmtMessages "Warnings" warnings
   where
-    addGoalMarks goals = addMarks ctx [ (head $ getField @"range" $ constraintObj goal, "  ⛳" <> fmtGoalType goal) | goal <- goals ]
+    addGoalMarks goals = addMarks ctx [ ( Cursor (R.line start - 1) (R.col start)
+                                        , Cursor (R.line end - 1)   (R.col end)
+                                        , "  ⛳" <> fmtGoalType goal
+                                        )
+                                      | goal <- goals
+                                      , let R.Range { .. } = head $ getField @"range" $ constraintObj goal
+                                      ]
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
@@ -103,18 +109,18 @@ fmtMessages _    [] = mempty
 fmtMessages name msgs = V.fromList $ name <> ":" : fmap message msgs
 
 
-addMarks :: DispatchContext -> [(R.Range, T.Text)] -> Neovim AgdaEnv ()
+addMarks :: DispatchContext -> [(Cursor64, Cursor64, T.Text)] -> Neovim AgdaEnv ()
 addMarks DispatchContext { agdaBuffer = buf } marks = do
   hlId <- asks highlightNs >>= readTVarIO
-  forM_ marks $ \(R.Range { .. }, text) -> do
+  forM_ marks $ \(start, end, text) -> do
     let virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
-                                             , ObjectString "agdaHoleVirtualText"
+                                             , ObjectArray [ObjectString "agdaHoleVirtualText", ObjectString "agdaItalic"]
                                              ]
                                ]
-    nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
-                                                                   , ("end_col", ObjectInt $ R.col end)
-                                                                   , ("virt_text", virtText)
-                                                                   ]
+    nvim_buf_set_extmark buf hlId (U.row start) (U.col start) [ ("end_line", ObjectInt $ U.row end)
+                                                              , ("end_col", ObjectInt $ U.col end)
+                                                              , ("virt_text", virtText)
+                                                              ]
 
 
 expandHoles :: T.Text -> T.Text
