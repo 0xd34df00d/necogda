@@ -2,6 +2,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
 
 module Neovim.Agda.Response.Dispatch
@@ -50,6 +51,25 @@ data DispatchContext = DispatchContext
   , modifyPayload :: (NeovimPayload -> NeovimPayload) -> Neovim AgdaEnv ()
   }
 
+addMarks :: DispatchContext -> (range -> [R.Range]) -> [Goal range] -> Neovim AgdaEnv ()
+addMarks ctx getRange = mapM_ $ \goal -> setVirtualText (getRange $ constraintObj goal) (fmtGoalType goal)
+  where
+    buf = agdaBuffer ctx
+
+    setVirtualText :: [R.Range] -> T.Text -> Neovim AgdaEnv ()
+    setVirtualText [R.Range { .. }] text = do
+      hlId <- asks highlightNs >>= readTVarIO
+      void $ nvim_buf_set_extmark buf hlId (R.line start - 1) (R.col start) [ ("end_line", ObjectInt $ R.line end - 1)
+                                                                            , ("end_col", ObjectInt $ R.col end)
+                                                                            , ("virt_text", virtText)
+                                                                            ]
+      where
+        virtText = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 text
+                                             , ObjectString "agdaHole"
+                                             ]
+                               ]
+    setVirtualText _ _ = pure ()
+
 dispatchResponse :: DispatchContext -> Response -> Neovim AgdaEnv ()
 dispatchResponse _   (Status StatusInfo {}) = nvim_command "echo ''"
 dispatchResponse ctx (InteractionPoints pts) = do
@@ -57,7 +77,9 @@ dispatchResponse ctx (InteractionPoints pts) = do
   modifyPayload ctx $ \p -> p { markId2interactionPoint = mark2id
                               , interactionPoint2markIds = id2marks
                               }
-dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) =
+dispatchResponse ctx (DisplayInfo AllGoalsWarnings { .. }) = do
+  addMarks ctx (R.range :: RangeWithId -> [R.Range]) visibleGoals
+  addMarks ctx (R.range :: RangeWithName -> [R.Range]) invisibleGoals
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
                      <> fmtMessages "Errors" errors
