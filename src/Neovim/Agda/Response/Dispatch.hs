@@ -4,10 +4,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE LambdaCase #-}
 
 module Neovim.Agda.Response.Dispatch
 ( parseResponse
@@ -27,13 +23,13 @@ import Data.Foldable
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
-import GHC.Records
 import UnliftIO
 
 import Neovim
 import Neovim.API.ByteString
 
 import Neovim.Agda.Interaction
+import Neovim.Agda.Nvim.VisualMarks
 import Neovim.Agda.Response.Types as R
 import Neovim.Agda.Types
 import Neovim.Agda.Util as U
@@ -78,22 +74,13 @@ dispatchResponse _   JumpToError { .. } = pure ()
 
 handleDisplayInfo :: DispatchContext -> DisplayInfo -> Neovim AgdaEnv ()
 handleDisplayInfo ctx AllGoalsWarnings { .. } = do
-  addGoalMarks visibleGoals
-  addGoalMarks invisibleGoals
+  addGoalMarks (agdaBuffer ctx) fmtGoalType visibleGoals
+  addGoalMarks (agdaBuffer ctx) fmtGoalType invisibleGoals
   setOutputBuffer ctx $ fmtGoals "Goals" (T.pack . show . getId . id'range) visibleGoals
                      <> fmtGoals "Invisible" name'range invisibleGoals
                      <> fmtMessages "Errors" errors
                      <> fmtMessages "Warnings" warnings
   where
-    addGoalMarks goals = addVirtualMarks (agdaBuffer ctx) [ VirtualMark
-                                                            { vmStart = Cursor (R.line start - 1) (R.col start)
-                                                            , vmEnd   = Cursor (R.line end - 1)   (R.col end)
-                                                            , vmText  = fmtGoalType goal
-                                                            , vmKind  = VMGoal
-                                                            }
-                                                          | goal <- goals
-                                                          , let R.Range { .. } = head $ getField @"range" $ constraintObj goal
-                                                          ]
     fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
     fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
     fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
@@ -113,33 +100,6 @@ fmtGoalType JustSort {} = "Sort"
 fmtMessages :: T.Text -> [Message] -> V.Vector T.Text
 fmtMessages _    [] = mempty
 fmtMessages name msgs = V.fromList $ name <> ":" : fmap message msgs
-
-data VMKind = VMGoal | VMWarning | VMError deriving (Eq, Show)
-
-data VirtualMark = VirtualMark
-  { vmStart :: Cursor64
-  , vmEnd :: Cursor64
-  , vmText :: T.Text
-  , vmKind :: VMKind
-  }
-
-addVirtualMarks :: Buffer -> [VirtualMark] -> Neovim AgdaEnv ()
-addVirtualMarks buf marks = do
-  hlId <- asks highlightNs >>= readTVarIO
-  forM_ marks $ \VirtualMark { .. } -> do
-    let textObj = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 $ "  " <> vmKindSymbol vmKind <> " " <> vmText
-                                            , ObjectArray [ObjectString [i|agda#{vmKind}|], ObjectString "agdaItalic"]
-                                            ]
-                              ]
-    nvim_buf_set_extmark buf hlId (U.row vmStart) (U.col vmStart) [ ("end_line", ObjectInt $ U.row vmEnd)
-                                                                  , ("end_col", ObjectInt $ U.col vmEnd)
-                                                                  , ("virt_text", textObj)
-                                                                  ]
-  where
-    vmKindSymbol = \case VMGoal    -> "⛳"
-                         VMWarning -> "⚠"
-                         VMError   -> "❌"
-
 
 expandHoles :: T.Text -> T.Text
 expandHoles = T.replace "?" "{! !}"
@@ -193,20 +153,9 @@ dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal:
 extractHlMarks :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
 extractHlMarks ctx p2c bits = addVirtualMarks (agdaBuffer ctx) $ mapMaybe marking bits
   where
-    atom2message = [ ("error", ("Error", VMError))
-                   , ("unsolvedmeta", ("Unsolved meta", VMWarning))
-                   , ("unsolvedconstraint", ("Unsolved constraint", VMWarning))
-                   , ("terminationproblem", ("Termination problem", VMError))
-                   , ("deadcode", ("Dead code", VMWarning))
-                   , ("coverageproblem", ("Coverage problem", VMError))
-                   , ("positivityproblem", ("Positivity problem", VMError))
-                   , ("incompletepattern", ("Incomplete pattern", VMError))
-                   , ("confluenceproblem", ("Confluence problem", VMError))
-                   , ("missingdefinition", ("Missing definition", VMError))
-                   ]
     marking (HlBit atoms ranges) = do
       [fromPos, toPos] <- Just ranges
-      (vmText, vmKind) <- msum $ (`HM.lookup` atom2message) <$> atoms
+      (vmText, vmKind) <- atomsMarkInfo atoms
       vmStart <- position2cursor p2c fromPos
       vmEnd <- position2cursor p2c toPos
       pure $ VirtualMark { .. }
