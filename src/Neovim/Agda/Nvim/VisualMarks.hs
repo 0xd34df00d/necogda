@@ -9,12 +9,14 @@
 
 module Neovim.Agda.Nvim.VisualMarks where
 
+import qualified Data.ByteString.Char8 as BS
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Control.Monad
-import GHC.Records
+import Data.String
 import Data.String.Interpolate.IsString
+import GHC.Records
 import UnliftIO
 
 import Neovim
@@ -33,17 +35,25 @@ data VirtualMark = VirtualMark
   , vmKind :: VMKind
   }
 
-vmKindSymbol :: VMKind -> T.Text
-vmKindSymbol = \case VMGoal    -> "⛳"
-                     VMWarning -> "⚠"
-                     VMError   -> "❌"
+kindSymbol :: VMKind -> BS.ByteString
+kindSymbol = T.encodeUtf8 . \case VMGoal    -> "⛳"
+                                  VMWarning -> "⚠"
+                                  VMError   -> "❌"
+
+kindSignName :: VMKind -> BS.ByteString
+kindSignName kind = "agdaSign" <> fromString (show kind)
+
+kindHighlightName :: VMKind -> BS.ByteString
+kindHighlightName kind = "agda" <> fromString (show kind)
 
 addVirtualMarks :: Buffer -> [VirtualMark] -> Neovim AgdaEnv ()
 addVirtualMarks buf marks = do
   hlId <- asks highlightNs >>= readTVarIO
   forM_ marks $ \VirtualMark { .. } -> do
-    let textObj = ObjectArray [ ObjectArray [ ObjectString $ T.encodeUtf8 $ "  " <> vmKindSymbol vmKind <> " " <> vmText
-                                            , ObjectArray [ObjectString [i|agda#{vmKind}|], ObjectString "agdaItalic"]
+    void $ nvim_exec [i|call sign_place(0, #{hlId}, "#{kindSignName vmKind}", "%", { "lnum": #{U.row vmStart + 1} })|] False
+
+    let textObj = ObjectArray [ ObjectArray [ ObjectString $ "  " <> kindSymbol vmKind <> " " <> T.encodeUtf8 vmText
+                                            , ObjectArray [ObjectString $ kindHighlightName vmKind, ObjectString "agdaItalic"]
                                             ]
                               ]
     nvim_buf_set_extmark buf hlId (U.row vmStart) (U.col vmStart) [ ("end_line", ObjectInt $ U.row vmEnd)

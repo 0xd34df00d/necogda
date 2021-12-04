@@ -20,8 +20,9 @@ import UnliftIO
 import Neovim
 import Neovim.API.ByteString (nvim_create_namespace, nvim_exec, nvim_err_writeln)
 
-import Neovim.Agda.Input
 import Neovim.Agda.Interaction
+import Neovim.Agda.Input
+import Neovim.Agda.Nvim.VisualMarks
 import Neovim.Agda.Start
 import Neovim.Agda.Types
 
@@ -30,7 +31,7 @@ registerMappings = do
   forM_ goalCommands $ \(cmd, leader) -> do
     let str = [i|nnoremap <buffer><silent> <LocalLeader>#{leader}       :call NecogdaGoalCommand('#{cmd}', 'Simplified')<CR>|]
     void $ nvim_exec str False
-    forM_ [minBound..maxBound :: Rewrite] $ \rewrite -> do
+    forM_ [minBound .. maxBound :: Rewrite] $ \rewrite -> do
       let modifier = [toLower $ head $ show rewrite]
       nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}       :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
 
@@ -48,11 +49,16 @@ registerMappings = do
                    , ("Type", "t")
                    ]
 
+registerSigns :: Neovim env ()
+registerSigns = forM_ [minBound .. maxBound] $ \kind ->
+  nvim_exec [i|call sign_define("#{kindSignName kind}", { "text": "#{kindSymbol kind}", "texthl": "#{kindHighlightName kind}" })|] False
+
 loadNecogda :: Neovim AgdaEnv ()
 loadNecogda = do
   startAgda
   startInput
   registerMappings
+  registerSigns
 
 initNamespace :: BS.ByteString -> (AgdaEnv -> TVar Int64) -> Neovim AgdaEnv ()
 initNamespace name tvar = do
