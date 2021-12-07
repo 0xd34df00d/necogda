@@ -52,7 +52,7 @@ addVirtualMarks buf marks = do
   forM_ marks $ \VirtualMark { .. } -> do
     void $ nvim_exec [i|call sign_place(0, #{hlId}, "#{kindSignName vmKind}", "%", { "lnum": #{U.row vmStart + 1} })|] False
 
-    let textObj = ObjectArray [ ObjectArray [ ObjectString $ "  " <> kindSymbol vmKind <> " " <> T.encodeUtf8 vmText
+    let textObj = ObjectArray [ ObjectArray [ ObjectString $ "  " <> kindSymbol vmKind <> " " <> BS.map (\ch -> if ch == '\n' then ' ' else ch) (T.encodeUtf8 vmText)
                                             , ObjectArray [ObjectString $ kindHighlightName vmKind, ObjectString "agdaItalic"]
                                             ]
                               ]
