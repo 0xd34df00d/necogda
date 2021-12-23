@@ -49,6 +49,12 @@ kindHighlightName kind = "agda" <> fromString (show kind)
 signGroupName :: BS.ByteString
 signGroupName = "agda-vms"
 
+clearVirtualMarks :: Buffer -> Neovim AgdaEnv ()
+clearVirtualMarks buf = do
+  vmId <- asks virtualMarksNs >>= readTVarIO
+  nvim_buf_clear_namespace buf vmId 0 (-1)
+  void $ nvim_exec [i|call sign_unplace("#{signGroupName}", { "buffer": "%" })|] False
+
 addVirtualMarks :: Buffer -> [VirtualMark] -> Neovim AgdaEnv ()
 addVirtualMarks buf marks = do
   vmId <- asks virtualMarksNs >>= readTVarIO

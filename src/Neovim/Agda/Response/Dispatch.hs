@@ -67,7 +67,9 @@ dispatchResponse ctx (HighlightingInfo (HlInfo _ bits)) = do
   handleHighlights ctx p2c bits
   extractHlMarks ctx p2c bits
 dispatchResponse _   (RunningInfo _ msg) = nvim_command [i|echom '#{T.encodeUtf8 msg}'|]
-dispatchResponse ctx ClearHighlighting = nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
+dispatchResponse ctx ClearHighlighting = do
+  nvim_buf_clear_namespace (agdaBuffer ctx) (-1) 0 (-1)
+  clearVirtualMarks (agdaBuffer ctx)
 dispatchResponse _   ClearRunningInfo = nvim_command "echo ''"
 dispatchResponse _   JumpToError { .. } = pure ()
 
