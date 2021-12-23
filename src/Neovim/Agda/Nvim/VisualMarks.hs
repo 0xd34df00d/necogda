@@ -46,11 +46,14 @@ kindSignName kind = "agdaSign" <> fromString (show kind)
 kindHighlightName :: VMKind -> BS.ByteString
 kindHighlightName kind = "agda" <> fromString (show kind)
 
+signGroupName :: BS.ByteString
+signGroupName = "agda-vms"
+
 addVirtualMarks :: Buffer -> [VirtualMark] -> Neovim AgdaEnv ()
 addVirtualMarks buf marks = do
   hlId <- asks highlightNs >>= readTVarIO
   forM_ marks $ \VirtualMark { .. } -> do
-    void $ nvim_exec [i|call sign_place(0, #{hlId}, "#{kindSignName vmKind}", "%", { "lnum": #{U.row vmStart + 1} })|] False
+    void $ nvim_exec [i|call sign_place(0, "#{signGroupName}", "#{kindSignName vmKind}", "%", { "lnum": #{U.row vmStart + 1} })|] False
 
     let textObj = ObjectArray [ ObjectArray [ ObjectString $ "  " <> kindSymbol vmKind <> " " <> BS.map (\ch -> if ch == '\n' then ' ' else ch) (T.encodeUtf8 vmText)
                                             , ObjectArray [ObjectString $ kindHighlightName vmKind, ObjectString "agdaItalic"]
