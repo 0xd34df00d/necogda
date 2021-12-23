@@ -51,7 +51,7 @@ signGroupName = "agda-vms"
 
 addVirtualMarks :: Buffer -> [VirtualMark] -> Neovim AgdaEnv ()
 addVirtualMarks buf marks = do
-  hlId <- asks highlightNs >>= readTVarIO
+  vmId <- asks virtualMarksNs >>= readTVarIO
   forM_ marks $ \VirtualMark { .. } -> do
     void $ nvim_exec [i|call sign_place(0, "#{signGroupName}", "#{kindSignName vmKind}", "%", { "lnum": #{U.row vmStart + 1} })|] False
 
@@ -59,7 +59,7 @@ addVirtualMarks buf marks = do
                                             , ObjectArray [ObjectString $ kindHighlightName vmKind, ObjectString "agdaItalic"]
                                             ]
                               ]
-    nvim_buf_set_extmark buf hlId (U.row vmStart) (U.col vmStart) [ ("end_line", ObjectInt $ U.row vmEnd)
+    nvim_buf_set_extmark buf vmId (U.row vmStart) (U.col vmStart) [ ("end_line", ObjectInt $ U.row vmEnd)
                                                                   , ("end_col", ObjectInt $ U.col vmEnd)
                                                                   , ("virt_text", textObj)
                                                                   ]
