@@ -7,7 +7,7 @@ endif
 call LoadNecogda()
 
 set omnifunc=NecogdaComplete
-set completeopt=menu,menuone,noinsert
+set completeopt=menu,menuone,noinsert,noselect
 
 inoremap <buffer><silent> ` `<C-X><C-O>
 
