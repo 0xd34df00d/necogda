@@ -139,7 +139,7 @@ fmtGoalContextEntry :: GoalContextEntry -> T.Text
 fmtGoalContextEntry GoalContextEntry { .. } = preBinding <> binding'
   where
     (scopeMarkerL, scopeMarkerR) = if inScope then (T.empty, T.empty) else ("{", "}")
-    preBinding = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker}: |] :: T.Text
+    preBinding = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker} : |] :: T.Text
     reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
     binding' = let firstLine : rest = T.lines binding
                 in T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
