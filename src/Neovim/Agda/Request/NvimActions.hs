@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE RankNTypes #-}
 
 module Neovim.Agda.Request.NvimActions
