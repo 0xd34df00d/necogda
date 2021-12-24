@@ -15,6 +15,7 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.Map as M
 import qualified Data.Trie as Trie
 import qualified Data.Trie.Convenience as Trie
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Control.Arrow (first)
 import Control.Monad
@@ -88,20 +89,27 @@ split3 str start len = (left, mid, right)
     (mid, right) = BS.splitAt len rest
 
 handleSubstr :: Char -> Int -> Cursor -> BS.ByteString -> Neovim AgdaEnv ()
-handleSubstr marker start Cursor { .. } line = getInputTrie >>= Trie.lookupBy handleTrieResult (if isComplete then BS.init mid else mid)
+handleSubstr marker start Cursor { .. } line
+  | BS.null mid = pure ()
+  | otherwise = getInputTrie >>= Trie.lookupBy handlePrefixResult (BS.init mid)
   where
     (left, BS.tail -> mid, right) = split3 line start (col - start)
-    isComplete = not (BS.null mid) && BS.last mid `elem` [marker, ' ']
 
-    handleTrieResult (Just [sub]) children
-      | Trie.null children = insertBytes $ T.encodeUtf8 sub
-      | isComplete = do
-          insertBytes $ T.encodeUtf8 sub `BS.snoc` BS.last mid
-          when (BS.last mid == marker) maybeStartSymbol
+    handlePrefixResult prefixNode = uncurry (handleFullResult prefixNode) . Trie.lookupBy (,) (BS.singleton $ BS.last mid)
+
+    handleFullResult :: Maybe [T.Text]  -- prefixNode
+                     -> Maybe [T.Text]  -- fullNode
+                     -> InputTrie       -- fullChidren
+                     -> Neovim AgdaEnv ()
+    handleFullResult _ (Just subs) children
+      | Trie.null children = insertBytes $ T.encodeUtf8 $ head subs
       | otherwise = pure ()
-    handleTrieResult maybeOpts children
-      | Trie.null children
-      , null $ fromMaybe [] maybeOpts = cancelInput
+    handleFullResult (Just subs) Nothing children
+      | Trie.null children = do insertBytes $ T.encodeUtf8 (head subs) `BS.snoc` BS.last mid
+                                when (BS.last mid == marker) maybeStartSymbol
+      | otherwise = pure ()
+    handleFullResult Nothing Nothing children
+      | Trie.null children = cancelInput
       | otherwise = pure ()
 
     insertBytes bytes = do
