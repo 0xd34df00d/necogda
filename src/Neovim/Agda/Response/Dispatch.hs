@@ -136,9 +136,10 @@ iipRange ctx range = withPayload ctx $ \payload -> do
 
 
 fmtGoalContextEntry :: GoalContextEntry -> T.Text
-fmtGoalContextEntry GoalContextEntry { .. } = [i|#{originalName}#{reifyMarker}: #{binding}#{scopeMarker}|]
+fmtGoalContextEntry GoalContextEntry { .. } = [i|#{fullName}: #{binding}|]
   where
-    scopeMarker = if inScope then T.empty else " (not in scope)"
+    (scopeMarkerL, scopeMarkerR) = if inScope then (T.empty, T.empty) else ("{", "}")
+    fullName = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker}|] :: T.Text
     reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
