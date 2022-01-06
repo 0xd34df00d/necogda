@@ -1,6 +1,4 @@
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
@@ -16,10 +14,10 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Control.Monad
 import Data.Bifunctor
-import Data.Data
 import Data.Functor
 import Data.Generics.Uniplate.Data
 import Data.List
+import Data.Proxy
 import Data.SExpresso.Parse
 import Data.SExpresso.SExpr
 import Data.SExpresso.Language.SchemeR5RS
@@ -28,18 +26,6 @@ import Data.Void
 import System.Environment
 import Text.Megaparsec as M
 import Text.Megaparsec.Char as M
-
-deriving instance Data SchemeToken
-deriving instance Data SchemeNumber
-deriving instance Data Complex
-deriving instance Data Exactness
-deriving instance Data SReal
-deriving instance Data UInteger
-deriving instance Data Sign
-deriving instance Data SExprType
-deriving instance Data Suffix
-deriving instance Data Precision
-deriving instance (Data a, Data b) => Data (SExpr a b)
 
 type SchemeExpr = SExpr SExprType SchemeToken
 

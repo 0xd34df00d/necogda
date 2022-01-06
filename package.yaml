@@ -71,7 +71,7 @@ executables:
     - -rtsopts
     dependencies:
     - megaparsec
-    - sexpresso
+    - sexpresso >= 1.2.1.0
     - uniplate
 
 tests:
