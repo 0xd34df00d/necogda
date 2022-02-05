@@ -81,7 +81,9 @@ addGoalMarks buf fmtGoalType goals = addVirtualMarks buf [ VirtualMark
                                                            , vmKind  = VMGoal
                                                            }
                                                          | goal <- goals
-                                                         , let R.Range { .. } = head $ getField @"range" $ constraintObj goal
+                                                         , let ranges = getField @"range" $ constraintObj goal
+                                                         , not $ null ranges
+                                                         , let R.Range { .. } = head ranges
                                                          ]
 
 atomsMarkInfo :: [T.Text] -> Maybe (T.Text, VMKind)
