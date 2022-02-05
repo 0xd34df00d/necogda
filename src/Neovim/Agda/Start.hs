@@ -62,9 +62,10 @@ watchStdout :: MonadUnliftIO m
             -> m ()
 watchStdout handler errHandler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
   hasInput <- hWaitWithEof agdaStdout 1000
-  if hasInput
-  then liftIO (BS.hGetLine agdaStdout) >>= handler
-  else pure ()
+  if not hasInput
+  then pure ()
+  else do str <- liftIO (BS.hGetLine agdaStdout)
+          handler str `catchAny` \e -> errHandler [i|`#{displayException e}` when handling #{T.decodeUtf8 str}|]
 
 startAgdaForFile :: (MonadUnliftIO m, MonadReader (AgdaEnvT payload) m, MonadFail m)
                  => payload
