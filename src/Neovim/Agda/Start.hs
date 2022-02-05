@@ -55,8 +55,12 @@ watchErrors errHandler AgdaInstance { agdaStderr, agdaProcess } = withWatcher $ 
          stop
 
 -- TODO this leaks green threads when agda exits
-watchStdout :: MonadUnliftIO m => (BS.ByteString -> m ()) -> AgdaInstanceT payload -> m ()
-watchStdout handler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
+watchStdout :: MonadUnliftIO m
+            => (BS.ByteString -> m ())
+            -> (BS.ByteString -> m ())
+            -> AgdaInstanceT payload
+            -> m ()
+watchStdout handler errHandler AgdaInstance { agdaStdout } = withWatcher $ \_ -> do
   hasInput <- hWaitWithEof agdaStdout 1000
   if hasInput
   then liftIO (BS.hGetLine agdaStdout) >>= handler
@@ -121,5 +125,5 @@ startAgda = do
          Nothing -> pure ()
          Just inst -> do
            watchErrors nvim_err_writeln inst
-           watchStdout parseDispatch inst
+           watchStdout parseDispatch nvim_err_writeln inst
            loadFile

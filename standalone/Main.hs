@@ -18,9 +18,11 @@ import Neovim.Agda.Types
 startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
 startStandalone file = do
   Just inst <- startAgdaForFile () file
-  watchErrors (liftIO . BS.putStrLn . ("[ERR] " <>)) inst
-  watchStdout (liftIO . print . parseResponse) inst
+  watchErrors errHandler inst
+  watchStdout (liftIO . print . parseResponse) errHandler inst
   sendCommand inst $ Cmd_load file []
+  where
+    errHandler = liftIO . BS.putStrLn . ("[ERR] " <>)
 
 main :: IO ()
 main = do
