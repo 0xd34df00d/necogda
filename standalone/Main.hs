@@ -16,11 +16,11 @@ import Neovim.Agda.Start
 import Neovim.Agda.Types
 
 startStandalone :: FilePath -> ReaderT (AgdaEnvT ()) IO ()
-startStandalone filename = do
-  Just inst <- startAgdaForFile () filename
+startStandalone file = do
+  Just inst <- startAgdaForFile () file
   watchErrors (liftIO . BS.putStrLn . ("[ERR] " <>)) inst
   watchStdout (liftIO . print . parseResponse) inst
-  sendCommand inst $ Cmd_load filename []
+  sendCommand inst $ Cmd_load file []
 
 main :: IO ()
 main = do
