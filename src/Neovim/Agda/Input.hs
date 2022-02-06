@@ -174,7 +174,7 @@ generateCompletions base = do
                 | (abbr, syms) <- opts
                 , sym <- syms
                 ]
-  void $ nvim_eval [i|timer_start(0, { _ -> nvim_input("<down>") })|]
+  void $ nvim_eval [i|timer_start(0, { _ -> pumvisible() ? nvim_input("<down>") : nvim_input("") })|]
   pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
                                 , (ObjectString "refresh", ObjectString "always")
                                 ]
