@@ -47,7 +47,6 @@ setInteractionMarks buffer pts = do
                                  , ("end_col",  ObjectInt endCol)
                                  ]
       nvim_buf_set_extmark buffer goalmarksId startLine startCol extraOpts
-      -- TODO attach virtual text to it when it's available in AllGoalsWarnings
     pure (id'range, markIds)
   let mark2id = HM.fromList [ (markId, id'range)
                             | (id'range, markIds) <- id'range2markIds
