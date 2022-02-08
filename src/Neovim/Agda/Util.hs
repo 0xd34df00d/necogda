@@ -3,6 +3,8 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Util where
 
@@ -58,11 +60,16 @@ data MarkObject = MarkObject
   , markId :: Int64
   } deriving (Show, Eq, Ord)
 
+anyInt :: Object -> Maybe Int64
+anyInt = \case ObjectInt n -> Just n
+               ObjectUInt n -> Just $ fromIntegral n
+               _ -> Nothing
+
 parseMarkObject :: Object -> Maybe MarkObject
 parseMarkObject obj = do
-  ObjectArray [ObjectInt markId, ObjectInt markRow, ObjectInt markCol, ObjectMap extras] <- Just obj
-  ObjectInt endRow <- ObjectString "end_row" `M.lookup` extras
-  ObjectInt endCol <- ObjectString "end_col" `M.lookup` extras
+  ObjectArray [ObjectInt markId, anyInt -> Just markRow, anyInt -> Just markCol, ObjectMap extras] <- Just obj
+  endRow <- anyInt =<< ObjectString "end_row" `M.lookup` extras
+  endCol <- anyInt =<< ObjectString "end_col" `M.lookup` extras
   let markStart = Cursor markRow markCol
   let markEnd = Cursor endRow endCol
   pure $ MarkObject { .. }
