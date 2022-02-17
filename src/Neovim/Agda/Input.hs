@@ -149,7 +149,7 @@ wrapExceptions :: Neovim AgdaEnv Object -> Neovim AgdaEnv Object
 wrapExceptions = try >=> either showEx pure
   where
     showEx :: SomeException -> Neovim AgdaEnv Object
-    showEx ex = nvim_err_writeln [i|Error running completion: #{ex}|] >> dump (show ex) $> ObjectNil
+    showEx ex = nvim_err_writeln [i|Error running completion: #{ex}|] >> logToFile (show ex) $> ObjectNil
 
 checkCompletionStart :: Neovim AgdaEnv Object
 checkCompletionStart = do
