@@ -31,6 +31,7 @@ import Neovim.API.ByteString
 import Neovim.Agda.Request.Commands (loadFile)
 import Neovim.Agda.Response.Dispatch
 import Neovim.Agda.Types
+import Neovim.Agda.Util
 
 withWatcher :: MonadUnliftIO m => (m () -> m ()) -> m ()
 withWatcher watch = do
@@ -115,7 +116,8 @@ startAgda = do
         atomically $ modifyTVar' agdasTVar $ HM.adjust (\inst -> inst { payload = f $ payload inst }) name
 
   let parseDispatch line = case parseResponse line of
-                                Left errStr -> nvim_err_writeln $ T.encodeUtf8 $ T.pack errStr
+                                Left errStr -> do nvim_err_writeln $ T.encodeUtf8 $ T.pack errStr
+                                                  logToFile $ errStr <> "; when parsing\n" <> T.unpack (T.decodeUtf8 line)
                                 Right resp  -> dispatchResponse (DispatchContext { agdaBuffer = buf, .. }) resp
 
   agdasTVar <- asks agdas
