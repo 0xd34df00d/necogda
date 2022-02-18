@@ -94,6 +94,7 @@ handleDisplayInfo ctx Error { .. }
   | otherwise = setOutputBuffer ctx $ fmtMessages "Error" [error']
                                    <> fmtMessages "Warnings" warnings
 handleDisplayInfo ctx GoalSpecific { .. } = dispatchGoalInfo ctx goalInfo
+handleDisplayInfo ctx IntroNotFound = setOutputBuffer ctx $ V.singleton "Intro not found"
 
 fmtGoalType :: Goal a -> T.Text
 fmtGoalType OfType { .. } = type'goal

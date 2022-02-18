@@ -105,6 +105,7 @@ data DisplayInfo
     , warnings :: [Message]
     }
   | GoalSpecific { goalInfo :: GoalInfo }
+  | IntroNotFound
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
