@@ -106,6 +106,7 @@ data DisplayInfo
     }
   | GoalSpecific { goalInfo :: GoalInfo }
   | IntroNotFound
+  | Auto { info :: T.Text }
   deriving (Show, Generic)
   deriving (A.FromJSON, A.ToJSON) via (AgdaJson DisplayInfo)
 
