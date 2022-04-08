@@ -11,9 +11,11 @@ In the following, `<LL>` stands for `<LocalLeader>`.
 
 Common commands are:
 
-| Binding | Prefixes  | Description                                 |
-|---------|-----------|---------------------------------------------|
-| `<LL>l` |           | Load file in Agda                           |
+| Binding  | Prefixes  | Description                                 |
+|----------|-----------|---------------------------------------------|
+| `<LL>l`  |           | Load file in Agda                           |
+| `<LL>gn` |           | Go to the next goal/warning/error           |
+| `<LL>gp` |           | Go to the previous goal/warning/error       |
 
 Goal commands include:
 
