@@ -4,6 +4,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Neovim.Agda.Response.Dispatch
 ( parseResponse
@@ -20,6 +21,7 @@ import Control.Monad
 import Control.Monad.Identity
 import Data.Default
 import Data.Foldable
+import Data.Functor
 import Data.List
 import Data.Maybe
 import Data.String.Interpolate.IsString
@@ -148,13 +150,8 @@ fmtGoalContextEntry GoalContextEntry { .. } = preBinding <> binding'
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
 dispatchGoalInfo ctx GoalType { .. } = do
-  showInaccessibleVar <- nvim_eval [i|get(g:, 'show_inaccessible_bindings', 1)|]
-  let showInaccessible = case showInaccessibleVar of
-                              ObjectInt 1 -> True
-                              _           -> False
-      entriesFilter = if showInaccessible
-                         then const True
-                         else inScope
+  entriesFilter <- nvim_eval [i|get(g:, 'show_inaccessible_bindings', 1)|] <&> \case ObjectInt 1 -> const True
+                                                                                     _           -> inScope
   setOutputBuffer ctx $ V.fromList $ typeAuxInfo : header : (fmtGoalContextEntry <$> filter entriesFilter entries)
   where
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
