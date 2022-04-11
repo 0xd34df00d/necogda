@@ -44,6 +44,24 @@ For example, to show normalised goal type, do `<LL>nt`, or do `<LL>n.` to see ev
 You might have noticed the key is the lowercased first letter of the corresponding strategy.
 This is not a coincidence.
 
+## Configuration
+
+* `g:symbol_start_marker`: any character
+  **Default**: `` ` ``
+  The marker for the beginning of an Unicode symbol chord.
+  For instance, with the default value, the sequence ```ga`` will be replaced with `α`.
+* `g:insert_behaviour`: `"undo"` | unset
+  **Default**: unset
+  How exactly a symbol chord should be replaced with the corresponding symbol. TODO describe more.
+* `g:show_inaccessible_bindings`: `1` | `0`
+  **Default**: true
+  If `1`, the goals window shows inaccessible bindings (in `{curly} : braces`), and hides them otherwise.
+  Bindings are inaccessible if they come from an implicit (and unbounded) argument or a wildcard pattern,
+  or if they have been shadowed.
+
+All these options are read every time they are used, so changing them does not require restarting neovim.
+Thus, you might find it useful to make shortcuts for changing some of them, like `g:show_inaccessible_bindings`.
+
 ## How to install
 
 TODO ;)
