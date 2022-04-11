@@ -147,7 +147,15 @@ fmtGoalContextEntry GoalContextEntry { .. } = preBinding <> binding'
                 in T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
-dispatchGoalInfo ctx GoalType { .. } = setOutputBuffer ctx $ V.fromList $ typeAuxInfo : header : (fmtGoalContextEntry <$> entries)
+dispatchGoalInfo ctx GoalType { .. } = do
+  showInaccessibleVar <- nvim_eval [i|get(g:, 'show_inaccessible_bindings', 1)|]
+  let showInaccessible = case showInaccessibleVar of
+                              ObjectInt 1 -> True
+                              _           -> False
+      entriesFilter = if showInaccessible
+                         then const True
+                         else inScope
+  setOutputBuffer ctx $ V.fromList $ typeAuxInfo : header : (fmtGoalContextEntry <$> filter entriesFilter entries)
   where
     header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
     typeAuxInfo = case typeAux of
