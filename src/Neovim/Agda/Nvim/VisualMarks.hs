@@ -65,10 +65,11 @@ addVirtualMarks buf marks = do
                                             , ObjectArray [ObjectString $ kindHighlightName vmKind, ObjectString "agdaItalic"]
                                             ]
                               ]
-    nvim_buf_set_extmark buf vmId (U.row vmStart) (U.col vmStart) [ ("end_line", ObjectInt $ U.row vmEnd)
-                                                                  , ("end_col", ObjectInt $ U.col vmEnd)
-                                                                  , ("virt_text", textObj)
-                                                                  ]
+    logToFile [i|#{vmStart}-#{vmEnd} #{textObj}|]
+    nvim_buf_set_extmark buf vmId (U.row vmStart) (U.col vmStart - 1) [ ("end_line", ObjectInt $ U.row vmEnd)
+                                                                      , ("end_col", ObjectInt $ U.col vmEnd - 1)
+                                                                      , ("virt_text", textObj)
+                                                                      ]
 
 
 -- * Various helpers for specific mark types
