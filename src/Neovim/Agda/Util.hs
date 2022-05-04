@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -12,6 +13,8 @@ import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Control.Monad.Extra (mconcatMapM)
+import Data.String.Interpolate.IsString
+import Data.Time.Clock (getCurrentTime)
 import UnliftIO
 
 import Neovim
@@ -19,7 +22,10 @@ import qualified Neovim.API.ByteString as AB
 import qualified Neovim.API.Text as AT
 
 logToFile :: MonadIO m => String -> m ()
-logToFile = liftIO . appendFile "log.txt" . (<> "\n")
+logToFile str = liftIO $ do
+  now <- getCurrentTime
+  appendFile "log.txt" [i|#{now} #{str}|]
+  appendFile "log.txt" "\n"
 
 data CursorT a = Cursor { row :: a, col :: a }
   deriving (Eq, Ord, Show, Functor)
