@@ -5,6 +5,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE Strict #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Response.Dispatch
 ( parseResponse
@@ -135,7 +136,7 @@ iipRange ctx range = withPayload ctx $ \payload -> do
     MarkObject { markId = _, .. } <- parseMarkObject =<< V.find (findById markId) marks
     pure (markStart, markEnd)
   where
-    findById markId (ObjectArray ((ObjectInt markId') : _)) = markId == markId'
+    findById markId (ObjectArray ((anyInt -> Just markId') : _)) = markId == markId'
     findById _ _ = False
 
 
