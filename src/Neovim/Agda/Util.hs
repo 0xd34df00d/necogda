@@ -76,7 +76,7 @@ anyInt = \case ObjectInt n -> Just n
 
 parseMarkObject :: Object -> Maybe MarkObject
 parseMarkObject obj = do
-  ObjectArray [ObjectInt markId, anyInt -> Just markRow, anyInt -> Just markCol, ObjectMap extras] <- Just obj
+  ObjectArray [anyInt -> Just markId, anyInt -> Just markRow, anyInt -> Just markCol, ObjectMap extras] <- Just obj
   endRow <- anyInt =<< ObjectString "end_row" `M.lookup` extras
   endCol <- anyInt =<< ObjectString "end_col" `M.lookup` extras
   let markStart = Cursor markRow markCol
