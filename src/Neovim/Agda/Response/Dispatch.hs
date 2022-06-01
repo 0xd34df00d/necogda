@@ -114,7 +114,12 @@ expandHoles = T.replace "?" "{! !}"
 handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
 handleMakeCase "Function" ctx clauses = withRange ctx f
   where
-    f start end = nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . expandHoles <$> clauses
+    f start end = do
+      existing <- nvim_buf_get_lines (agdaBuffer ctx) (row start) (row start + 1) False
+      let prefix = case toList existing of
+                        (l:_) -> T.replicate (BS.length $ BS.takeWhile (== ' ') l) " "
+                        _ -> mempty
+      nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . (prefix <>) . expandHoles <$> clauses
 handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
 
 
