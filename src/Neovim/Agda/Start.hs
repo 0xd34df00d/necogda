@@ -96,7 +96,7 @@ startAgdaForFile payload filename = do
 
 prepareGoalWindow :: Neovim AgdaEnv Buffer
 prepareGoalWindow = do
-  size <- extractSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', 60)|]
+  size <- extractSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', '')|]
   void $ nvim_exec [i|vertical belowright pedit! Goals
 wincmd P
 #{size}wincmd >
