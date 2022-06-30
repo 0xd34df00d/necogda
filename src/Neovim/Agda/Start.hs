@@ -99,8 +99,9 @@ startAgda = do
   buf <- vim_get_current_buffer
   name <- T.unpack . T.decodeUtf8 <$> buffer_get_name buf
 
-  nvim_command [i|belowright pedit! Goals|]
+  nvim_command [i|vertical belowright pedit! Goals|]
   nvim_command [i|wincmd P|]
+  nvim_command [i|60wincmd >|]
   nvim_command [i|setlocal buftype=nofile nobuflisted bufhidden=wipe|]
   outputBuffer <- vim_get_current_buffer
   nvim_command [i|wincmd p|]
