@@ -94,19 +94,28 @@ startAgdaForFile payload filename = do
   where
     agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
+prepareGoalWindow :: Neovim AgdaEnv Buffer
+prepareGoalWindow = do
+  size <- extractSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', 60)|]
+  void $ nvim_exec [i|vertical belowright pedit! Goals
+wincmd P
+#{size}wincmd >
+setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
+  outputBuffer <- vim_get_current_buffer
+  nvim_command [i|wincmd p|]
+  pure outputBuffer
+  where
+    extractSize :: Object -> Int
+    extractSize (ObjectInt n) = fromIntegral n
+    extractSize (ObjectUInt n) = fromIntegral n
+    extractSize _ = 60
+
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
   buf <- vim_get_current_buffer
   name <- T.unpack . T.decodeUtf8 <$> buffer_get_name buf
 
-  goalWindowSize <- extractGoalWindowSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', 60)|]
-
-  void $ nvim_exec [i|vertical belowright pedit! Goals
-wincmd P
-#{goalWindowSize}wincmd >
-setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
-  outputBuffer <- vim_get_current_buffer
-  nvim_command [i|wincmd p|]
+  outputBuffer <- prepareGoalWindow
 
   let withPayload f = do
         agdasTVar <- asks agdas
@@ -133,8 +142,3 @@ setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
            watchErrors nvim_err_writeln inst
            watchStdout parseDispatch nvim_err_writeln inst
            loadFile
-  where
-    extractGoalWindowSize :: Object -> Int
-    extractGoalWindowSize (ObjectInt n) = fromIntegral n
-    extractGoalWindowSize (ObjectUInt n) = fromIntegral n
-    extractGoalWindowSize _ = 60
