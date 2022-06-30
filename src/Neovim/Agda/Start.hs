@@ -101,10 +101,10 @@ startAgda = do
 
   goalWindowSize <- extractGoalWindowSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', 60)|]
 
-  nvim_command [i|vertical belowright pedit! Goals|]
-  nvim_command [i|wincmd P|]
-  nvim_command [i|#{goalWindowSize}wincmd >|]
-  nvim_command [i|setlocal buftype=nofile nobuflisted bufhidden=wipe|]
+  void $ nvim_exec [i|vertical belowright pedit! Goals
+wincmd P
+#{goalWindowSize}wincmd >
+setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
   outputBuffer <- vim_get_current_buffer
   nvim_command [i|wincmd p|]
 
