@@ -46,23 +46,23 @@ This is not a coincidence.
 
 ## Configuration
 
-* `g:symbol_start_marker`: any character
-  **Default**: `` ` ``
+* `g:symbol_start_marker`: any character\
+  **Default**: `` ` ``\
   The marker for the beginning of an Unicode symbol chord.
   For instance, with the default value, the sequence ```ga`` will be replaced with `α`.
-* `g:insert_behaviour`: `"undo"` | unset
-  **Default**: unset
+* `g:insert_behaviour`: `"undo"` | unset\
+  **Default**: unset\
   How exactly a symbol chord should be replaced with the corresponding symbol. TODO describe more.
-* `g:show_inaccessible_bindings`: `1` | `0`
-  **Default**: true
+* `g:show_inaccessible_bindings`: `1` | `0`\
+  **Default**: true\
   If `1`, the goals window shows inaccessible bindings (in `{curly} : braces`), and hides them otherwise.
   Bindings are inaccessible if they come from an implicit (and unbounded) argument or a wildcard pattern,
   or if they have been shadowed.
-* `g:necogda_goal_window_orientation`: `"vertical"` | `"horizontal"`
-  **Default**: `"vertical"`
+* `g:necogda_goal_window_orientation`: `"vertical"` | `"horizontal"`\
+  **Default**: `"vertical"`\
   The orientation of the goal information window.
-* `g:necogda_goal_window_size`: integer
-  **Default**: 60
+* `g:necogda_goal_window_size`: integer\
+  **Default**: 60\
   The size (increment) of the goal information window.
   Roughly speaking, this is how much `C-W <` (for vertical windows) or `C-W +` (for horizontal windows) is done by Necogda for you.
 
