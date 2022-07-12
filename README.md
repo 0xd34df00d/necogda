@@ -58,6 +58,13 @@ This is not a coincidence.
   If `1`, the goals window shows inaccessible bindings (in `{curly} : braces`), and hides them otherwise.
   Bindings are inaccessible if they come from an implicit (and unbounded) argument or a wildcard pattern,
   or if they have been shadowed.
+* `g:necogda_goal_window_orientation`: `"vertical"` | `"horizontal"`
+  **Default**: `"vertical"`
+  The orientation of the goal information window.
+* `g:necogda_goal_window_size`: integer
+  **Default**: 60
+  The size (increment) of the goal information window.
+  Roughly speaking, this is how much `C-W <` (for vertical windows) or `C-W +` (for horizontal windows) is done by Necogda for you.
 
 All these options are read every time they are used, so changing them does not require restarting neovim.
 Thus, you might find it useful to make shortcuts for changing some of them, like `g:show_inaccessible_bindings`.
