@@ -97,9 +97,15 @@ startAgdaForFile payload filename = do
 prepareGoalWindow :: Neovim AgdaEnv Buffer
 prepareGoalWindow = do
   size <- extractSize <$> nvim_eval [i|get(g:, 'necogda_goal_window_size', '')|]
-  void $ nvim_exec [i|vertical belowright pedit! Goals
+  orientation <- extractOrientation <$> nvim_eval [i|get(g:, 'necogda_goal_window_orientation')|]
+  void $ if orientation == "vertical"
+    then nvim_exec [i|vertical belowright pedit! Goals
 wincmd P
 #{size}wincmd >
+setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
+    else nvim_exec [i|belowright pedit! Goals
+wincmd P
+#{size}wincmd +
 setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
   outputBuffer <- vim_get_current_buffer
   nvim_command [i|wincmd p|]
@@ -109,6 +115,9 @@ setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
     extractSize (ObjectInt n) = fromIntegral n
     extractSize (ObjectUInt n) = fromIntegral n
     extractSize _ = 60
+
+    extractOrientation (ObjectString bs) = bs
+    extractOrientation _ = "vertical"
 
 startAgda :: Neovim AgdaEnv ()
 startAgda = do
