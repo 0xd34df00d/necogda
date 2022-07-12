@@ -9,6 +9,8 @@ module Neovim.Agda.Input
 , necogdaComplete
 
 , loadInputTrie
+
+, howToEnterCurSym
 ) where
 
 import qualified Data.ByteString.Char8 as BS
@@ -17,6 +19,7 @@ import qualified Data.Trie as Trie
 import qualified Data.Trie.Convenience as Trie
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import qualified Data.Vector as V
 import Control.Arrow (first)
 import Control.Monad
 import Data.Functor
@@ -178,3 +181,26 @@ generateCompletions base = do
   pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
                                 , (ObjectString "refresh", ObjectString "always")
                                 ]
+
+
+howToEnterCurSym :: Neovim AgdaEnv ()
+howToEnterCurSym = do
+  line <- nvim_get_current_line
+  col <- col <$> getCursorI
+
+  markerSym <- getMarker
+
+  trie <- getInputTrie
+  let sym = T.head $ T.decodeUtf8 $ BS.drop col line
+      bindings = symbolBindings sym trie
+      msg = ObjectArray [ObjectString [i|To enter #{T.encodeUtf8 $ T.singleton sym} use: |]]
+          : [ ObjectArray [ObjectString [i|#{[markerSym]}#{bnd} (#{count} overloads) |]] | (bnd, count) <- bindings ]
+  void $ nvim_echo (V.fromList msg) False mempty
+
+symbolBindings :: Char -> InputTrie -> [(BS.ByteString, Int)]
+symbolBindings sym trie = sortOn (\(binding, symsCnt) -> (symsCnt, BS.length binding)) candidates
+  where
+    candidates = [ (binding, length syms)
+                 | (binding, syms) <- Trie.toList trie
+                 , T.singleton sym `elem` syms
+                 ]
