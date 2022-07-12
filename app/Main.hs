@@ -5,6 +5,7 @@ module Main where
 import Neovim
 
 import qualified Neovim.Agda as P
+import qualified Neovim.Agda.Input as I
 import qualified Neovim.Agda.Request.Commands as C
 import qualified Neovim.Agda.Request.NvimActions as N
 
@@ -26,6 +27,8 @@ main = do
 
                               , $(function "NecogdaGoalNext" 'N.goalNext) Async
                               , $(function "NecogdaGoalPrev" 'N.goalPrev) Async
+
+                              , $(function "NecogdaHowToEnter" 'I.howToEnterCurSym) Async
                               ]
                   }
   neovim defaultConfig { plugins = [plugin], logOptions = Just ("nvim.log", DEBUG) }
