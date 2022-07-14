@@ -63,8 +63,8 @@ This is not a coincidence.
   The orientation of the goal information window.
 * `g:necogda_goal_window_size`: integer\
   **Default**: 60\
-  The size (increment) of the goal information window.
-  Roughly speaking, this is how much `C-W <` (for vertical windows) or `C-W +` (for horizontal windows) is done by Necogda for you.
+  The size of the goal information window.
+  Roughly speaking, this is the argument to `resize` that Necogda does for you when it opens the goal preview window.
 
 All these options are read every time they are used, so changing them does not require restarting neovim.
 Thus, you might find it useful to make shortcuts for changing some of them, like `g:show_inaccessible_bindings`.
