@@ -3,5 +3,4 @@ resolver:
 packages:
 - .
 extra-deps:
-- bytestring-trie-0.2.7
 - sexpresso-1.2.1.0
