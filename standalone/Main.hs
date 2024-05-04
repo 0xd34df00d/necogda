@@ -4,6 +4,7 @@ module Main where
 
 import qualified Data.ByteString.Char8 as BS
 import Control.Concurrent
+import Control.Monad
 import Control.Monad.Reader
 import System.Environment
 

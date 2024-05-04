@@ -22,9 +22,9 @@ import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 import Control.Arrow (first)
 import Control.Monad
+import Data.Either
 import Data.Functor
 import Data.List
-import Data.Maybe
 import Data.String.Interpolate.IsString
 import UnliftIO
 
@@ -49,7 +49,7 @@ loadInputTrie path = parseContents <$> BS.readFile path
     parseContents contents = Trie.fromListWith (<>)
                              [ (abbrev, T.decodeUtf8 <$> codes)
                              | l <- BS.lines contents
-                             , let (abbrev : codes) = BS.split ' ' l
+                             , abbrev : codes <- [BS.split ' ' l]
                              ]
 
 getInputTrie :: Neovim AgdaEnv InputTrie
@@ -138,7 +138,7 @@ cancelInput = asks symbolInputCol >>= \var -> atomically $ writeTVar var Nothing
 startInput :: Neovim AgdaEnv ()
 startInput = forM_ commands $ \(event, cmd) -> do
   res <- addAutocmd event Sync (AutocmdOptions "<buffer>" False Nothing) cmd
-  when (isNothing res) $ nvim_err_writeln "Unable to register input handler"
+  when (isLeft res) $ nvim_err_writeln "Unable to register input handler"
   where
     commands = ((, cancelInput) <$> ["InsertLeave"])
             <> ((, handleInput) <$> ["TextChangedI", "TextChangedP"])

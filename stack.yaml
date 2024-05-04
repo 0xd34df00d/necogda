@@ -1,6 +1,10 @@
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/1.yaml
+resolver: nightly-2024-05-01
 packages:
 - .
 extra-deps:
-- sexpresso-1.2.1.0
+- bytestring-trie-0.2.7.3
+- sexpresso-1.2.4.0
+allow-newer: true
+allow-newer-deps:
+- bytestring-trie
+- sexpresso

@@ -18,6 +18,7 @@ import qualified Data.ByteString.Char8 as BS
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import Control.Monad
 import Control.Monad.Reader
 import Data.Default
 import Data.Functor
