@@ -33,7 +33,7 @@ type SchemeExpr = SExpr SExprType SchemeToken
 handleSExpr :: [SchemeExpr] -> Either String [(T.Text, [T.Text])]
 handleSExpr sexprs
   | [SList _ defRoot] <- [ defs | SList _ (SAtom (TIdentifier "defcustom") : SAtom (TIdentifier "agda-input-translations") : (defs :: SchemeExpr) : _) <- universeBi sexprs ]
-  , [SList _ defs] <- tail $ dropWhile (/= SAtom TQuasiquote) defRoot = mapM f defs
+  , [SList _ defs] <- drop 1 $ dropWhile (/= SAtom TQuasiquote) defRoot = mapM f defs
   | otherwise = Left "not found"
   where
     f (SList _ [SAtom (TString abbrev), SAtom TDot,               SList _ codes]) = pure (abbrev, [ code | SAtom (TString code) <- codes ])
