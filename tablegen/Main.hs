@@ -90,7 +90,9 @@ handleVimTrie path = do
   vimContents <- readFile path
   case parse vimASTParser path vimContents of
        Left err -> putStrLn $ errorBundlePretty @_ @Void err
-       Right res -> forM_ (sort $ HM.toList $ collectVimTrie res) $ \(_:k, vs) -> putStrLn $ unwords (k : sort vs)
+       Right res -> forM_ (sort $ HM.toList $ collectVimTrie res) $ \(ks, vs) -> case ks of
+                                                                                   [] -> error "unexpected empty keys"
+                                                                                   (_:k) -> putStrLn $ unwords (k : sort vs)
 
 main :: IO ()
 main = getArgs >>=
