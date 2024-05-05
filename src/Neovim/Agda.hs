@@ -32,7 +32,7 @@ registerMappings = do
     let str = [i|nnoremap <buffer><silent> <LocalLeader>#{leader}       :call NecogdaGoalCommand('#{cmd}', 'Simplified')<CR>|]
     void $ nvim_exec str False
     forM_ [minBound .. maxBound :: Rewrite] $ \rewrite -> do
-      let modifier = [toLower $ head $ show rewrite]
+      let modifier = map toLower $ take 1 $ show rewrite
       nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}       :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
 
   void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>r :call NecogdaRefine()<CR>|] False
