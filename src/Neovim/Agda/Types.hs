@@ -1,6 +1,7 @@
 module Neovim.Agda.Types where
 
 import qualified Data.HashMap.Strict as HM
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as T
 import qualified Data.Trie as Trie
 import Data.Int (Int64)
@@ -25,7 +26,7 @@ data AgdaInstanceT payload = AgdaInstance
   , payload :: payload
   } deriving (Show)
 
-type InputTrie = Trie.Trie [T.Text]
+type InputTrie = Trie.Trie (NE.NonEmpty T.Text)
 
 data AgdaEnvT payload = AgdaEnv
   { agdas :: TVar (HM.HashMap FilePath (AgdaInstanceT payload))

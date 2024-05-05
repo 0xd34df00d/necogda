@@ -14,6 +14,7 @@ module Neovim.Agda.Input
 ) where
 
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as M
 import qualified Data.Trie as Trie
 import qualified Data.Trie.Convenience as Trie
@@ -47,20 +48,20 @@ loadInputTrie :: FilePath -> IO InputTrie
 loadInputTrie path = parseContents <$> BS.readFile path
   where
     parseContents contents = Trie.fromListWith (<>)
-                             [ (abbrev, T.decodeUtf8 <$> codes)
+                             [ (abbrev, T.decodeUtf8 <$> firstCode NE.:| restCodes)
                              | l <- BS.lines contents
-                             , abbrev : codes <- [BS.split ' ' l]
+                             , abbrev : firstCode : restCodes <- [BS.split ' ' l]
                              ]
 
 getInputTrie :: Neovim AgdaEnv InputTrie
 getInputTrie = asks symbolsTrie >>= readTVarIO
   where
     sampleTrie :: InputTrie
-    sampleTrie = Trie.fromList [ ("all", ["∀"])
-                               , ("alls", ["∀"])
-                               , ("forall", ["∀"])
-                               , ("Ga", ["α"])
-                               , ("Gb", ["β"])
+    sampleTrie = Trie.fromList [ ("all", NE.fromList ["∀"])
+                               , ("alls", NE.fromList ["∀"])
+                               , ("forall", NE.fromList ["∀"])
+                               , ("Ga", NE.fromList ["α"])
+                               , ("Gb", NE.fromList ["β"])
                                ]
     _unused = sampleTrie
 
@@ -100,15 +101,15 @@ handleSubstr marker start Cursor { .. } line
 
     handlePrefixResult prefixNode = uncurry (handleFullResult prefixNode) . Trie.lookupBy (,) (BS.singleton $ BS.last mid)
 
-    handleFullResult :: Maybe [T.Text]  -- prefixNode
-                     -> Maybe [T.Text]  -- fullNode
-                     -> InputTrie       -- fullChidren
+    handleFullResult :: Maybe (NE.NonEmpty T.Text)  -- prefixNode
+                     -> Maybe (NE.NonEmpty T.Text)  -- fullNode
+                     -> InputTrie                   -- fullChidren
                      -> Neovim AgdaEnv ()
     handleFullResult _ (Just subs) children
-      | Trie.null children = insertBytes $ T.encodeUtf8 $ head subs
+      | Trie.null children = insertBytes $ T.encodeUtf8 $ NE.head subs
       | otherwise = pure ()
     handleFullResult (Just subs) Nothing children
-      | Trie.null children = do insertBytes $ T.encodeUtf8 (head subs) `BS.snoc` BS.last mid
+      | Trie.null children = do insertBytes $ T.encodeUtf8 (NE.head subs) `BS.snoc` BS.last mid
                                 when (BS.last mid == marker) maybeStartSymbol
       | otherwise = pure ()
     handleFullResult Nothing Nothing children
@@ -175,7 +176,7 @@ generateCompletions base = do
                              , (ObjectString "menu", ObjectString [i|(#{abbr})|])
                              ]
                 | (abbr, syms) <- opts
-                , sym <- syms
+                , sym <- NE.toList syms
                 ]
   void $ nvim_eval [i|timer_start(0, { _ -> pumvisible() ? nvim_input("<down>") : nvim_input("") })|]
   pure $ ObjectMap $ M.fromList [ (ObjectString "words", ObjectArray $ ObjectMap <$> vimOpts)
