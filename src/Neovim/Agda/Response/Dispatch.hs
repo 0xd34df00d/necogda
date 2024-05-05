@@ -151,8 +151,10 @@ fmtGoalContextEntry GoalContextEntry { .. } = preBinding <> binding'
     (scopeMarkerL, scopeMarkerR) = if inScope then (T.empty, T.empty) else ("{", "}")
     preBinding = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker} : |] :: T.Text
     reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
-    binding' = let firstLine : rest = T.lines binding
-                in T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
+    binding'
+      | firstLine : rest <- T.lines binding
+      , not $ null rest = T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
+      | otherwise = binding
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
 dispatchGoalInfo ctx GoalType { .. } = do
