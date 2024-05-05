@@ -41,7 +41,7 @@ data AgdaEnvT payload = AgdaEnv
 defaultEnv :: MonadIO m => m (AgdaEnvT payload)
 defaultEnv = atomically $ AgdaEnv <$> newTVar mempty
                                   <*> newTVar Nothing
-                                  <*> newTVar mempty
+                                  <*> newTVar Trie.empty
                                   <*> newTVar (-1)
                                   <*> newTVar (-1)
                                   <*> newTVar (-1)
