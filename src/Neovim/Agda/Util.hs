@@ -1,9 +1,10 @@
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Util where
@@ -15,11 +16,20 @@ import qualified Data.Text.Encoding as T
 import Control.Monad.Extra (mconcatMapM)
 import Data.String.Interpolate.IsString
 import Data.Time.Clock (getCurrentTime)
+import GHC.Clock
 import UnliftIO
 
 import Neovim
 import qualified Neovim.API.ByteString as AB
 import qualified Neovim.API.Text as AT
+
+time :: MonadIO m => String -> m a -> m a
+time name act = do
+  start <- liftIO getMonotonicTimeNSec
+  !res <- act
+  end <- liftIO getMonotonicTimeNSec
+  logToFile [i|#{name} took #{fromIntegral (end - start) / 1e6 :: Double} ms|]
+  pure res
 
 logToFile :: MonadIO m => String -> m ()
 logToFile str = liftIO $ do
@@ -59,6 +69,7 @@ instance ConvertAPI AB.Buffer AT.Buffer where
 instance ConvertAPI AT.Buffer AB.Buffer where
   convertAPI (AT.Buffer bs) = AB.Buffer bs
 
+-- | Converts a position in a 'Text' to the corresponding position in the corresponding 'ByteString'.
 infix 1 @|
 (@|) :: (Integral a, Num b) => T.Text -> a -> b
 str @| pos = fromIntegral $ BS.length $ T.encodeUtf8 $ T.take (fromIntegral pos) str
