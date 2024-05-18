@@ -34,15 +34,6 @@ registerMappings = do
     forM_ [minBound .. maxBound :: Rewrite] $ \rewrite -> do
       let modifier = map toLower $ take 1 $ show rewrite
       nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}       :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
-
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>r :call NecogdaRefine()<CR>|] False
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>c :call NecogdaMakeCase()<CR>|] False
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>a :call NecogdaAutoOne()<CR>|] False
-
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>gp :call NecogdaGoalPrev()<CR>|] False
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>gn :call NecogdaGoalNext()<CR>|] False
-
-  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>? :call NecogdaHowToEnter()<CR>|] False
   where
     goalCommands :: [(String, String)]
     goalCommands = [ ("TypeContextInfer", ".")

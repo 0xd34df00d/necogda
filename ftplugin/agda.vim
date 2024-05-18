@@ -17,3 +17,11 @@ set completeopt=menu,menuone,noinsert,noselect
 inoremap <buffer><silent> ` `<C-X><C-O>
 
 nnoremap <buffer><silent> <LocalLeader>l :w<CR>:call NecogdaLoadFile()<CR>
+nnoremap <buffer><silent> <LocalLeader>r :call NecogdaRefine()<CR>
+nnoremap <buffer><silent> <LocalLeader>c :call NecogdaMakeCase()<CR>
+nnoremap <buffer><silent> <LocalLeader>a :call NecogdaAutoOne()<CR>
+
+nnoremap <buffer><silent> <LocalLeader>gp :call NecogdaGoalPrev()<CR>
+nnoremap <buffer><silent> <LocalLeader>gn :call NecogdaGoalNext()<CR>
+
+nnoremap <buffer><silent> <LocalLeader>? :call NecogdaHowToEnter()<CR>
