@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Neovim.Agda.Request.Commands
 ( sendCommand
@@ -50,11 +50,11 @@ goalCommand cmd rewrite = case lookup cmd ctors of
                                Just ctor -> withInteractionId $ \agda iid text -> sendCommand agda $ ctor rewrite iid NoRange (T.unpack text)
                                Nothing -> nvim_err_writeln [i|Unknown goal command: #{cmd}|]
   where
-    ctors = [ ("Type", Cmd_goal_type)
-            , ("TypeContext", Cmd_goal_type_context)
-            , ("TypeContextInfer", Cmd_goal_type_context_infer)
-            , ("TypeContextCheck", Cmd_goal_type_context_check)
-            ]
+  ctors = [ ("Type", Cmd_goal_type)
+          , ("TypeContext", Cmd_goal_type_context)
+          , ("TypeContextInfer", Cmd_goal_type_context_infer)
+          , ("TypeContextCheck", Cmd_goal_type_context_check)
+          ]
 
 refine :: Neovim AgdaEnv ()
 refine = withInteractionId $ \agda iid text -> sendCommand agda $ Cmd_refine_or_intro False iid NoRange (T.unpack text)

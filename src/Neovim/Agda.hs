@@ -1,7 +1,7 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE BangPatterns #-}
 
 module Neovim.Agda
 ( defaultEnv
@@ -27,13 +27,11 @@ import Neovim.Agda.Start
 import Neovim.Agda.Types
 
 registerMappings :: Neovim AgdaEnv ()
-registerMappings = do
-  forM_ goalCommands $ \(cmd, leader) -> do
-    let str = [i|nnoremap <buffer><silent> <LocalLeader>#{leader}       :call NecogdaGoalCommand('#{cmd}', 'Simplified')<CR>|]
-    void $ nvim_exec str False
-    forM_ [minBound .. maxBound :: Rewrite] $ \rewrite -> do
-      let modifier = map toLower $ take 1 $ show rewrite
-      nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}       :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
+registerMappings = forM_ goalCommands $ \(cmd, leader) -> do
+  void $ nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{leader}  :call NecogdaGoalCommand('#{cmd}', 'Simplified')<CR>|] False
+  forM_ [minBound .. maxBound :: Rewrite] $ \rewrite -> do
+    let modifier = map toLower $ take 1 $ show rewrite
+    nvim_exec [i|nnoremap <buffer><silent> <LocalLeader>#{modifier}#{leader}  :call NecogdaGoalCommand('#{cmd}', '#{rewrite}')<CR>|] False
   where
     goalCommands :: [(String, String)]
     goalCommands = [ ("TypeContextInfer", ".")

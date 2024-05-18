@@ -1,4 +1,6 @@
-{-# LANGUAGE RecordWildCards, OverloadedStrings, OverloadedLists #-}
+{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TupleSections #-}
 
 module Neovim.Agda.Interaction
@@ -77,18 +79,18 @@ getCurrentInteractionId AgdaInstance { .. } = do
         pure (iid, T.decodeUtf8 text)
   traverse extractLines $ findMark (markId2interactionPoint payload) (Cursor (curRow - 1) curCol) marks
   where
-    extractLine start ls row maybeStart maybeEnd = pure $ maybe id BS.drop maybeStart
-                                                        $ maybe id BS.take maybeEnd
-                                                        $ ls V.! (row - start)
+  extractLine start ls row maybeStart maybeEnd = pure $ maybe id BS.drop maybeStart
+                                                      $ maybe id BS.take maybeEnd
+                                                      $ ls V.! (row - start)
 
 findMark :: Foldable f => MarkId2InteractionPoint -> Cursor64 -> f MarkObject -> Maybe (InteractionId, (Cursor, Cursor))
 findMark id2ip cursor = listToMaybe . mapMaybe f . toList >=> getInteractionId
   where
-    f MarkObject { .. } | cursor `between` (markStart, markEnd) = Just (markId, (fromIntegral <$> markStart, fromIntegral <$> markEnd))
-    f _ = Nothing
+  f MarkObject { .. } | cursor `between` (markStart, markEnd) = Just (markId, (fromIntegral <$> markStart, fromIntegral <$> markEnd))
+  f _ = Nothing
 
-    getInteractionId :: (Int64, a) -> Maybe (InteractionId, a)
-    getInteractionId (markId, a) = (, a) . InteractionId . getId <$> markId `HM.lookup` id2ip
+  getInteractionId :: (Int64, a) -> Maybe (InteractionId, a)
+  getInteractionId (markId, a) = (, a) . InteractionId . getId <$> markId `HM.lookup` id2ip
 
 between :: Ord a => a -> (a, a) -> Bool
 smth `between` (start, end) = start <= smth && smth <= end

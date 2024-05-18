@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Neovim.Agda.Nvim.VisualMarks where
 
@@ -87,14 +87,14 @@ addGoalMarks buf fmtGoalType goals = addVirtualMarks buf [ VirtualMark
 atomsMarkInfo :: [T.Text] -> Maybe (T.Text, VMKind)
 atomsMarkInfo = msum . fmap (`HM.lookup` atom2message)
   where
-    atom2message = [ ("error", ("Error", VMError))
-                   , ("unsolvedmeta", ("Unsolved meta", VMWarning))
-                   , ("unsolvedconstraint", ("Unsolved constraint", VMWarning))
-                   , ("terminationproblem", ("Termination problem", VMError))
-                   , ("deadcode", ("Dead code", VMWarning))
-                   , ("coverageproblem", ("Coverage problem", VMError))
-                   , ("positivityproblem", ("Positivity problem", VMError))
-                   , ("incompletepattern", ("Incomplete pattern", VMError))
-                   , ("confluenceproblem", ("Confluence problem", VMError))
-                   , ("missingdefinition", ("Missing definition", VMError))
-                   ]
+  atom2message = [ ("error", ("Error", VMError))
+                 , ("unsolvedmeta", ("Unsolved meta", VMWarning))
+                 , ("unsolvedconstraint", ("Unsolved constraint", VMWarning))
+                 , ("terminationproblem", ("Termination problem", VMError))
+                 , ("deadcode", ("Dead code", VMWarning))
+                 , ("coverageproblem", ("Coverage problem", VMError))
+                 , ("positivityproblem", ("Positivity problem", VMError))
+                 , ("incompletepattern", ("Incomplete pattern", VMError))
+                 , ("confluenceproblem", ("Confluence problem", VMError))
+                 , ("missingdefinition", ("Missing definition", VMError))
+                 ]

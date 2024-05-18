@@ -1,11 +1,11 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Start
 ( startAgda
@@ -93,7 +93,7 @@ startAgdaForFile payload filename = do
     pure Nothing
   else pure $ Just inst
   where
-    agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
+  agdaProc = (proc "agda" ["--interaction-json"]) { std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe }
 
 prepareGoalWindow :: Neovim AgdaEnv Buffer
 prepareGoalWindow = do
@@ -107,14 +107,14 @@ setlocal buftype=nofile nobuflisted bufhidden=wipe|] False
   nvim_command [i|wincmd p|]
   pure outputBuffer
   where
-    extractSize :: Object -> Int
-    extractSize (ObjectInt n) = fromIntegral n
-    extractSize (ObjectUInt n) = fromIntegral n
-    extractSize _ = 60
+  extractSize :: Object -> Int
+  extractSize (ObjectInt n) = fromIntegral n
+  extractSize (ObjectUInt n) = fromIntegral n
+  extractSize _ = 60
 
-    extractOrientation :: Object -> BS.ByteString
-    extractOrientation (ObjectString "horizontal") = ""
-    extractOrientation _ = "vertical "
+  extractOrientation :: Object -> BS.ByteString
+  extractOrientation (ObjectString "horizontal") = ""
+  extractOrientation _ = "vertical "
 
 startAgda :: Neovim AgdaEnv ()
 startAgda = do

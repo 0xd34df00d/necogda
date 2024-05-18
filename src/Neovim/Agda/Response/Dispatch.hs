@@ -1,10 +1,11 @@
-{-# LANGUAGE OverloadedStrings, OverloadedLists #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE Strict #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE Strict #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Neovim.Agda.Response.Dispatch
@@ -42,7 +43,7 @@ stripMarker str
   | marker `BS.isPrefixOf` str = BS.drop (BS.length marker) str
   | otherwise = str
   where
-    marker = "JSON> "
+  marker = "JSON> "
 
 parseResponse :: BS.ByteString -> Either String Response
 parseResponse = decodeResponse . stripMarker
@@ -86,11 +87,11 @@ handleDisplayInfo ctx AllGoalsWarnings { .. } = do
                      <> fmtMessages "Errors" errors
                      <> fmtMessages "Warnings" warnings
   where
-    fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
-    fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
-    fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
-      where
-        fmtGoal goal = [i|?#{fmtRange $ constraintObj goal}: #{T.replace "\n" "\n    " $ fmtGoalType goal}|] :: T.Text
+  fmtGoals :: String -> (range -> T.Text) -> [Goal range] -> V.Vector T.Text
+  fmtGoals name _        [] = V.fromList [ [i|#{name}: none|], " " ]
+  fmtGoals name fmtRange goals = V.fromList ([i|#{name}:|] : (fmtGoal <$> goals)) <> V.singleton " "
+    where
+    fmtGoal goal = [i|?#{fmtRange $ constraintObj goal}: #{T.replace "\n" "\n    " $ fmtGoalType goal}|] :: T.Text
 handleDisplayInfo _   Version {} = pure ()
 handleDisplayInfo ctx Error { .. }
   | null warnings = setOutputBuffer ctx (Identity $ message error')
@@ -112,21 +113,19 @@ expandHoles :: T.Text -> T.Text
 expandHoles = T.replace "?" "{! !}"
 
 handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
-handleMakeCase "Function" ctx clauses = withRange ctx f
-  where
-    f start end = do
-      existing <- nvim_buf_get_lines (agdaBuffer ctx) (row start) (row start + 1) False
-      let prefix = case toList existing of
-                        (l:_) -> T.replicate (BS.length $ BS.takeWhile (== ' ') l) " "
-                        _ -> mempty
-      nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . (prefix <>) . expandHoles <$> clauses
+handleMakeCase "Function" ctx clauses = withRange ctx $ \start end -> do
+  existing <- nvim_buf_get_lines (agdaBuffer ctx) (row start) (row start + 1) False
+  let prefix = case toList existing of
+                    (l:_) -> T.replicate (BS.length $ BS.takeWhile (== ' ') l) " "
+                    _ -> mempty
+  nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . (prefix <>) . expandHoles <$> clauses
 handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
 insertGivenResult ctx GiveResult { .. } = withRange ctx f
   where
-    f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 $ expandHoles str'given)
+  f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 $ expandHoles str'given)
 
 
 withRange :: DispatchContext -> (Cursor64 -> Cursor64 -> Neovim AgdaEnv ()) -> RangeWithId -> Neovim AgdaEnv ()
@@ -141,20 +140,20 @@ iipRange ctx range = withPayload ctx $ \payload -> do
     MarkObject { markId = _, .. } <- parseMarkObject =<< V.find (findById markId) marks
     pure (markStart, markEnd)
   where
-    findById markId (ObjectArray ((anyInt -> Just markId') : _)) = markId == markId'
-    findById _ _ = False
+  findById markId (ObjectArray ((anyInt -> Just markId') : _)) = markId == markId'
+  findById _ _ = False
 
 
 fmtGoalContextEntry :: GoalContextEntry -> T.Text
 fmtGoalContextEntry GoalContextEntry { .. } = preBinding <> binding'
   where
-    (scopeMarkerL, scopeMarkerR) = if inScope then (T.empty, T.empty) else ("{", "}")
-    preBinding = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker} : |] :: T.Text
-    reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
-    binding'
-      | firstLine : rest <- T.lines binding
-      , not $ null rest = T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
-      | otherwise = binding
+  (scopeMarkerL, scopeMarkerR) = if inScope then (T.empty, T.empty) else ("{", "}")
+  preBinding = [i|#{scopeMarkerL}#{originalName}#{scopeMarkerR}#{reifyMarker} : |] :: T.Text
+  reifyMarker = if originalName == reifiedName then "" else " (renamed to " <> reifiedName <> ")"
+  binding'
+    | firstLine : rest <- T.lines binding
+    , not $ null rest = T.intercalate "\n" $ firstLine : ((T.replicate (T.length preBinding) " " <>) <$> rest)
+    | otherwise = binding
 
 dispatchGoalInfo :: DispatchContext -> GoalInfo -> Neovim AgdaEnv ()
 dispatchGoalInfo ctx GoalType { .. } = do
@@ -162,23 +161,23 @@ dispatchGoalInfo ctx GoalType { .. } = do
                                                                                      _           -> inScope
   setOutputBuffer ctx $ V.fromList $ typeAuxInfo : header : (fmtGoalContextEntry <$> filter entriesFilter entries)
   where
-    header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
-    typeAuxInfo = case typeAux of
-                       Just GoalAndHave { .. } -> "Have: " <> expr
-                       Just GoalAndElaboration { .. } -> "Elab: " <> term
-                       _ -> ""
+  header = "Goal: " <> type'goal <> "\n" <> T.replicate 40 "-"
+  typeAuxInfo = case typeAux of
+                     Just GoalAndHave { .. } -> "Have: " <> expr
+                     Just GoalAndElaboration { .. } -> "Elab: " <> term
+                     _ -> ""
 dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
 
 
 extractHlMarks :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
 extractHlMarks ctx p2c bits = addVirtualMarks (agdaBuffer ctx) $ mapMaybe marking bits
   where
-    marking (HlBit atoms ranges) = do
-      [fromPos, toPos] <- Just ranges
-      (vmText, vmKind) <- atomsMarkInfo atoms
-      vmStart <- position2cursor p2c fromPos
-      vmEnd <- position2cursor p2c toPos
-      pure $ VirtualMark { .. }
+  marking (HlBit atoms ranges) = do
+    [fromPos, toPos] <- Just ranges
+    (vmText, vmKind) <- atomsMarkInfo atoms
+    vmStart <- position2cursor p2c fromPos
+    vmEnd <- position2cursor p2c toPos
+    pure $ VirtualMark { .. }
 
 
 handleHighlights :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
@@ -201,19 +200,19 @@ prepareHlBit pos2cur (HlBit atoms [fromPos, toPos])
   , Just to <- position2cursor pos2cur toPos = onRange from to highlight
   | otherwise = Right []
   where
-    highlight row fromCol toCol = Right $ (\atom -> PreparedHighlight (T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)) <$> atoms
+  highlight row fromCol toCol = Right $ (\atom -> PreparedHighlight (T.encodeUtf8 atom) row (fromMaybe 0 fromCol) (fromMaybe (-1) toCol)) <$> atoms
 prepareHlBit _       (HlBit _     range) = Left [i|Unexpected range format: #{range}|]
 
 serializePreparedHighlights :: Buffer -> Int64 -> [PreparedHighlight] -> V.Vector Object
 serializePreparedHighlights buf hlNs = V.fromList . fmap (\ph -> ObjectArray [ObjectString "nvim_buf_add_highlight", args ph])
   where
-    args PreparedHighlight { .. } = ObjectArray [ toObject buf
-                                                , ObjectInt hlNs
-                                                , ObjectString $ "agda_atom_" <> phAtom
-                                                , ObjectInt phRow
-                                                , ObjectInt phFromCol
-                                                , ObjectInt phToCol
-                                                ]
+  args PreparedHighlight { .. } = ObjectArray [ toObject buf
+                                              , ObjectInt hlNs
+                                              , ObjectString $ "agda_atom_" <> phAtom
+                                              , ObjectInt phRow
+                                              , ObjectInt phFromCol
+                                              , ObjectInt phToCol
+                                              ]
 
 data Position2Cursor = Position2Cursor
   { linesOffsets :: [Int64]
