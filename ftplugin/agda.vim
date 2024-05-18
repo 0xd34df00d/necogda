@@ -1,5 +1,6 @@
 if (get(g:, 'necogda_started', 0) == 0)
   call nvimhs#start(expand('<sfile>:p:h:h'), 'necogda', [])
+  sleep 1000m
   call InitializePlugin()
 
   let g:necogda_started = 1
