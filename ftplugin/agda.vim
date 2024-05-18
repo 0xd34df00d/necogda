@@ -3,6 +3,7 @@ if (get(g:, 'necogda_started', 0) == 0)
   while !exists('*InitializePlugin')
     sleep 100m
   endwhile
+  sleep 200m
   call InitializePlugin()
 
   let g:necogda_started = 1
