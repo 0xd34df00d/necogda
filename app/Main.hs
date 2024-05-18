@@ -14,7 +14,7 @@ main = do
   env <- P.defaultEnv
   let plugin = wrapPlugin Plugin
                   { environment = env
-                  , exports = [ $(function' 'P.initializePlugin) Async
+                  , exports = [ $(function' 'P.initializePlugin) Sync
                               , $(function' 'P.loadNecogda) Async
 
                               , $(function' 'P.necogdaComplete) Sync
