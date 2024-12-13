@@ -94,12 +94,12 @@ handleDisplayInfo ctx AllGoalsWarnings { .. } = do
     fmtGoal goal = [i|?#{fmtRange $ constraintObj goal}: #{T.replace "\n" "\n    " $ fmtGoalType goal}|] :: T.Text
 handleDisplayInfo _   Version {} = pure ()
 handleDisplayInfo ctx Error { .. }
-  | null warnings = setOutputBuffer ctx (Identity $ message error')
+  | null warnings = setOutputBuffer ctx [message error']
   | otherwise = setOutputBuffer ctx $ fmtMessages "Error" [error']
                                    <> fmtMessages "Warnings" warnings
 handleDisplayInfo ctx GoalSpecific { .. } = dispatchGoalInfo ctx goalInfo
-handleDisplayInfo ctx IntroNotFound = setOutputBuffer ctx $ V.singleton "Intro not found"
-handleDisplayInfo ctx Auto { .. } = setOutputBuffer ctx $ V.singleton info
+handleDisplayInfo ctx IntroNotFound = setOutputBuffer ctx ["Intro not found"]
+handleDisplayInfo ctx Auto { .. } = setOutputBuffer ctx [info]
 
 fmtGoalType :: Goal a -> T.Text
 fmtGoalType OfType { .. } = type'goal
@@ -166,7 +166,7 @@ dispatchGoalInfo ctx GoalType { .. } = do
                      Just GoalAndHave { .. } -> "Have: " <> expr
                      Just GoalAndElaboration { .. } -> "Elab: " <> term
                      _ -> ""
-dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx (Identity $ "Goal: " <> type'goal)
+dispatchGoalInfo ctx CurrentGoal { .. } = setOutputBuffer ctx ["Goal: " <> type'goal]
 
 
 extractHlMarks :: DispatchContext -> Position2Cursor -> [HlBit] -> Neovim AgdaEnv ()
@@ -233,7 +233,7 @@ position2cursor Position2Cursor { .. } pos = do
   pure $ Cursor (fromIntegral lineIdx) colIdx
 
 
-setOutputBuffer :: Foldable f => DispatchContext -> f T.Text -> Neovim env ()
+setOutputBuffer :: DispatchContext -> V.Vector T.Text -> Neovim env ()
 setOutputBuffer ctx = nvim_buf_set_lines (outputBuffer ctx) 0 (-1) False
                     . V.concatMap (V.fromList . BS.split '\n' . T.encodeUtf8)
                     . V.fromList
