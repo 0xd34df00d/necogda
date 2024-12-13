@@ -1,10 +1,8 @@
-resolver: nightly-2024-05-01
+resolver: nightly-2024-12-13
 packages:
 - .
 extra-deps:
-- bytestring-trie-0.2.7.3
-- sexpresso-1.2.4.0
+- sexpresso-1.2.5.0
 allow-newer: true
 allow-newer-deps:
-- bytestring-trie
 - sexpresso
