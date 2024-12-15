@@ -99,6 +99,7 @@ handleDisplayInfo ctx Error { .. }
                                    <> fmtMessages "Warnings" warnings
 handleDisplayInfo ctx GoalSpecific { .. } = dispatchGoalInfo ctx goalInfo
 handleDisplayInfo ctx IntroNotFound = setOutputBuffer ctx ["Intro not found"]
+handleDisplayInfo ctx (IntroConstructorUnknown ctors) = setOutputBuffer ctx $ V.fromList $ "Intro constructor unknown; considered:\n" : ((" * " <>) <$> ctors)
 handleDisplayInfo ctx Auto { .. } = setOutputBuffer ctx [info]
 
 fmtGoalType :: Goal a -> T.Text
