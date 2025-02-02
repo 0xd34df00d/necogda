@@ -115,6 +115,7 @@ expandHoles :: T.Text -> T.Text
 expandHoles = T.replace "?" "{! !}"
 
 handleMakeCase :: String -> DispatchContext -> [T.Text] -> RangeWithId -> Neovim AgdaEnv ()
+handleMakeCase _ _ [] = const $ nvim_err_writeln "empty clauses"
 handleMakeCase "Function" ctx clauses = withRange ctx $ \start end -> do
   existing <- nvim_buf_get_lines (agdaBuffer ctx) (row start) (row start + 1) False
   let prefix = case toList existing of
