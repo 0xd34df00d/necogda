@@ -16,6 +16,7 @@ module Neovim.Agda.Response.Dispatch
 ) where
 
 import Data.ByteString.Char8 qualified as BS
+import Data.ByteString.Search qualified as BSS
 import Data.HashMap.Strict qualified as HM
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as T
@@ -122,6 +123,14 @@ handleMakeCase "Function" ctx clauses = withRange ctx $ \start end -> do
                     (l:_) -> T.replicate (BS.length $ BS.takeWhile (== ' ') l) " "
                     _ -> mempty
   nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . (prefix <>) . expandHoles <$> clauses
+handleMakeCase "ExtendedLambda" ctx (headClause : clauses) = withRange ctx $ \start end -> do
+  line : _ <- V.toList <$> nvim_buf_get_lines (agdaBuffer ctx) (row start) (row start + 1) False
+  let marker = " where "
+  prefixLen <- case reverse $ BSS.indices marker line of
+                    [] -> nvim_err_writeln "expected to have a `where` keyword on this line" $> 0
+                    (lastIdx : _) -> pure lastIdx
+  let repLines = T.encodeUtf8 . expandHoles <$> (headClause : ((T.replicate prefixLen " " <>) <$> clauses))
+  nvim_buf_set_text (agdaBuffer ctx) (row start) (fromIntegral $ prefixLen + BS.length marker) (row end) (U.col end) (V.fromList repLines)
 handleMakeCase variant _ clauses = const $ NT.nvim_err_writeln [i|Unknown make case variant: #{variant} with clauses\n#{T.unpack $ T.unlines clauses}|]
 
 
