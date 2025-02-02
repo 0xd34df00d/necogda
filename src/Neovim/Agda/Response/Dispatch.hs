@@ -31,6 +31,7 @@ import UnliftIO
 
 import Neovim
 import Neovim.API.ByteString
+import Neovim.API.Text qualified as NT
 
 import Neovim.Agda.Interaction
 import Neovim.Agda.Nvim.VisualMarks
@@ -120,7 +121,7 @@ handleMakeCase "Function" ctx clauses = withRange ctx $ \start end -> do
                     (l:_) -> T.replicate (BS.length $ BS.takeWhile (== ' ') l) " "
                     _ -> mempty
   nvim_buf_set_lines (agdaBuffer ctx) (row start) (row end + 1) False $ V.fromList $ T.encodeUtf8 . (prefix <>) . expandHoles <$> clauses
-handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case variant: #{variant}|]
+handleMakeCase variant _ clauses = const $ NT.nvim_err_writeln [i|Unknown make case variant: #{variant} with clauses\n#{T.unpack $ T.unlines clauses}|]
 
 
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
