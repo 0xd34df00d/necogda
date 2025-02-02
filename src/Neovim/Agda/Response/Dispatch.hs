@@ -1,4 +1,5 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -14,11 +15,11 @@ module Neovim.Agda.Response.Dispatch
 , DispatchContext(..)
 ) where
 
-import qualified Data.ByteString.Char8 as BS
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import qualified Data.Vector as V
+import Data.ByteString.Char8 qualified as BS
+import Data.HashMap.Strict qualified as HM
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as T
+import Data.Vector qualified as V
 import Control.Monad
 import Data.Default
 import Data.Foldable
