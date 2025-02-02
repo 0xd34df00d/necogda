@@ -20,7 +20,6 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 import Control.Monad
-import Control.Monad.Identity
 import Data.Default
 import Data.Foldable
 import Data.Functor
@@ -126,7 +125,7 @@ handleMakeCase variant _ _ = const $ nvim_err_writeln [i|Unknown make case varia
 insertGivenResult :: DispatchContext -> GiveResult -> RangeWithId -> Neovim AgdaEnv ()
 insertGivenResult ctx GiveResult { .. } = withRange ctx f
   where
-  f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (pure $ T.encodeUtf8 $ expandHoles str'given)
+  f start end = nvim_buf_set_text (agdaBuffer ctx) (U.row start) (U.col start) (U.row end) (U.col end) (V.fromList $ BS.lines $ T.encodeUtf8 $ expandHoles str'given)
 
 
 withRange :: DispatchContext -> (Cursor64 -> Cursor64 -> Neovim AgdaEnv ()) -> RangeWithId -> Neovim AgdaEnv ()
